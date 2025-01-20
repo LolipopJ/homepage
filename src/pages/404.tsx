@@ -1,49 +1,23 @@
 import { HeadFC, Link, PageProps } from "gatsby";
 import * as React from "react";
 
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-};
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-};
-
-const paragraphStyles = {
-  marginBottom: 48,
-};
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-};
+import SEO from "../components/seo";
 
 const NotFoundPage: React.FC<PageProps> = () => {
   return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry 😔, we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
-    </main>
+    <div>
+      <h1 className="mb-4 text-xl font-bold">不存在的页面</h1>
+      <p className="mb-8">Ooops 😔，当前您正在浏览的页面如今并不存在</p>
+      <Link
+        to="/"
+        className="item-selectable rounded border border-neutral-600/80 p-2"
+      >
+        回到主页
+      </Link>
+    </div>
   );
 };
 
 export default NotFoundPage;
 
-export const Head: HeadFC = () => <title>Not found</title>;
+export const Head: HeadFC = () => <SEO title="(ᗒᗣᗕ)՞ 404" />;

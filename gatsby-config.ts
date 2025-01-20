@@ -2,17 +2,21 @@ import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `blog`,
-    siteUrl: `https://www.yourdomain.tld`,
+    title: "Lolipop's Studio",
+    description:
+      "Personal blog of Lolipop, share knowledge about software / frontend development.",
+    siteUrl: "https://lolipopj.github.io/blog",
   },
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
   // If you use VSCode you can also use the GraphQL plugin
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
+    "gatsby-plugin-layout",
     "gatsby-plugin-postcss",
     "gatsby-plugin-sitemap",
-    "gatsby-plugin-mdx",
+    "gatsby-plugin-image",
+    "gatsby-plugin-sharp",
     {
       resolve: "gatsby-source-filesystem",
       options: {
@@ -20,6 +24,36 @@ const config: GatsbyConfig = {
         path: "./src/pages/",
       },
       __key: "pages",
+    },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "posts",
+        path: "./blog/posts/",
+      },
+      __key: "posts",
+    },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "drafts",
+        path: "./blog/drafts/",
+      },
+      __key: "drafts",
+    },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "about",
+        path: "./blog/about.mdx",
+      },
+      __key: "about",
+    },
+    {
+      resolve: "gatsby-plugin-mdx",
+      options: {
+        extensions: [".mdx", ".md"],
+      },
     },
   ],
 };

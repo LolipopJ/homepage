@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-neutral-900 text-neutral-100;
+}
+
+::-webkit-scrollbar {
+  @apply h-3 w-3;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-700;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-md bg-neutral-600 hover:bg-neutral-500;
+}
+
+.item-selectable {
+  @apply transition hover:bg-neutral-600/50;
+}
+
+.item-selected {
+  @apply !bg-neutral-600/80 transition;
+}
