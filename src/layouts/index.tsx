@@ -1,12 +1,15 @@
 import { graphql, PageProps, useStaticQuery } from "gatsby";
 import * as React from "react";
 
+import Post from "../components/post";
 import { NAVBAR_ITEMS } from "../constants/navbar";
-import { BlogFrontmatter } from "../interfaces/blog";
+import { PostBase } from "../interfaces/post";
+import { parseFilePathToPostPath } from "../utils/post";
 import Navbar from "./navbar";
+import SiderBar, { SiderBarProps } from "./sider-bar";
 
 const Layout = (props: PageProps) => {
-  const { children, path = "" } = props;
+  const { children, path = "/" } = props;
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<string>("Posts");
 
@@ -22,25 +25,78 @@ const Layout = (props: PageProps) => {
         filter: { internal: { contentFilePath: { regex: "/blog/posts/" } } }
       ) {
         nodes {
+          id
           frontmatter {
-            date
-            title
-            tags
             categories
+            date
+            tags
+            title
+          }
+          internal {
+            contentFilePath
           }
         }
       }
     }
   `);
   const siteMetadata = data.site.siteMetadata;
-  const postsData = (
-    data.allMdx.nodes.map(
-      // @ts-expect-error: ignored
-      (node) => node.frontmatter,
-    ) as Pick<BlogFrontmatter, "categories" | "date" | "tags" | "title">[]
-  ).filter((node) => !!node.title);
+  const postsData: PostBase[] = data.allMdx.nodes.map(
+    // @ts-expect-error: ignored
+    (node) => ({ ...node.frontmatter, ...node.internal, id: node.id }),
+  );
 
-  const selectedRouteKey = React.useMemo(() => {
+  const showPosts = /^(\/about|\/posts|\/categories|\/tags|\/authors)/.test(
+    path,
+  );
+  const showToc = /^(\/about|\/posts)/.test(path);
+  const subNavbarItems: SiderBarProps["items"] = [
+    ...(showPosts
+      ? [
+          {
+            key: "Posts",
+            body: (
+              <ol
+                className={`${subNavbarActiveKey === "Posts" ? "block" : "hidden"}`}
+              >
+                {postsData.map((post) => {
+                  const postPath = parseFilePathToPostPath(
+                    post.contentFilePath,
+                  );
+                  const isActive = new RegExp(`^/posts/${postPath}/?`).test(
+                    path,
+                  );
+
+                  return (
+                    <li key={post.id}>
+                      <Post
+                        post={post}
+                        postPath={postPath}
+                        className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                      />
+                    </li>
+                  );
+                })}
+              </ol>
+            ),
+          },
+        ]
+      : []),
+    ...(showToc
+      ? [
+          {
+            key: "Toc",
+            body: <></>,
+          },
+        ]
+      : []),
+  ];
+
+  React.useEffect(() => {
+    if (showToc) setSubNavbarActiveKey("Toc");
+    else setSubNavbarActiveKey("Posts");
+  }, [showToc]);
+
+  const navbarActiveKey = React.useMemo(() => {
     const pathSplits = path.split("/");
     if (pathSplits.length === 1) {
       return "/";
@@ -49,48 +105,28 @@ const Layout = (props: PageProps) => {
     }
   }, [path]);
 
-  const showPosts = /^(\/about|\/posts|\/categories|\/tags|\/authors)/.test(
-    path,
-  );
-  const showToc = /^(\/about|\/posts)/.test(path);
-  const subNavbarKeys = [
-    ...(showPosts ? ["Posts"] : []),
-    ...(showToc ? ["Toc"] : []),
-  ];
-
   return (
     <div className="flex h-screen overflow-y-hidden">
-      {/* 左侧导航栏 */}
-      <aside className="w-64 shrink-0 overflow-y-auto border-r border-neutral-600/80 bg-neutral-800/20 px-4">
-        <div className="flex h-16 items-center px-3">
-          <div className="font-bold">{siteMetadata.title}</div>
-        </div>
-        <Navbar items={NAVBAR_ITEMS} activeKey={selectedRouteKey} />
-      </aside>
-      {/* 左侧二级导航栏 */}
-      <div
-        className={`w-80 shrink-0 border-r border-neutral-600/80 bg-neutral-800/20 ${subNavbarKeys.length ? "block" : "hidden"}`}
+      <SiderBar
+        className="w-64 shrink-0 px-4"
+        header={
+          <div className="mx-3 flex h-16 items-center">
+            <div className="font-bold">{siteMetadata.title}</div>
+          </div>
+        }
       >
-        <div className="flex h-16 items-center px-7">
-          <ul className="flex gap-1 rounded-full border border-neutral-600/80 bg-neutral-800 p-0.5">
-            {subNavbarKeys.map((key) => (
-              <li
-                key={key}
-                className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${key === subNavbarActiveKey ? "bg-neutral-100 text-neutral-900" : ""}`}
-                onClick={() => {
-                  setSubNavbarActiveKey(key);
-                }}
-              >
-                {key}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="h-[calc(100vh-4rem)] overflow-y-auto px-4">
-          {subNavbarActiveKey === "Posts" && <ol></ol>}
-        </div>
-      </div>
-      {/* 主体内容部分 */}
+        <Navbar items={NAVBAR_ITEMS} activeKey={navbarActiveKey} />
+      </SiderBar>
+
+      <SiderBar
+        items={subNavbarItems}
+        className={`w-80 shrink-0 ${subNavbarItems.length ? "block" : "hidden"}`}
+        activeKey={subNavbarActiveKey}
+        onActiveKeyChange={(key) => setSubNavbarActiveKey(key)}
+        headerClassName="px-4 mx-3"
+        bodyClassName="px-4"
+      />
+
       <main className="relative grow overflow-auto">
         <header className="sticky top-0 flex h-16 items-center bg-neutral-900/80 backdrop-blur-sm"></header>
         <article className="mx-24 min-h-[calc(100vh-16rem)] pb-48 pt-8">

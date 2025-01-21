@@ -5,6 +5,7 @@ import {
   faHeart,
   faHouse,
   faIdCard,
+  faLaptopCode,
   faLayerGroup,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
@@ -16,8 +17,9 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
     title: "",
     routes: [
       { icon: faHouse, label: "主页", url: "/" },
-      { icon: faIdCard, label: "关于我", url: "/about" },
+      { icon: faLaptopCode, label: "作品集", url: "/works" },
       { icon: faCookieBite, label: "时间线", url: "/timeline" },
+      { icon: faIdCard, label: "关于我", url: "/about" },
       { icon: faHeart, label: "朋友们", url: "/friends" },
     ],
   },

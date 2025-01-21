@@ -19,9 +19,9 @@ body {
 }
 
 .item-selectable {
-  @apply transition hover:bg-neutral-600/50;
+  @apply transition hover:bg-neutral-600/30;
 }
 
 .item-selected {
-  @apply !bg-neutral-600/80 transition;
+  @apply !bg-neutral-600/50 transition;
 }

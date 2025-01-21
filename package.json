@@ -1,11 +1,13 @@
 {
-  "name": "blog",
+  "name": "homepage",
   "version": "1.0.0",
   "private": true,
-  "description": "blog",
+  "description": "Lolipop's homepage and static blog system, inspired by Priority Vision theme Thesis",
   "author": "LolipopJ",
   "keywords": [
-    "gatsby"
+    "gatsby",
+    "homepage",
+    "blog"
   ],
   "scripts": {
     "develop": "gatsby develop",
