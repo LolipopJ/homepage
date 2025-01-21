@@ -12,6 +12,7 @@ const Layout = (props: PageProps) => {
   const { children, path = "/" } = props;
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<string>("Posts");
+  const mainRef = React.useRef<HTMLElement>(null);
 
   const data = useStaticQuery(graphql`
     query {
@@ -22,7 +23,7 @@ const Layout = (props: PageProps) => {
       }
       allMdx(
         sort: { frontmatter: { date: DESC } }
-        filter: { internal: { contentFilePath: { regex: "/blog/posts/" } } }
+        filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
       ) {
         nodes {
           id
@@ -44,6 +45,15 @@ const Layout = (props: PageProps) => {
     // @ts-expect-error: ignored
     (node) => ({ ...node.frontmatter, ...node.internal, id: node.id }),
   );
+
+  const navbarActiveKey = React.useMemo(() => {
+    const pathSplits = path.split("/");
+    if (pathSplits.length === 1) {
+      return "/";
+    } else {
+      return `/${pathSplits[1]}`;
+    }
+  }, [path]);
 
   const showPosts = /^(\/about|\/posts|\/categories|\/tags|\/authors)/.test(
     path,
@@ -92,23 +102,18 @@ const Layout = (props: PageProps) => {
   ];
 
   React.useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  }, [path]);
+
+  React.useEffect(() => {
     if (showToc) setSubNavbarActiveKey("Toc");
     else setSubNavbarActiveKey("Posts");
   }, [showToc]);
 
-  const navbarActiveKey = React.useMemo(() => {
-    const pathSplits = path.split("/");
-    if (pathSplits.length === 1) {
-      return "/";
-    } else {
-      return `/${pathSplits[1]}`;
-    }
-  }, [path]);
-
   return (
     <div className="flex h-screen overflow-y-hidden">
       <SiderBar
-        className="w-64 shrink-0 px-4"
+        className="w-72 shrink-0 px-4"
         header={
           <div className="mx-3 flex h-16 items-center">
             <div className="font-bold">{siteMetadata.title}</div>
@@ -120,18 +125,15 @@ const Layout = (props: PageProps) => {
 
       <SiderBar
         items={subNavbarItems}
-        className={`w-80 shrink-0 ${subNavbarItems.length ? "block" : "hidden"}`}
+        className={`w-96 shrink-0 ${subNavbarItems.length ? "block" : "hidden"}`}
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={(key) => setSubNavbarActiveKey(key)}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
       />
 
-      <main className="relative grow overflow-auto">
-        <header className="sticky top-0 flex h-16 items-center bg-neutral-900/80 backdrop-blur-sm"></header>
-        <article className="mx-24 min-h-[calc(100vh-16rem)] pb-48 pt-8">
-          {children}
-        </article>
+      <main ref={mainRef} className="grow overflow-auto">
+        <div className="relative min-h-[calc(100vh-12rem)]">{children}</div>
         <footer className="flex h-48 items-center border-t border-neutral-600/80 bg-neutral-800/60"></footer>
       </main>
     </div>

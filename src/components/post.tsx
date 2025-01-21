@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { Link } from "gatsby";
 import * as React from "react";
 
@@ -11,7 +12,8 @@ export interface PostProps {
 
 const Post = (props: PostProps) => {
   const { post, postPath, className = "" } = props;
-  const { categories = [], date, tags = [], title } = post;
+  const { categories = [], date: dateString, tags = [], title } = post;
+  const date = new Date(dateString);
 
   return (
     <Link
@@ -27,8 +29,8 @@ const Post = (props: PostProps) => {
         {title}
       </div>
       <div className="flex text-sm text-neutral-100/60">
-        <div title={new Date(date).toString()} className="line-clamp-1">
-          {new Date(date).toLocaleDateString()}
+        <div title={date.toString()} className="line-clamp-1">
+          {dayjs(date).format("MM 月 DD 日 YYYY 年")}
         </div>
         {tags.length && (
           <>

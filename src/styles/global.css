@@ -1,3 +1,5 @@
+@import url("//unpkg.com/heti/umd/heti.min.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,4 +26,35 @@ body {
 
 .item-selected {
   @apply !bg-neutral-600/50 transition;
+}
+
+.post-entry {
+  blockquote,
+  img,
+  video,
+  pre,
+  table {
+    @apply rounded-md;
+  }
+
+  blockquote {
+    @apply me-0 ms-0;
+
+    :last-child {
+      @apply mb-3;
+    }
+  }
+
+  img,
+  video {
+    @apply -mx-6 w-[calc(100%+3rem)] max-w-none;
+  }
+
+  code {
+    @apply break-all;
+  }
+
+  img {
+    @apply mb-6 mt-3;
+  }
 }

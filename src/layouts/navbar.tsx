@@ -31,7 +31,7 @@ const Navbar = ({ items, activeKey, className }: NavbarProps) => {
             <ul>
               {item.routes.map((route) => {
                 const isSelected = activeKey === route.url;
-                const isExternal = route.url.startsWith("http");
+                const isExternal = !/^\//.test(route.url);
 
                 return (
                   <li key={route.url} className="mb-0.5">

@@ -87,7 +87,7 @@ Use these links to connect to your proxy:
 ${username}: tg://proxy?server=${ip}&port=${port}&secret=${secret}
 ```
 
-其中 \${username} 为之前输入的用户名（并不重要，只是标识），\${ip} 是服务器的公网 IP 或域名，\${port} 是设置的访问代理的端口，\${secret} 是设置或自动生成的密钥。
+其中 \$\{username\} 为之前输入的用户名（并不重要，只是标识），\$\{ip\} 是服务器的公网 IP 或域名，\$\{port\} 是设置的访问代理的端口，\$\{secret\} 是设置或自动生成的密钥。
 
 这里作者提示可以用 `systemctl start mtprotoproxy` 来启动代理服务了，作为补充，`systemctl` 是 `Systemd` 进程管理命令，而 `Systemd` 是一种 Linux 的系统工具，用来启动守护进程（即一直在后台运行的进程，daemon）。这说明当前 `mtprotoproxy` 已经是可以启动的服务了，在后续的过程中只需要对此服务进行管理就可以了。
 
