@@ -1,6 +1,10 @@
-import { faSteam, faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import {
-  faCookieBite,
+  faGithub,
+  faSteam,
+  faXTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+import {
+  faCommentDots,
   faEnvelope,
   // faFeatherPointed,
   faHeart,
@@ -8,6 +12,7 @@ import {
   faIdCard,
   faLaptopCode,
   faLayerGroup,
+  // faRss,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,30 +34,36 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
       { icon: faLayerGroup, label: "分类", url: "/categories" },
       { icon: faTags, label: "标签", url: "/tags" },
       // { icon: faFeatherPointed, label: "作者", url: "/authors" },
+      // { icon: faRss, label: "RSS", url: "" },
     ],
   },
   {
     title: "找到博主",
     routes: [
       {
-        icon: faCookieBite,
+        icon: faCommentDots,
         label: "时间线",
         url: "https://timeline.towind.fun",
       },
       {
-        icon: faEnvelope,
-        label: "mail@towind.fun",
-        url: "mailto:mail@towind.fun",
+        icon: faGithub,
+        label: "@LolipopJ",
+        url: "https://github.com/LolipopJ",
       },
       {
         icon: faXTwitter,
-        label: "@LolipopJ",
-        url: "https://github.com/LolipopJ",
+        label: "@Lolipop_0703",
+        url: "https://x.com/Lolipop_0703",
       },
       {
         icon: faSteam,
         label: "@lolipopj_703",
         url: "https://steamcommunity.com/id/lolipopj_703",
+      },
+      {
+        icon: faEnvelope,
+        label: "mail@towind.fun",
+        url: "mailto:mail@towind.fun",
       },
     ],
   },
