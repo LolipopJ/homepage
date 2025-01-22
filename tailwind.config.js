@@ -7,7 +7,13 @@ module.exports = {
     "./src/templates/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "var(--primary)",
+        "primary-light": "var(--primary-light)",
+        "primary-dark": "var(--primary-dark)",
+      },
+    },
   },
   plugins: [],
 };
