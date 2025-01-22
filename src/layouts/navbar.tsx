@@ -41,7 +41,9 @@ const Navbar = ({ items, activeKey, className }: NavbarProps) => {
                       className={`item-selectable flex items-center rounded-md px-1 py-2 text-base ${isSelected ? "item-selected" : ""}`}
                     >
                       <Icon icon={route.icon} className="w-8" />
-                      <span className="mr-6">{route.label}</span>
+                      <span className="mr-6 flex-1 overflow-hidden text-ellipsis">
+                        {route.label}
+                      </span>
                       {isExternal && (
                         <Icon
                           icon={faArrowUp}

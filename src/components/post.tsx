@@ -21,7 +21,7 @@ const Post = (props: PostProps) => {
       className={`item-selectable flex flex-col rounded-lg px-4 py-3 ${className}`}
     >
       {categories.length && (
-        <div className="mb-1 line-clamp-1 text-sm font-medium">
+        <div className="mb-1 line-clamp-1 text-sm font-medium text-neutral-100/90">
           {categories.join(" / ")}
         </div>
       )}
@@ -30,14 +30,13 @@ const Post = (props: PostProps) => {
       </div>
       <div className="flex text-sm text-neutral-100/60">
         <div title={date.toString()} className="line-clamp-1">
-          {dayjs(date).format("MM 月 DD 日 YYYY 年")}
+          {dayjs(date).format("MM月DD日YYYY年")}
         </div>
         {tags.length && (
           <>
             <div className="mx-1 select-none">·</div>
             <div title={tags.join(" ")} className="line-clamp-1 flex-1">
-              {tags.slice(0, 2).join(" ")}
-              {tags.length > 2 && " +"}
+              {tags.join(" ")}
             </div>
           </>
         )}
