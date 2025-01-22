@@ -1,8 +1,28 @@
+import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import { Link, PageProps } from "gatsby";
+import { MDXProps } from "mdx/types";
 import * as React from "react";
 
 import { PostFrontmatter } from "../interfaces/post";
+
+const FancyBoxImage = (props: { alt?: string; src?: string }) => {
+  const {
+    alt = "The author is too lazy to give an alt",
+    src,
+    ...restProps
+  } = props;
+  return (
+    <a href={src} data-fancybox="gallery" data-caption={alt}>
+      <img src={src} alt={alt} {...restProps} />
+    </a>
+  );
+};
+
+const components: MDXProps["components"] = {
+  img: FancyBoxImage,
+  Link,
+};
 
 const PostTemplate = ({
   children,
@@ -15,14 +35,9 @@ const PostTemplate = ({
 
   React.useEffect(() => {
     const titleDom = titleRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowTitleHeader(!entry.isIntersecting);
-      },
-      {
-        threshold: 0.1,
-      },
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      setShowTitleHeader(!entry.isIntersecting);
+    });
 
     if (titleDom) {
       observer.observe(titleDom);
@@ -33,6 +48,11 @@ const PostTemplate = ({
       }
     };
   }, []);
+
+  React.useEffect(() => {
+    Fancybox.bind("[data-fancybox]");
+    return () => Fancybox.unbind("[data-fancybox]");
+  });
 
   return (
     <>
@@ -47,7 +67,7 @@ const PostTemplate = ({
       <div className="px-24 pb-48 pt-8">
         <article className="heti post-entry mx-auto max-w-xl">
           <h1 ref={titleRef}>{title}</h1>
-          <MDXProvider components={{ Link }}>{children}</MDXProvider>
+          <MDXProvider components={components}>{children}</MDXProvider>
         </article>
       </div>
     </>

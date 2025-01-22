@@ -21,6 +21,7 @@
     "prettier": "prettier '**/*.{md,mdx,css,json}' --write"
   },
   "dependencies": {
+    "@fancyapps/ui": "^5.0.36",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
