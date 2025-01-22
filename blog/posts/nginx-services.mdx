@@ -151,7 +151,7 @@ return 301 https://$http_host$request_uri;
 
 由于静态站点的源码均托管在 Github 上，当新的代码提交后，希望能够自动更新服务器上的静态资源内容。笔者通过 `crontab` 配置定时任务来实现这个需求：
 
-```cron
+```bash
 0 0,12,18 * * * /path/to/update-blog.sh >> /path/to/update-blog.log 2>&1
 ```
 
