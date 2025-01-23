@@ -1,4 +1,9 @@
+import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
+
+dotenv.config({
+  path: [".env", `.env.${process.env.NODE_ENV}`],
+});
 
 const config: GatsbyConfig = {
   siteMetadata: {
@@ -72,6 +77,54 @@ const config: GatsbyConfig = {
             },
           },
         ],
+      },
+    },
+    {
+      // This plugin must be placed last in your list of plugins to ensure that it can query all the GraphQL data
+      resolve: `gatsby-plugin-algolia`,
+      options: {
+        appId: process.env.ALGOLIA_APP_ID,
+        // Use Admin API key without GATSBY_ prefix, so that the key isn't exposed in the application
+        // Tip: use Search API key with GATSBY_ prefix to access the service from within components
+        apiKey: process.env.ALGOLIA_API_KEY,
+        indexName: process.env.ALGOLIA_INDEX_NAME,
+        queries: [
+          {
+            query: `
+query {
+  allMdx(filter: {internal: {contentFilePath: {regex: "//blog/posts//"}}}) {
+    nodes {
+      excerpt
+      frontmatter {
+        categories
+        tags
+        title
+      }
+      id
+      internal {
+        contentDigest
+      }
+    }
+  }
+}
+`,
+            queryVariables: {},
+            transformer: ({ data }) => {
+              console.log("data", data);
+              return data.allMdx.nodes;
+            },
+            indexName: process.env.ALGOLIA_INDEX_NAME,
+            settings: {},
+            mergeSettings: false,
+          },
+        ],
+        chunkSize: 10000,
+        settings: {},
+        mergeSettings: false,
+        concurrentQueries: true,
+        dryRun: false,
+        continueOnFailure: false,
+        algoliasearchOptions: { timeouts: { connect: 1, read: 30, write: 30 } },
       },
     },
   ],

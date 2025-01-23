@@ -10,15 +10,16 @@
     "blog"
   ],
   "scripts": {
+    "prepare": "husky",
     "develop": "gatsby develop",
     "start": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
-    "lint": "npm run eslint && npm run prettier",
+    "lint": "npm run prettier && npm run eslint",
     "eslint": "eslint --fix .",
-    "prettier": "prettier --write '**/*.{md,mdx,css,json}'"
+    "prettier": "prettier --write '**/*.{md,mdx,json,css}'"
   },
   "dependencies": {
     "@fancyapps/ui": "^5.0.36",
@@ -30,7 +31,9 @@
     "@mdx-js/react": "^3.1.0",
     "@types/lodash-es": "^4.17.12",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "gatsby": "^5.14.1",
+    "gatsby-plugin-algolia": "^1.0.3",
     "gatsby-plugin-image": "^3.14.0",
     "gatsby-plugin-layout": "^4.14.0",
     "gatsby-plugin-mdx": "^5.14.0",
@@ -60,6 +63,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tailwindcss": "^3.18.0",
+    "husky": "^9.1.7",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.10",

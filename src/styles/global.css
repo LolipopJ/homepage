@@ -6,6 +6,12 @@
   --primary: #61bfad;
   --primary-light: #80cbbd;
   --primary-dark: #438579;
+  /* neutral-100 */
+  --foreground: rgb(245 245 245);
+  /* neutral-400 */
+  --foreground-secondary: rgb(163, 163, 163);
+  /* neutral-900 */
+  --background: rgb(23 23 23);
 }
 
 html {
@@ -17,7 +23,7 @@ html {
 }
 
 body {
-  @apply bg-neutral-900 text-neutral-100;
+  @apply bg-background text-foreground;
 }
 
 ::-webkit-scrollbar {
@@ -33,15 +39,27 @@ body {
 }
 
 .item-selectable {
-  @apply transition hover:bg-neutral-600/30;
+  @apply cursor-pointer transition-colors hover:bg-neutral-600/30;
 }
 
 .item-selected {
-  @apply !bg-neutral-600/50 transition;
+  @apply !bg-neutral-600/50 transition-colors;
+}
+
+.item-secondary {
+  @apply text-foreground-secondary;
+
+  &.item-selectable {
+    @apply transition-colors hover:bg-inherit hover:text-foreground;
+  }
 }
 
 .item-converse-color {
-  @apply bg-neutral-100 text-neutral-900;
+  @apply bg-foreground text-background;
+
+  &.item-selectable {
+    @apply transition-colors hover:bg-foreground-secondary hover:text-neutral-950;
+  }
 }
 
 .post-entry {
@@ -50,7 +68,7 @@ body {
   video,
   pre,
   table {
-    @apply rounded-md;
+    @apply rounded-lg;
   }
 
   blockquote {

@@ -1,7 +1,10 @@
+import { Fancybox } from "@fancyapps/ui";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { graphql, PageProps, useStaticQuery } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 
+import Icon from "../components/icon";
 import Post from "../components/post";
 import { NAVBAR_ITEMS } from "../constants/navbar";
 import GlobalContext, { GlobalContextValues } from "../contexts/global";
@@ -11,7 +14,8 @@ import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
 
 const Layout = (props: PageProps) => {
-  const { children, path = "/" } = props;
+  const { children, path = "/", location } = props;
+  const { hash } = location;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<string>("博文列表");
@@ -22,6 +26,7 @@ const Layout = (props: PageProps) => {
   const [currentHeading, setCurrentHeading] = React.useState<number>(-1);
   const [readProgress, setReadProgress] = React.useState<number>(0);
 
+  const hashRef = React.useRef<string>("");
   const mainRef = React.useRef<HTMLElement>(null);
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
@@ -49,6 +54,7 @@ const Layout = (props: PageProps) => {
           frontmatter {
             categories
             date
+            updated
             tags
             title
           }
@@ -78,7 +84,9 @@ const Layout = (props: PageProps) => {
     }
   }, [path]);
 
-  const showPosts = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
+  /** 是否显示博文列表 */
+  const showPostsList = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
+  /** 是否为博文页 */
   const isPostPage = /^(\/about|\/posts)/.test(path);
 
   React.useEffect(() => {
@@ -92,16 +100,32 @@ const Layout = (props: PageProps) => {
     }
   }, [path, isPostPage]);
 
-  //#region 更新 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
+  //#region 初始化博文页面的图片预览功能
+  React.useEffect(() => {
+    if (isPostPage) {
+      Fancybox.bind("[data-fancybox]");
+      return () => Fancybox.unbind("[data-fancybox]");
+    }
+  }, [path, isPostPage]);
+  //#endregion
+
+  //#region 更新博文中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
   React.useEffect(() => {
     const pageDom = pageRef.current;
     if (isPostPage && pageDom) {
       const observer = new ResizeObserver(() => {
         const headings: HTMLHeadingElement[] = Array.from(
-          pageDom.querySelectorAll("h2, h3, h4, h5, h6"),
+          pageDom.querySelectorAll("h1, h2, h3, h4, h5, h6"),
         );
+        headings.forEach((heading) => {
+          heading.id = encodeURIComponent(heading.innerText);
+        });
         if (headings.length) {
-          setPageHeadings(headings);
+          setPageHeadings(
+            headings.filter((heading) => heading.nodeName !== "H1"),
+          );
+        } else {
+          setPageHeadings([]);
         }
       });
 
@@ -110,13 +134,30 @@ const Layout = (props: PageProps) => {
     } else {
       setPageHeadings([]);
     }
-  }, [isPostPage]);
+  }, [path, isPostPage]);
   //#endregion
 
+  //#region 处理 Hash 查询，跳转到指定 Heading
+  React.useEffect(() => {
+    if (hash && hashRef.current !== hash) {
+      const targetId = hash.slice(1);
+      const pageHeading = pageHeadings.find(
+        (heading) => heading.id === targetId,
+      );
+
+      if (pageHeading) {
+        pageHeading.scrollIntoView();
+        hashRef.current = hash;
+      }
+    }
+  }, [hash, pageHeadings]);
+  //#endregion
+
+  //#region 监听博文滚动，更新目录列表与阅读进度
   React.useEffect(() => {
     const mainDom = mainRef.current;
     const pageDom = pageRef.current;
-    if (isPostPage && pageHeadings.length && mainDom && pageDom) {
+    if (isPostPage && pageHeadings && mainDom && pageDom) {
       const onScrolled = () => {
         const pageHeight = pageDom.clientHeight;
         const scrollTop = mainDom.scrollTop;
@@ -149,7 +190,32 @@ const Layout = (props: PageProps) => {
       setCurrentHeading(-1);
       setReadProgress(0);
     }
-  }, [pageHeadings, isPostPage]);
+  }, [path, isPostPage, pageHeadings]);
+  //#endregion
+
+  //#region 监听博文滚动，更新博客页面标题
+  React.useEffect(() => {
+    const pageDom = pageRef.current;
+    if (isPostPage && pageDom) {
+      const postTitle = pageDom.querySelector("h1");
+
+      if (postTitle) {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) {
+            setPageTitle("");
+          } else {
+            setPageTitle(postTitle.innerText);
+          }
+        });
+
+        observer.observe(postTitle);
+        return () => {
+          observer.unobserve(postTitle);
+        };
+      }
+    }
+  }, [path, isPostPage]);
+  //#endregion
 
   return (
     <div className="flex h-screen overflow-y-hidden">
@@ -157,9 +223,7 @@ const Layout = (props: PageProps) => {
         className="w-80 px-4"
         header={
           <div className="mx-3 flex h-16 items-center">
-            <div className="text-lg font-bold text-primary">
-              {siteMetadata.title}
-            </div>
+            <div className="text-lg font-bold">{siteMetadata.title}</div>
           </div>
         }
       >
@@ -169,7 +233,7 @@ const Layout = (props: PageProps) => {
       <SiderBar
         activeKey={subNavbarActiveKey}
         activeKeys={[
-          ...(showPosts ? ["博文列表"] : []),
+          ...(showPostsList ? ["博文列表"] : []),
           ...(isPostPage ? ["目录"] : []),
         ]}
         onActiveKeyChange={setSubNavbarActiveKey}
@@ -206,15 +270,19 @@ const Layout = (props: PageProps) => {
                 key={heading.innerText}
                 ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
                 style={{ marginLeft }}
-                className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-neutral-100/60" : currentHeading === index ? "item-selected" : ""}`}
+                className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
               >
                 <a
-                  href={`#${encodeURIComponent(heading.innerText.split(" ").join("-"))}`}
-                  dangerouslySetInnerHTML={{
-                    __html: heading.innerHTML,
-                  }}
+                  href={`#${heading.id}`}
                   className="block px-3 py-2 transition"
-                />
+                >
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: heading.innerHTML,
+                    }}
+                    className="pointer-events-none"
+                  />
+                </a>
               </li>
             );
           })}
@@ -229,7 +297,9 @@ const Layout = (props: PageProps) => {
           >
             {pageTitle}
           </div>
-          <div className="ml-auto pl-24"></div>
+          <div className="ml-auto justify-end pl-16">
+            <Icon icon={faSearch} className="item-selectable rounded-md p-2" />
+          </div>
         </header>
         <div ref={pageRef} className="relative min-h-[calc(100vh-12rem)]">
           <GlobalContext.Provider value={globalContextValues}>

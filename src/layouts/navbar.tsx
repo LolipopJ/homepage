@@ -32,26 +32,31 @@ const Navbar = ({ items, activeKey, className }: NavbarProps) => {
               {item.routes.map((route) => {
                 const isSelected = activeKey === route.url;
                 const isExternal = !/^\//.test(route.url);
+                const linkClassName = `item-selectable flex items-center rounded-lg px-1 py-2 mb-1 text-base ${isSelected ? "item-selected" : ""}`;
 
-                return (
-                  <li key={route.url} className="mb-0.5">
-                    <Link
-                      to={route.url}
-                      target={isExternal ? "_blank" : undefined}
-                      className={`item-selectable flex items-center rounded-md px-1 py-2 text-base ${isSelected ? "item-selected" : ""}`}
-                    >
-                      <Icon icon={route.icon} className="w-8" />
-                      <span className="mr-6 flex-1 overflow-hidden text-ellipsis">
-                        {route.label}
-                      </span>
-                      {isExternal && (
-                        <Icon
-                          icon={faArrowUp}
-                          className="ml-auto w-8 rotate-45"
-                        />
-                      )}
-                    </Link>
-                  </li>
+                return React.cloneElement(
+                  isExternal ? (
+                    // eslint-disable-next-line jsx-a11y/anchor-has-content
+                    <a href={route.url} target="_blank" rel="noreferrer" />
+                  ) : (
+                    <Link to={route.url} />
+                  ),
+                  {
+                    className: linkClassName,
+                    key: route.url,
+                  },
+                  <>
+                    <Icon icon={route.icon} className="w-8" />
+                    <span className="mr-6 flex-1 overflow-hidden text-ellipsis">
+                      {route.label}
+                    </span>
+                    {isExternal && (
+                      <Icon
+                        icon={faArrowUp}
+                        className="ml-auto w-8 rotate-45"
+                      />
+                    )}
+                  </>,
                 );
               })}
             </ul>

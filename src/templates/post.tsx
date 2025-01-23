@@ -1,4 +1,3 @@
-import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
 import { HeadProps, Link, PageProps } from "gatsby";
@@ -8,7 +7,6 @@ import * as React from "react";
 import Category from "../components/category";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
-import GlobalContext from "../contexts/global";
 import { PostFrontmatter } from "../interfaces/post";
 
 const FancyBoxImage = (props: { alt?: string; src?: string }) => {
@@ -22,42 +20,6 @@ const FancyBoxImage = (props: { alt?: string; src?: string }) => {
       <img src={src} alt={alt} {...restProps} />
     </a>
   );
-};
-
-/** 提取 props 包含 dangerouslySetInnerHTML.__html 的 Element 里的 innerText */
-const extractHeadingText = (children: React.ReactNode[]) => {
-  let text = "";
-
-  React.Children.forEach(children, (child) => {
-    if (typeof child === "string") {
-      text += child;
-    } else if (React.isValidElement(child)) {
-      text +=
-        String(child.props.dangerouslySetInnerHTML.__html).match(
-          /<[^>]+>([^<]+)<\/[^>]+>/,
-        )?.[1] ?? "";
-    }
-  });
-
-  return text;
-};
-const Heading = ({
-  children,
-  level,
-}: {
-  children?: React.ReactNode;
-  level: number;
-}) => {
-  const childrenList = Array.isArray(children) ? children : [children];
-  return React.createElement(
-    `h${level}`,
-    {
-      id: encodeURIComponent(
-        extractHeadingText(childrenList).split(" ").join("-"),
-      ),
-    },
-    children,
-  ) as React.JSX.Element;
 };
 
 const ALink = ({
@@ -85,24 +47,6 @@ const ALink = ({
 
 const components: MDXProps["components"] = {
   a: ALink,
-  h1: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={1} />
-  ),
-  h2: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={2} />
-  ),
-  h3: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={3} />
-  ),
-  h4: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={4} />
-  ),
-  h5: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={5} />
-  ),
-  h6: (props: { children?: React.ReactNode }) => (
-    <Heading {...props} level={6} />
-  ),
   img: FancyBoxImage,
   Link,
 };
@@ -117,36 +61,17 @@ const PostTemplate = ({
   children,
   pageContext,
 }: PageProps<object, PostPageContext>) => {
-  const { setPageTitle } = React.useContext(GlobalContext);
-  const titleRef = React.useRef<HTMLHeadingElement>(null);
+  const {
+    title,
+    date: dateString,
+    updated: updatedDateString,
+    categories,
+    tags,
+    timeliness,
+  } = pageContext.frontmatter;
 
-  const { title, date: dateString, categories, tags } = pageContext.frontmatter;
   const date = new Date(dateString);
-
-  React.useEffect(() => {
-    const titleDom = titleRef.current;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setPageTitle("");
-      } else {
-        setPageTitle(title);
-      }
-    });
-
-    if (titleDom) {
-      observer.observe(titleDom);
-    }
-    return () => {
-      if (titleDom) {
-        observer.unobserve(titleDom);
-      }
-    };
-  }, [setPageTitle, title]);
-
-  React.useEffect(() => {
-    Fancybox.bind("[data-fancybox]");
-    return () => Fancybox.unbind("[data-fancybox]");
-  });
+  const updatedDate = updatedDateString ? new Date(updatedDateString) : date;
 
   return (
     <div className="px-24 pb-48 pt-8">
@@ -155,17 +80,23 @@ const PostTemplate = ({
           {categories?.length && (
             <Category name={categories[0]} className="text-sm" />
           )}
-          <h1 ref={titleRef} className="text-3xl font-bold">
-            {title}
-          </h1>
-          <div className="flex gap-2 text-neutral-100/60">
-            <span title={date.toString()}>
-              {dayjs(date).format("MM 月 DD 日 YYYY 年")}
-            </span>
+          <h1 className="text-3xl font-bold">{title}</h1>
+          <div className="item-secondary flex gap-2">
+            {dateString && (
+              <span
+                title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
+              >
+                {dayjs(date).format("MM 月 DD 日 YYYY 年")}
+              </span>
+            )}
             {tags?.length && (
               <div className="flex flex-1 flex-wrap gap-2 before:content-['•']">
                 {tags.map((tag) => (
-                  <Tag key={tag} name={tag} />
+                  <Tag
+                    key={tag}
+                    name={tag}
+                    className="item-secondary item-selectable"
+                  />
                 ))}
               </div>
             )}
