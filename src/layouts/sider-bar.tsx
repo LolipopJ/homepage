@@ -36,11 +36,11 @@ const SiderBar = (props: SiderBarProps) => {
       <div className="flex h-16 items-center">
         {header || (
           <div className={headerClassName}>
-            <ul className="flex gap-1 rounded-full border border-neutral-600/80 bg-neutral-800 p-0.5">
+            <ul className="flex select-none gap-1 rounded-full border border-neutral-600/80 bg-neutral-800 p-0.5">
               {activeKeys?.map((key) => (
                 <li
                   key={key}
-                  className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === key ? "bg-neutral-100 text-neutral-900" : ""}`}
+                  className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === key ? "item-converse-color" : ""}`}
                   onClick={() => {
                     onActiveKeyChange?.(key);
                   }}

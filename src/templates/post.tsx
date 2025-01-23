@@ -1,9 +1,13 @@
 import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
-import { Link, PageProps } from "gatsby";
+import dayjs from "dayjs";
+import { HeadProps, Link, PageProps } from "gatsby";
 import { MDXProps } from "mdx/types";
 import * as React from "react";
 
+import Category from "../components/category";
+import SEO from "../components/seo";
+import Tag from "../components/tag";
 import GlobalContext from "../contexts/global";
 import { PostFrontmatter } from "../interfaces/post";
 
@@ -103,14 +107,21 @@ const components: MDXProps["components"] = {
   Link,
 };
 
+interface PostPageContext {
+  body: string;
+  frontmatter: PostFrontmatter;
+  id: string;
+}
+
 const PostTemplate = ({
   children,
   pageContext,
-}: PageProps<object, { body: string; frontmatter: PostFrontmatter }>) => {
+}: PageProps<object, PostPageContext>) => {
   const { setPageTitle } = React.useContext(GlobalContext);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
 
-  const { title } = pageContext.frontmatter;
+  const { title, date: dateString, categories, tags } = pageContext.frontmatter;
+  const date = new Date(dateString);
 
   React.useEffect(() => {
     const titleDom = titleRef.current;
@@ -139,12 +150,37 @@ const PostTemplate = ({
 
   return (
     <div className="px-24 pb-48 pt-8">
-      <article className="heti post-entry mx-auto max-w-xl">
-        <h1 ref={titleRef}>{title}</h1>
-        <MDXProvider components={components}>{children}</MDXProvider>
-      </article>
+      <div className="mx-auto max-w-xl">
+        <div className="mb-10 flex flex-col gap-4">
+          {categories?.length && (
+            <Category name={categories[0]} className="text-sm" />
+          )}
+          <h1 ref={titleRef} className="text-3xl font-bold">
+            {title}
+          </h1>
+          <div className="flex gap-2 text-neutral-100/60">
+            <span title={date.toString()}>
+              {dayjs(date).format("MM 月 DD 日 YYYY 年")}
+            </span>
+            {tags?.length && (
+              <div className="flex flex-1 flex-wrap gap-2 before:content-['•']">
+                {tags.map((tag) => (
+                  <Tag key={tag} name={tag} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <article className="heti post-entry">
+          <MDXProvider components={components}>{children}</MDXProvider>
+        </article>
+      </div>
     </div>
   );
+};
+
+export const Head = ({ pageContext }: HeadProps<object, PostPageContext>) => {
+  return <SEO title={pageContext.frontmatter.title} />;
 };
 
 export default PostTemplate;

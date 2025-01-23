@@ -21,7 +21,7 @@ const SEO = ({ title, children }: SEOProps) => {
   return (
     <>
       <title>
-        {title} · {siteMetadata.title}
+        {title} • {siteMetadata.title}
       </title>
       <meta name="description" content={siteMetadata.description} />
       {children}

@@ -33,12 +33,12 @@ const Post = (props: PostProps) => {
           {dayjs(date).format("MM月DD日YYYY年")}
         </div>
         {tags.length && (
-          <>
-            <div className="mx-1 select-none">·</div>
-            <div title={tags.join(" ")} className="line-clamp-1 flex-1">
-              {tags.join(" ")}
-            </div>
-          </>
+          <div
+            title={tags.join(" ")}
+            className="line-clamp-1 flex-1 before:mx-1 before:content-['•']"
+          >
+            {tags.join(" ")}
+          </div>
         )}
       </div>
     </Link>

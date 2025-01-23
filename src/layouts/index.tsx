@@ -14,7 +14,7 @@ const Layout = (props: PageProps) => {
   const { children, path = "/" } = props;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
-    React.useState<string>("Posts");
+    React.useState<string>("博文列表");
   const [pageTitle, setPageTitle] = React.useState<string>("");
   const [pageHeadings, setPageHeadings] = React.useState<HTMLHeadingElement[]>(
     [],
@@ -78,9 +78,7 @@ const Layout = (props: PageProps) => {
     }
   }, [path]);
 
-  const showPosts = /^(\/about|\/posts|\/categories|\/tags|\/authors)/.test(
-    path,
-  );
+  const showPosts = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
   const isPostPage = /^(\/about|\/posts)/.test(path);
 
   React.useEffect(() => {
@@ -88,9 +86,9 @@ const Layout = (props: PageProps) => {
     mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
 
     if (isPostPage) {
-      setSubNavbarActiveKey("Toc");
+      setSubNavbarActiveKey("目录");
     } else {
-      setSubNavbarActiveKey("Posts");
+      setSubNavbarActiveKey("博文列表");
     }
   }, [path, isPostPage]);
 
@@ -156,10 +154,12 @@ const Layout = (props: PageProps) => {
   return (
     <div className="flex h-screen overflow-y-hidden">
       <SiderBar
-        className="w-64 shrink-0 px-4"
+        className="w-80 px-4"
         header={
           <div className="mx-3 flex h-16 items-center">
-            <div className="font-bold text-primary">{siteMetadata.title}</div>
+            <div className="text-lg font-bold text-primary">
+              {siteMetadata.title}
+            </div>
           </div>
         }
       >
@@ -169,16 +169,16 @@ const Layout = (props: PageProps) => {
       <SiderBar
         activeKey={subNavbarActiveKey}
         activeKeys={[
-          ...(showPosts ? ["Posts"] : []),
-          ...(isPostPage ? ["Toc"] : []),
+          ...(showPosts ? ["博文列表"] : []),
+          ...(isPostPage ? ["目录"] : []),
         ]}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className={`w-80 shrink-0`}
+        className={`w-96`}
       >
         <ol
-          className={`${subNavbarActiveKey === "Posts" ? "block" : "hidden"}`}
+          className={`${subNavbarActiveKey === "博文列表" ? "block" : "hidden"}`}
         >
           {postsData.map((post) => {
             const postPath = parseFilePathToPostPath(post.contentFilePath);
@@ -196,7 +196,7 @@ const Layout = (props: PageProps) => {
           })}
         </ol>
         <ol
-          className={`px-3 ${subNavbarActiveKey === "Toc" ? "block" : "hidden"}`}
+          className={`px-3 ${subNavbarActiveKey === "目录" ? "block" : "hidden"}`}
         >
           {pageHeadings.map((heading, index) => {
             const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
@@ -221,9 +221,12 @@ const Layout = (props: PageProps) => {
         </ol>
       </SiderBar>
 
-      <main ref={mainRef} className="grow overflow-auto">
+      <main ref={mainRef} className="flex-1 overflow-auto">
         <header className="sticky top-0 z-10 flex h-16 items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
-          <div title={pageTitle} className="line-clamp-1 flex-1">
+          <div
+            title={pageTitle}
+            className="line-clamp-1 flex-1 text-lg font-bold"
+          >
             {pageTitle}
           </div>
           <div className="ml-auto pl-24"></div>

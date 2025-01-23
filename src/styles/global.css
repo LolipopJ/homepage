@@ -40,6 +40,10 @@ body {
   @apply !bg-neutral-600/50 transition;
 }
 
+.item-converse-color {
+  @apply bg-neutral-100 text-neutral-900;
+}
+
 .post-entry {
   blockquote,
   img,
