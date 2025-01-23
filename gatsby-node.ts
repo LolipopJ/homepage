@@ -1,9 +1,10 @@
 import path from "path";
 
-import { parseFilePathToPostPath } from "./src/utils/post";
+import { parseFilePathToPostSlug } from "./src/utils/post";
 
 const postTemplate = path.resolve(`./src/templates/post.tsx`);
 
+// @ts-expect-error: ignored
 exports.createPages = async function ({ actions, graphql }) {
   const { data } = await graphql(`
     query {
@@ -33,7 +34,7 @@ exports.createPages = async function ({ actions, graphql }) {
       const contentFilePath = node.internal.contentFilePath;
       const path = contentFilePath.endsWith("/blog/about.mdx")
         ? "/about"
-        : `/posts/${parseFilePathToPostPath(contentFilePath)}`;
+        : `/posts/${parseFilePathToPostSlug(contentFilePath)}`;
 
       actions.createPage({
         path,

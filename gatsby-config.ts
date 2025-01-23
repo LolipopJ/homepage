@@ -1,6 +1,9 @@
 import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
 
+import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
+import { parseFilePathToPostSlug } from "./src/utils/post";
+
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
 });
@@ -83,11 +86,11 @@ const config: GatsbyConfig = {
       // This plugin must be placed last in your list of plugins to ensure that it can query all the GraphQL data
       resolve: `gatsby-plugin-algolia`,
       options: {
-        appId: process.env.ALGOLIA_APP_ID,
+        appId: ALGOLIA_APP_ID,
         // Use Admin API key without GATSBY_ prefix, so that the key isn't exposed in the application
         // Tip: use Search API key with GATSBY_ prefix to access the service from within components
         apiKey: process.env.ALGOLIA_API_KEY,
-        indexName: process.env.ALGOLIA_INDEX_NAME,
+        indexName: ALGOLIA_INDEX_NAME,
         queries: [
           {
             query: `
@@ -99,21 +102,29 @@ query {
         categories
         tags
         title
+        date
+        updated
+        timeliness
       }
       id
       internal {
         contentDigest
+        contentFilePath
       }
     }
   }
 }
 `,
             queryVariables: {},
+            // @ts-expect-error: ignored
             transformer: ({ data }) => {
-              console.log("data", data);
-              return data.allMdx.nodes;
+              // @ts-expect-error: ignored
+              return data.allMdx.nodes.map((node) => ({
+                ...node,
+                slug: parseFilePathToPostSlug(node.internal.contentFilePath),
+              }));
             },
-            indexName: process.env.ALGOLIA_INDEX_NAME,
+            indexName: ALGOLIA_INDEX_NAME,
             settings: {},
             mergeSettings: false,
           },

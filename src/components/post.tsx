@@ -2,41 +2,51 @@ import dayjs from "dayjs";
 import { Link } from "gatsby";
 import * as React from "react";
 
-import { PostBase } from "../interfaces/post";
+import { PostFrontmatter } from "../interfaces/post";
 
 export interface PostProps {
-  post: Pick<PostBase, "categories" | "date" | "updated" | "tags" | "title">;
-  postPath: string;
+  post: {
+    id: string;
+    slug: string;
+    frontmatter: PostFrontmatter;
+    excerpt?: string;
+  };
+  onClick?: () => void;
+  titleDom?: React.ReactNode;
+  excerptDom?: React.ReactNode;
   className?: string;
 }
 
 /** 博文列表栏的博文简介 */
 const Post = (props: PostProps) => {
-  const { post, postPath, className = "" } = props;
+  const { post, onClick, titleDom, excerptDom, className = "" } = props;
+  const { slug, frontmatter, excerpt } = post;
   const {
     categories = [],
     date: dateString,
     updated: updatedDateString,
     tags = [],
     title,
-  } = post;
+  } = frontmatter;
 
   const date = new Date(dateString);
   const updatedDate = updatedDateString ? new Date(updatedDateString) : date;
 
   return (
     <Link
-      to={`/posts/${postPath}`}
-      className={`item-selectable flex flex-col rounded-lg px-4 py-3 ${className}`}
+      to={`/posts/${slug}`}
+      onClick={onClick}
+      className={`flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
     >
       {categories.length && (
-        <div className="mb-1 line-clamp-1 text-sm font-medium text-foreground opacity-80">
+        <div className="line-clamp-1 text-sm font-medium text-foreground opacity-80">
           {categories[0]}
         </div>
       )}
-      <div title={title} className="mb-1.5 line-clamp-3 font-bold">
-        {title}
-      </div>
+      <h1 title={title} className="line-clamp-3 font-bold">
+        {titleDom || title}
+      </h1>
+      {excerpt && <p title={excerpt}>{excerptDom || excerpt}</p>}
       <div className="flex text-sm text-foreground-secondary">
         <div
           title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}

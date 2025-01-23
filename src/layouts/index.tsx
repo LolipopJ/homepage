@@ -4,12 +4,12 @@ import { graphql, PageProps, useStaticQuery } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 
+import AlgoliaSearch from "../components/algolia-search";
 import Icon from "../components/icon";
-import Post from "../components/post";
+import Post, { PostProps } from "../components/post";
 import { NAVBAR_ITEMS } from "../constants/navbar";
 import GlobalContext, { GlobalContextValues } from "../contexts/global";
-import { PostBase } from "../interfaces/post";
-import { parseFilePathToPostPath } from "../utils/post";
+import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
 
@@ -20,6 +20,8 @@ const Layout = (props: PageProps) => {
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<string>("博文列表");
   const [pageTitle, setPageTitle] = React.useState<string>("");
+  const [openAlgoliaSearch, setOpenAlgoliaSearch] =
+    React.useState<boolean>(false);
   const [pageHeadings, setPageHeadings] = React.useState<HTMLHeadingElement[]>(
     [],
   );
@@ -50,14 +52,15 @@ const Layout = (props: PageProps) => {
         filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
       ) {
         nodes {
-          id
           frontmatter {
             categories
-            date
-            updated
             tags
             title
+            date
+            updated
+            timeliness
           }
+          id
           internal {
             contentFilePath
           }
@@ -66,12 +69,14 @@ const Layout = (props: PageProps) => {
     }
   `);
   const siteMetadata = data.site.siteMetadata;
-  const postsData: PostBase[] = React.useMemo(
+  const postsData: PostProps["post"][] = React.useMemo(
     () =>
-      data.allMdx.nodes.map(
-        // @ts-expect-error: ignored
-        (node) => ({ ...node.frontmatter, ...node.internal, id: node.id }),
-      ),
+      // @ts-expect-error: ignored
+      data.allMdx.nodes.map((node) => ({
+        id: node.id,
+        slug: parseFilePathToPostSlug(node.internal.contentFilePath),
+        frontmatter: node.frontmatter,
+      })),
     [data],
   );
 
@@ -245,15 +250,13 @@ const Layout = (props: PageProps) => {
           className={`${subNavbarActiveKey === "博文列表" ? "block" : "hidden"}`}
         >
           {postsData.map((post) => {
-            const postPath = parseFilePathToPostPath(post.contentFilePath);
-            const isActive = new RegExp(`^/posts/${postPath}/?`).test(path);
+            const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
 
             return (
               <li key={post.id}>
                 <Post
                   post={post}
-                  postPath={postPath}
-                  className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                  className={`item-selectable mb-2 ${isActive ? "item-selected" : ""}`}
                 />
               </li>
             );
@@ -298,7 +301,11 @@ const Layout = (props: PageProps) => {
             {pageTitle}
           </div>
           <div className="ml-auto justify-end pl-16">
-            <Icon icon={faSearch} className="item-selectable rounded-md p-2" />
+            <Icon
+              icon={faSearch}
+              className="item-selectable rounded-md p-2"
+              onClick={() => setOpenAlgoliaSearch(true)}
+            />
           </div>
         </header>
         <div ref={pageRef} className="relative min-h-[calc(100vh-12rem)]">
@@ -308,6 +315,16 @@ const Layout = (props: PageProps) => {
         </div>
         <footer className="flex h-48 items-center border-t border-neutral-600/80 bg-neutral-800/60"></footer>
       </main>
+
+      <div
+        onClick={() => setOpenAlgoliaSearch(false)}
+        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm ${openAlgoliaSearch ? "block" : "hidden"}`}
+      >
+        <AlgoliaSearch
+          onClose={() => setOpenAlgoliaSearch(false)}
+          className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-neutral-600/80 bg-neutral-900/90"
+        />
+      </div>
     </div>
   );
 };

@@ -105,3 +105,65 @@ body {
     @apply scroll-mt-16;
   }
 }
+
+.algolia-search-box {
+  @apply -mr-2 border-b border-neutral-600/80 px-8 py-4 text-foreground;
+
+  > form {
+    @apply flex w-full gap-2;
+
+    > input {
+      @apply flex-1 rounded-lg bg-neutral-700/80 px-3 py-1.5 text-lg;
+    }
+
+    svg {
+      @apply size-5 fill-current;
+    }
+
+    button {
+      @apply item-selectable rounded-md px-2;
+
+      &.ais-SearchBox-reset {
+        @apply block;
+      }
+    }
+  }
+}
+
+.algolia-hints {
+  @apply flex-1 overflow-y-auto py-4;
+
+  > ol {
+    > li {
+      @apply mx-4 mb-2;
+
+      &:last-child {
+        @apply mb-0;
+      }
+    }
+  }
+}
+
+.algolia-pagination {
+  @apply select-none border-t border-neutral-600/80 px-8 py-3;
+
+  > ul {
+    @apply flex items-center justify-center gap-2;
+
+    > li {
+      &.ais-Pagination-item--selected {
+        > a {
+          @apply item-selected;
+        }
+      }
+
+      &.ais-Pagination-item--disabled {
+        @apply text-foreground-secondary;
+      }
+
+      > a {
+        @apply item-selectable rounded px-1.5 py-1 text-lg;
+      }
+    }
+  }
+}
