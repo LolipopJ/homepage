@@ -4,6 +4,7 @@ import { HeadProps, Link, PageProps } from "gatsby";
 import { MDXProps } from "mdx/types";
 import * as React from "react";
 
+import Card from "../components/card";
 import Category from "../components/category";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
@@ -48,6 +49,7 @@ const ALink = ({
 const components: MDXProps["components"] = {
   a: ALink,
   img: FancyBoxImage,
+  Card,
   Link,
 };
 
@@ -77,9 +79,7 @@ const PostTemplate = ({
     <div className="px-24 pb-48 pt-8">
       <div className="mx-auto max-w-xl">
         <div className="mb-10 flex flex-col gap-4">
-          {categories?.length && (
-            <Category name={categories[0]} className="text-sm" />
-          )}
+          {categories?.length && <Category name={categories[0]} />}
           <h1 className="text-3xl font-bold">{title}</h1>
           <div className="item-secondary flex gap-2">
             {dateString && (
