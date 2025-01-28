@@ -60,6 +60,17 @@ const AlgoliaSearch = ({
   className,
   ...restProps
 }: AlgoliaSearchProps) => {
+  React.useEffect(() => {
+    const onEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, [onClose]);
+
   return (
     <div
       onClick={(e) => e.stopPropagation()}
