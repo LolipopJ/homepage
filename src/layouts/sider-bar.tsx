@@ -30,13 +30,13 @@ const SiderBar = (props: SiderBarProps) => {
 
   return (
     <aside
-      className={`border-r border-neutral-600/80 bg-neutral-800/20 ${className}`}
+      className={`border-r border-foreground-tertiary bg-neutral-800/20 ${className}`}
       {...restProps}
     >
       <div className="flex h-16 items-center">
         {header || (
           <div className={headerClassName}>
-            <ul className="flex select-none gap-1 rounded-full border border-neutral-600/80 bg-neutral-800 p-0.5">
+            <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-neutral-800 p-0.5">
               {activeKeys?.map((key) => (
                 <li
                   key={key}

@@ -1,3 +1,13 @@
+export interface Post {
+  /** 博文内容 */
+  body: string;
+  /** 博文摘要 */
+  excerpt: string;
+  frontmatter: PostFrontmatter;
+  id: string;
+  internal: PostInternal;
+}
+
 export interface PostFrontmatter {
   categories: string[];
   date: string;

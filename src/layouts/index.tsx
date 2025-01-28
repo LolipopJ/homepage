@@ -73,9 +73,8 @@ const Layout = (props: PageProps) => {
     () =>
       // @ts-expect-error: ignored
       data.allMdx.nodes.map((node) => ({
-        id: node.id,
+        ...node,
         slug: parseFilePathToPostSlug(node.internal.contentFilePath),
-        frontmatter: node.frontmatter,
       })),
     [data],
   );
@@ -308,23 +307,26 @@ const Layout = (props: PageProps) => {
             />
           </div>
         </header>
-        <div ref={pageRef} className="relative min-h-[calc(100vh-12rem)]">
+        <div ref={pageRef} className="relative min-h-[calc(100vh-16rem)]">
           <GlobalContext.Provider value={globalContextValues}>
             {children}
           </GlobalContext.Provider>
         </div>
-        <footer className="flex h-48 items-center border-t border-neutral-600/80 bg-neutral-800/60"></footer>
+        <footer className="flex h-48 items-center border-t border-foreground-tertiary bg-neutral-800/60"></footer>
       </main>
 
-      <div
-        onClick={() => setOpenAlgoliaSearch(false)}
-        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm ${openAlgoliaSearch ? "block" : "hidden"}`}
-      >
-        <AlgoliaSearch
-          onClose={() => setOpenAlgoliaSearch(false)}
-          className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-neutral-600/80 bg-neutral-900/90"
-        />
-      </div>
+      {/* Algolia Search Dialog */}
+      {openAlgoliaSearch && (
+        <div
+          onClick={() => setOpenAlgoliaSearch(false)}
+          className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm`}
+        >
+          <AlgoliaSearch
+            onClose={() => setOpenAlgoliaSearch(false)}
+            className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-neutral-900/90"
+          />
+        </div>
+      )}
     </div>
   );
 };

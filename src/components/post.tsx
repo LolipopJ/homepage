@@ -2,24 +2,35 @@ import dayjs from "dayjs";
 import { Link } from "gatsby";
 import * as React from "react";
 
-import { PostFrontmatter } from "../interfaces/post";
+import { Post as PostType } from "../interfaces/post";
+
+export type PostItem = Pick<PostType, "excerpt" | "frontmatter" | "id"> & {
+  slug: string;
+};
 
 export interface PostProps {
-  post: {
-    id: string;
-    slug: string;
-    frontmatter: PostFrontmatter;
-    excerpt?: string;
-  };
+  post: PostItem;
   onClick?: () => void;
-  titleDom?: React.ReactNode;
-  excerptDom?: React.ReactNode;
+  titleRenderer?: (
+    title: PostItem["frontmatter"]["title"],
+    post: PostItem,
+  ) => React.ReactElement;
+  excerptRenderer?: (
+    excerpt: PostItem["excerpt"],
+    post: PostItem,
+  ) => React.ReactElement;
   className?: string;
 }
 
 /** 博文列表栏的博文简介 */
 const Post = (props: PostProps) => {
-  const { post, onClick, titleDom, excerptDom, className = "" } = props;
+  const {
+    post,
+    onClick,
+    titleRenderer,
+    excerptRenderer,
+    className = "",
+  } = props;
   const { slug, frontmatter, excerpt } = post;
   const {
     categories = [],
@@ -44,9 +55,11 @@ const Post = (props: PostProps) => {
         </div>
       )}
       <h1 title={title} className="line-clamp-3 font-bold">
-        {titleDom || title}
+        {titleRenderer?.(title, post) || title}
       </h1>
-      {excerpt && <p title={excerpt}>{excerptDom || excerpt}</p>}
+      {excerpt && (
+        <p title={excerpt}>{excerptRenderer?.(excerpt, post) || excerpt}</p>
+      )}
       <div className="flex text-sm text-foreground-secondary">
         <div
           title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}

@@ -5,15 +5,17 @@ import SEO from "../components/seo";
 
 const NotFoundPage: React.FC<PageProps> = () => {
   return (
-    <div>
-      <h1 className="mb-4 text-xl font-bold">不存在的页面</h1>
-      <p className="mb-8">Ooops 😔，当前您正在浏览的页面如今并不存在</p>
-      <Link
-        to="/"
-        className="item-selectable rounded-lg border border-neutral-600/80 p-2"
-      >
-        回到主页
-      </Link>
+    <div className="p-8 text-center">
+      <h1 className="mb-4 text-xl font-bold">🚧 施工中</h1>
+      <p>Ooops，当前您正在浏览的页面仍在施工中，不期开放 🙇！</p>
+      <div className="mt-8">
+        <Link
+          to="/"
+          className="item-selectable rounded-lg border border-foreground-tertiary p-2"
+        >
+          回到主页
+        </Link>
+      </div>
     </div>
   );
 };

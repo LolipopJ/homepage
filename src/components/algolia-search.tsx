@@ -46,8 +46,10 @@ const Hit = ({
       <Post
         post={hit}
         onClick={onPostClick}
-        titleDom={<Highlight attribute={["frontmatter", "title"]} hit={hit} />}
-        excerptDom={<Highlight attribute={["excerpt"]} hit={hit} />}
+        titleRenderer={() => (
+          <Highlight attribute={["frontmatter", "title"]} hit={hit} />
+        )}
+        excerptRenderer={() => <Highlight attribute={["excerpt"]} hit={hit} />}
       />
     </article>
   );
