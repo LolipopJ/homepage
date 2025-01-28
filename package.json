@@ -18,8 +18,8 @@
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
     "lint": "npm run prettier && npm run eslint",
-    "eslint": "eslint --fix .",
-    "prettier": "prettier --write '**/*.{md,mdx,json,css}'",
+    "eslint": "eslint --fix '**/*.{js,ts,jsx,tsx}'",
+    "prettier": "prettier --write .",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {

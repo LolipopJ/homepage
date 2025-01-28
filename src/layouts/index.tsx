@@ -8,7 +8,6 @@ import AlgoliaSearch from "../components/algolia-search";
 import Icon from "../components/icon";
 import Post, { PostProps } from "../components/post";
 import { NAVBAR_ITEMS } from "../constants/navbar";
-import GlobalContext, { GlobalContextValues } from "../contexts/global";
 import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
@@ -33,14 +32,12 @@ const Layout = (props: PageProps) => {
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
 
-  const globalContextValues: GlobalContextValues = React.useMemo(
-    () => ({
-      setPageTitle: (title) => setPageTitle(title),
-    }),
-    [],
-  );
-
-  const data = useStaticQuery(graphql`
+  const {
+    site: {
+      siteMetadata: { title: siteTitle },
+    },
+    allMdx: { nodes },
+  } = useStaticQuery(graphql`
     query {
       site {
         siteMetadata {
@@ -68,15 +65,14 @@ const Layout = (props: PageProps) => {
       }
     }
   `);
-  const siteMetadata = data.site.siteMetadata;
-  const postsData: PostProps["post"][] = React.useMemo(
+  const posts: PostProps["post"][] = React.useMemo(
     () =>
       // @ts-expect-error: ignored
-      data.allMdx.nodes.map((node) => ({
+      nodes.map((node) => ({
         ...node,
         slug: parseFilePathToPostSlug(node.internal.contentFilePath),
       })),
-    [data],
+    [nodes],
   );
 
   const navbarActiveKey = React.useMemo(() => {
@@ -227,7 +223,7 @@ const Layout = (props: PageProps) => {
         className="w-80 px-4"
         header={
           <div className="mx-3 flex h-16 items-center">
-            <div className="text-lg font-bold">{siteMetadata.title}</div>
+            <div className="text-lg font-bold">{siteTitle}</div>
           </div>
         }
       >
@@ -248,7 +244,7 @@ const Layout = (props: PageProps) => {
         <ol
           className={`${subNavbarActiveKey === "博文列表" ? "block" : "hidden"}`}
         >
-          {postsData.map((post) => {
+          {posts.map((post) => {
             const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
 
             return (
@@ -308,25 +304,21 @@ const Layout = (props: PageProps) => {
           </div>
         </header>
         <div ref={pageRef} className="relative min-h-[calc(100vh-16rem)]">
-          <GlobalContext.Provider value={globalContextValues}>
-            {children}
-          </GlobalContext.Provider>
+          {children}
         </div>
         <footer className="flex h-48 items-center border-t border-foreground-tertiary bg-neutral-800/60"></footer>
       </main>
 
       {/* Algolia Search Dialog */}
-      {openAlgoliaSearch && (
-        <div
-          onClick={() => setOpenAlgoliaSearch(false)}
-          className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm`}
-        >
-          <AlgoliaSearch
-            onClose={() => setOpenAlgoliaSearch(false)}
-            className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-neutral-900/90"
-          />
-        </div>
-      )}
+      <div
+        onClick={() => setOpenAlgoliaSearch(false)}
+        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm ${openAlgoliaSearch ? "block" : "hidden"}`}
+      >
+        <AlgoliaSearch
+          onClose={() => setOpenAlgoliaSearch(false)}
+          className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-neutral-900/90"
+        />
+      </div>
     </div>
   );
 };
