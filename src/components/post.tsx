@@ -57,7 +57,7 @@ const Post: React.FC<PostProps> = (props) => {
     <Link
       to={`/posts/${slug}`}
       onClick={onClick}
-      className={`flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
+      className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
     >
       {categories.length && (
         <div
@@ -84,12 +84,14 @@ const Post: React.FC<PostProps> = (props) => {
           title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
           className="line-clamp-1"
         >
-          {dayjs(date).format("MM月DD日YYYY年")}
+          {size === "large"
+            ? dayjs(date).format("MM 月 DD 日 YYYY 年")
+            : dayjs(date).format("MM月DD日YYYY年")}
         </div>
         {tags.length && (
           <div
             title={tags.join(" ")}
-            className="line-clamp-1 flex-1 before:mx-1 before:content-['•']"
+            className={`line-clamp-1 flex-1 before:content-['•'] ${size === "large" ? "before:mx-1.5" : "before:mx-1"}`}
           >
             {tags.join(" ")}
           </div>

@@ -41,16 +41,14 @@ const Hit: React.FC<
   > & { onPostClick: () => void }
 > = ({ hit, onPostClick }) => {
   return (
-    <article className="item-selectable rounded-lg">
-      <Post
-        post={hit}
-        onClick={onPostClick}
-        titleRenderer={() => (
-          <Highlight attribute={["frontmatter", "title"]} hit={hit} />
-        )}
-        excerptRenderer={() => <Highlight attribute={["excerpt"]} hit={hit} />}
-      />
-    </article>
+    <Post
+      post={hit}
+      onClick={onPostClick}
+      titleRenderer={() => (
+        <Highlight attribute={["frontmatter", "title"]} hit={hit} />
+      )}
+      excerptRenderer={() => <Highlight attribute={["excerpt"]} hit={hit} />}
+    />
   );
 };
 

@@ -42,9 +42,11 @@ const IndexPage: React.FC<PageProps> = () => {
         slug: parseFilePathToPostSlug(node.internal.contentFilePath),
       };
       const postYear = new Date(node.frontmatter.date).getFullYear();
-      Array.isArray(result[postYear])
-        ? result[postYear].push(post)
-        : (result[postYear] = [post]);
+      if (Array.isArray(result[postYear])) {
+        result[postYear].push(post);
+      } else {
+        result[postYear] = [post];
+      }
     });
     return result;
   }, [nodes]);
@@ -66,12 +68,8 @@ const IndexPage: React.FC<PageProps> = () => {
             <ol className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
               {posts.map((post) => {
                 return (
-                  <li key={post.id} className="">
-                    <Post
-                      post={post}
-                      size="large"
-                      className="item-selectable"
-                    />
+                  <li key={post.id}>
+                    <Post post={post} size="large" />
                   </li>
                 );
               })}

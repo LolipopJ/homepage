@@ -320,7 +320,7 @@ const Layout: React.FC<PageProps> = (props) => {
               <li key={post.id}>
                 <Post
                   post={post}
-                  className={`item-selectable mb-2 ${isActive ? "item-selected" : ""}`}
+                  className={`mb-2 ${isActive ? "item-selected" : ""}`}
                 />
               </li>
             );

@@ -54,9 +54,7 @@ const components: MDXProps["components"] = {
 };
 
 interface PostPageContext {
-  body: string;
   frontmatter: PostFrontmatter;
-  id: string;
 }
 
 const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
