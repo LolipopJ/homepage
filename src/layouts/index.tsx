@@ -5,6 +5,7 @@ import {
   faFolder,
   faHeart,
   faLaptopCode,
+  faPenNib,
   faPersonRays,
   faSearch,
   faTag,
@@ -28,7 +29,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const { hash } = location;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
-    React.useState<string>("博文列表");
+    React.useState<string>("博客列表");
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -86,12 +87,12 @@ const Layout: React.FC<PageProps> = (props) => {
     [nodes],
   );
 
-  /** 是否显示博文列表 */
+  /** 是否显示博客列表 */
   const showPostsList = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
-  /** 是否为博文页 */
+  /** 是否为博客页 */
   const isPostPage = /^(\/about|\/posts)/.test(path);
   const subNavbarActiveKeys = [
-    ...(showPostsList ? ["博文列表"] : []),
+    ...(showPostsList ? ["博客列表"] : []),
     ...(isPostPage ? ["目录"] : []),
   ];
 
@@ -102,11 +103,11 @@ const Layout: React.FC<PageProps> = (props) => {
     if (isPostPage) {
       setSubNavbarActiveKey("目录");
     } else {
-      setSubNavbarActiveKey("博文列表");
+      setSubNavbarActiveKey("博客列表");
     }
   }, [path, isPostPage]);
 
-  //#region 初始化博文页面的图片预览功能
+  //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
     if (isPostPage) {
       Fancybox.bind("[data-fancybox]");
@@ -115,7 +116,7 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [path, isPostPage]);
   //#endregion
 
-  //#region 更新博文中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
+  //#region 更新博客中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
   React.useEffect(() => {
     const pageDom = pageRef.current;
     if (isPostPage && pageDom) {
@@ -159,7 +160,7 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [hash, pageHeadings]);
   //#endregion
 
-  //#region 监听博文滚动，更新目录列表与阅读进度
+  //#region 监听博客滚动，更新目录列表与阅读进度
   React.useEffect(() => {
     const mainDom = mainRef.current;
     const pageDom = pageRef.current;
@@ -204,18 +205,25 @@ const Layout: React.FC<PageProps> = (props) => {
     const pageDom = pageRef.current;
     let match: RegExpMatchArray | null = null;
 
-    if (/^\/posts\/(.+?)\/?/.test(path)) {
+    if (path === "/") {
+      setPageTitle(
+        <>
+          <Icon icon={faPenNib} className="p-2" />
+          <span>所有博客</span>
+        </>,
+      );
+    } else if (/^\/posts\/(.+?)\/?/.test(path)) {
       if (pageDom) {
         const postTitle = pageDom.querySelector("h1");
 
         if (postTitle) {
-          // 监听博文页面滚动，更新页面标题为博文标题
+          // 监听博客页面滚动，更新页面标题为博客标题
           const observer = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
               setPageTitle(
                 <>
                   <Icon icon={faBlog} className="p-2" />
-                  <span>博文</span>
+                  <span>博客</span>
                 </>,
               );
             } else {
@@ -311,7 +319,7 @@ const Layout: React.FC<PageProps> = (props) => {
         className={`w-96`}
       >
         <ol
-          className={`${subNavbarActiveKey === "博文列表" ? "block" : "hidden"}`}
+          className={`${subNavbarActiveKey === "博客列表" ? "block" : "hidden"}`}
         >
           {posts.map((post) => {
             const isActive = new RegExp(`^/posts/${post.slug}`).test(path);

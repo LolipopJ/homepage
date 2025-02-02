@@ -27,7 +27,7 @@ const PostListTemplate: React.FC<PageProps<object, PostPageContext>> = ({
 
 export const Head = ({ pageContext }: HeadProps<object, PostPageContext>) => {
   const { category, tag } = pageContext;
-  return <SEO title={category ?? tag ?? "博文列表"} />;
+  return <SEO title={category ?? tag ?? "博客列表"} />;
 };
 
 export default PostListTemplate;

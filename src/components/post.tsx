@@ -27,7 +27,7 @@ export interface PostProps {
   footerClassName?: string;
 }
 
-/** 博文列表栏的博文简介 */
+/** 博客列表栏的博客简介 */
 const Post: React.FC<PostProps> = (props) => {
   const {
     post,
@@ -50,8 +50,8 @@ const Post: React.FC<PostProps> = (props) => {
     title,
   } = frontmatter;
 
-  const date = new Date(dateString);
-  const updatedDate = updatedDateString ? new Date(updatedDateString) : date;
+  const date = dayjs(dateString);
+  const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
 
   return (
     <Link
@@ -84,9 +84,9 @@ const Post: React.FC<PostProps> = (props) => {
           title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
           className="line-clamp-1"
         >
-          {size === "large"
-            ? dayjs(date).format("MM 月 DD 日 YYYY 年")
-            : dayjs(date).format("MM月DD日YYYY年")}
+          {date.format(
+            size === "large" ? "MM 月 DD 日 YYYY 年" : "MM月DD日YYYY年",
+          )}
         </div>
         {tags.length && (
           <div

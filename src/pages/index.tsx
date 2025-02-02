@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { graphql, HeadFC, PageProps, useStaticQuery } from "gatsby";
 import * as React from "react";
 
@@ -41,7 +42,7 @@ const IndexPage: React.FC<PageProps> = () => {
         ...node,
         slug: parseFilePathToPostSlug(node.internal.contentFilePath),
       };
-      const postYear = new Date(node.frontmatter.date).getFullYear();
+      const postYear = dayjs(node.frontmatter.date).year();
       if (Array.isArray(result[postYear])) {
         result[postYear].push(post);
       } else {

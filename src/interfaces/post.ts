@@ -1,7 +1,7 @@
 export interface Post {
-  /** 博文内容 */
+  /** 博客内容 */
   body: string;
-  /** 博文摘要 */
+  /** 博客摘要 */
   excerpt: string;
   frontmatter: PostFrontmatter;
   id: string;
@@ -12,7 +12,7 @@ export interface PostFrontmatter {
   categories: string[];
   date: string;
   tags: string[];
-  /** 博文是否具有时效性 */
+  /** 博客是否需要关注内容时效性 */
   timeliness?: boolean;
   title: string;
   updated?: string;

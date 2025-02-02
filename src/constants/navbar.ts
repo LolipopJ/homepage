@@ -29,7 +29,7 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
     ],
   },
   {
-    title: "发现博文",
+    title: "发现博客",
     routes: [
       { icon: faFolder, label: "分类", url: "/categories/" },
       { icon: faTags, label: "标签", url: "/tags/" },
