@@ -7,17 +7,17 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   actions?: { label: string; url: string }[];
 }
 
-const Card = (props: CardProps) => {
+const Card: React.FC<CardProps> = (props) => {
   const { headline, subhead, body, actions, className, ...restProps } = props;
 
   return (
     <div
-      className={`rounded-lg border border-foreground-tertiary px-6 py-4 shadow-sm shadow-primary-dark transition hover:shadow hover:shadow-primary ${className}`}
+      className={`rounded-lg border border-foreground-tertiary bg-background-light px-6 py-4 text-foreground shadow-sm shadow-primary-dark transition hover:shadow hover:shadow-primary ${className}`}
       {...restProps}
     >
       <div className="text-lg font-bold">{headline}</div>
       {subhead && <div className="mt-3">{subhead}</div>}
-      <div className="mt-2 text-sm text-foreground-secondary">{body}</div>
+      <div className="mt-2 text-sm text-neutral-300">{body}</div>
       {actions && (
         <div className="mt-5 flex flex-wrap items-center gap-2">
           {actions.map(({ label, url }, index) => (

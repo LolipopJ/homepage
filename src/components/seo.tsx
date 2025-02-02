@@ -6,7 +6,7 @@ export interface SEOProps {
   children?: React.ReactElement;
 }
 
-const SEO = ({ title, children }: SEOProps) => {
+const SEO: React.FC<SEOProps> = ({ title, children }) => {
   const siteMetadata = useStaticQuery(graphql`
     query {
       site {

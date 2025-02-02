@@ -15,6 +15,11 @@
     --foreground-tertiary: rgb(82 82 82 / 0.8);
     /* neutral-900 */
     --background: rgb(23 23 23);
+    --background-light: rgb(28, 28, 28);
+    --background-lighter: rgb(33, 33, 33);
+    --background-dark: rgb(17, 17, 17);
+    /* neutral-950 */
+    --background-darker: rgb(10, 10, 10);
   }
 
   ::selection {
@@ -67,7 +72,7 @@
     @apply bg-foreground text-background;
 
     &.item-selectable {
-      @apply transition-colors hover:bg-foreground-secondary hover:text-neutral-950;
+      @apply transition-colors hover:bg-foreground-secondary hover:text-background-darker;
     }
   }
 

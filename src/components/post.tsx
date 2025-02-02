@@ -19,17 +19,27 @@ export interface PostProps {
     excerpt: PostItem["excerpt"],
     post: PostItem,
   ) => React.ReactElement;
+  size?: "normal" | "large";
   className?: string;
+  categoryClassName?: string;
+  titleClassName?: string;
+  excerptClassName?: string;
+  footerClassName?: string;
 }
 
 /** 博文列表栏的博文简介 */
-const Post = (props: PostProps) => {
+const Post: React.FC<PostProps> = (props) => {
   const {
     post,
     onClick,
     titleRenderer,
     excerptRenderer,
+    size = "normal",
     className = "",
+    categoryClassName = "",
+    titleClassName = "",
+    excerptClassName = "",
+    footerClassName = "",
   } = props;
   const { slug, frontmatter, excerpt } = post;
   const {
@@ -50,17 +60,26 @@ const Post = (props: PostProps) => {
       className={`flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
     >
       {categories.length && (
-        <div className="line-clamp-1 text-sm font-medium text-foreground opacity-80">
+        <div
+          className={`line-clamp-1 font-medium text-foreground opacity-80 ${size === "large" ? "text-base" : "text-sm"} ${categoryClassName}`}
+        >
           {categories[0]}
         </div>
       )}
-      <h1 title={title} className="line-clamp-3 font-bold">
+      <h1
+        title={title}
+        className={`line-clamp-3 font-bold ${size === "large" ? "text-lg" : "text-base"} ${titleClassName}`}
+      >
         {titleRenderer?.(title, post) || title}
       </h1>
       {excerpt && (
-        <p title={excerpt}>{excerptRenderer?.(excerpt, post) || excerpt}</p>
+        <p title={excerpt} className={`${excerptClassName}`}>
+          {excerptRenderer?.(excerpt, post) || excerpt}
+        </p>
       )}
-      <div className="flex text-sm text-foreground-secondary">
+      <div
+        className={`flex text-foreground-secondary ${size === "large" ? "text-base" : "text-sm"} ${footerClassName}`}
+      >
         <div
           title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
           className="line-clamp-1"

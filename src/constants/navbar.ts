@@ -6,12 +6,12 @@ import {
 import {
   faCommentDots,
   faEnvelope,
+  faFolder,
   // faFeatherPointed,
   faHeart,
   faHouse,
   faIdCard,
   faLaptopCode,
-  faLayerGroup,
   // faRss,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
@@ -23,18 +23,18 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
     title: "",
     routes: [
       { icon: faHouse, label: "主页", url: "/" },
-      { icon: faLaptopCode, label: "作品集", url: "/works" },
-      { icon: faIdCard, label: "关于我", url: "/about" },
-      { icon: faHeart, label: "朋友们", url: "/friends" },
+      { icon: faLaptopCode, label: "作品集", url: "/works/" },
+      { icon: faIdCard, label: "关于我", url: "/about/" },
+      { icon: faHeart, label: "朋友们", url: "/friends/" },
     ],
   },
   {
     title: "发现博文",
     routes: [
-      { icon: faLayerGroup, label: "分类", url: "/categories" },
-      { icon: faTags, label: "标签", url: "/tags" },
-      // { icon: faFeatherPointed, label: "作者", url: "/authors" },
-      // { icon: faRss, label: "RSS", url: "" },
+      { icon: faFolder, label: "分类", url: "/categories/" },
+      { icon: faTags, label: "标签", url: "/tags/" },
+      // { icon: faFeatherPointed, label: "作者", url: "/authors/" },
+      // { icon: faRss, label: "RSS", url: "/rss/" },
     ],
   },
   {

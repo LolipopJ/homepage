@@ -50,13 +50,13 @@ const IndexPage: React.FC<PageProps> = () => {
   }, [nodes]);
 
   return (
-    <div className="m-auto max-w-4xl px-8">
+    <div>
       {Object.entries(postsWithYear)
         .reverse()
         .map(([year, posts]) => (
           <div>
-            <div className="mb-2 px-4">
-              <span className="text-lg font-bold">
+            <div className="mb-4 px-4">
+              <span className="text-xl font-bold">
                 {year.split("").map((num) => NUMBER_LETTER[Number(num)])}
               </span>
               <span className="text-sm text-foreground-secondary before:mx-2 before:content-['/']">
@@ -67,7 +67,11 @@ const IndexPage: React.FC<PageProps> = () => {
               {posts.map((post) => {
                 return (
                   <li key={post.id} className="">
-                    <Post post={post} className="item-selectable" />
+                    <Post
+                      post={post}
+                      size="large"
+                      className="item-selectable"
+                    />
                   </li>
                 );
               })}

@@ -59,10 +59,10 @@ interface PostPageContext {
   id: string;
 }
 
-const PostTemplate = ({
+const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   children,
   pageContext,
-}: PageProps<object, PostPageContext>) => {
+}) => {
   const {
     title,
     date: dateString,
@@ -76,38 +76,36 @@ const PostTemplate = ({
   const updatedDate = updatedDateString ? new Date(updatedDateString) : date;
 
   return (
-    <div className="px-24 pb-48 pt-8">
-      <div className="mx-auto max-w-xl">
-        <div className="mb-10 flex flex-col gap-4">
-          {categories?.length && (
-            <Category name={categories[0]} className="item-selectable" />
+    <div className="mx-auto max-w-xl">
+      <div className="mb-12 flex flex-col gap-4">
+        {categories?.length && (
+          <Category name={categories[0]} className="item-selectable" />
+        )}
+        <h1 className="text-3xl font-bold">{title}</h1>
+        <div className="item-secondary flex gap-2">
+          {dateString && (
+            <span
+              title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
+            >
+              {dayjs(date).format("MM 月 DD 日 YYYY 年")}
+            </span>
           )}
-          <h1 className="text-3xl font-bold">{title}</h1>
-          <div className="item-secondary flex gap-2">
-            {dateString && (
-              <span
-                title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
-              >
-                {dayjs(date).format("MM 月 DD 日 YYYY 年")}
-              </span>
-            )}
-            {tags?.length && (
-              <div className="flex flex-1 flex-wrap gap-2 before:content-['•']">
-                {tags.map((tag) => (
-                  <Tag
-                    key={tag}
-                    name={tag}
-                    className="item-secondary item-selectable"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          {tags?.length && (
+            <div className="flex flex-1 flex-wrap gap-2 before:content-['•']">
+              {tags.map((tag) => (
+                <Tag
+                  key={tag}
+                  name={tag}
+                  className="item-secondary item-selectable"
+                />
+              ))}
+            </div>
+          )}
         </div>
-        <article className="heti post-entry">
-          <MDXProvider components={components}>{children}</MDXProvider>
-        </article>
       </div>
+      <article className="heti post-entry mb-12">
+        <MDXProvider components={components}>{children}</MDXProvider>
+      </article>
     </div>
   );
 };

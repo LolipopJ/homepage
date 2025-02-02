@@ -6,7 +6,7 @@ export interface TagProps {
   className?: string;
 }
 
-const Tag = ({ name, className = "" }: TagProps) => {
+const Tag: React.FC<TagProps> = ({ name, className = "" }) => {
   return (
     <Link
       to={`/tags/${encodeURIComponent(name)}`}

@@ -35,12 +35,11 @@ interface AlgoliaIndexRecord {
 
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_PUBLIC_KEY);
 
-const Hit = ({
-  hit,
-  onPostClick,
-}: React.ComponentProps<
-  NonNullable<HitsProps<AlgoliaIndexRecord>["hitComponent"]>
-> & { onPostClick: () => void }) => {
+const Hit: React.FC<
+  React.ComponentProps<
+    NonNullable<HitsProps<AlgoliaIndexRecord>["hitComponent"]>
+  > & { onPostClick: () => void }
+> = ({ hit, onPostClick }) => {
   return (
     <article className="item-selectable rounded-lg">
       <Post
@@ -55,11 +54,11 @@ const Hit = ({
   );
 };
 
-const AlgoliaSearch = ({
+const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
   onClose,
   className,
   ...restProps
-}: AlgoliaSearchProps) => {
+}) => {
   React.useEffect(() => {
     const onEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape") {

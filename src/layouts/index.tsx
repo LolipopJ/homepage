@@ -1,5 +1,16 @@
 import { Fancybox } from "@fancyapps/ui";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
+import {
+  faBlog,
+  faFolder,
+  faHeart,
+  faLaptopCode,
+  faPersonRays,
+  faSearch,
+  faTag,
+  faTags,
+  faWarning,
+} from "@fortawesome/free-solid-svg-icons";
 import { graphql, PageProps, useStaticQuery } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
@@ -12,13 +23,13 @@ import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
 
-const Layout = (props: PageProps) => {
+const Layout: React.FC<PageProps> = (props) => {
   const { children, path = "/", location } = props;
   const { hash } = location;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<string>("博文列表");
-  const [pageTitle, setPageTitle] = React.useState<string>("");
+  const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
   const [pageHeadings, setPageHeadings] = React.useState<HTMLHeadingElement[]>(
@@ -75,19 +86,14 @@ const Layout = (props: PageProps) => {
     [nodes],
   );
 
-  const navbarActiveKey = React.useMemo(() => {
-    const pathSplits = path.split("/");
-    if (pathSplits.length === 1) {
-      return "/";
-    } else {
-      return `/${pathSplits[1]}`;
-    }
-  }, [path]);
-
   /** 是否显示博文列表 */
   const showPostsList = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
   /** 是否为博文页 */
   const isPostPage = /^(\/about|\/posts)/.test(path);
+  const subNavbarActiveKeys = [
+    ...(showPostsList ? ["博文列表"] : []),
+    ...(isPostPage ? ["目录"] : []),
+  ];
 
   React.useEffect(() => {
     setPageTitle("");
@@ -193,28 +199,94 @@ const Layout = (props: PageProps) => {
   }, [path, isPostPage, pageHeadings]);
   //#endregion
 
-  //#region 监听博文滚动，更新博客页面标题
+  //#region 更新页面标题
   React.useEffect(() => {
     const pageDom = pageRef.current;
-    if (isPostPage && pageDom) {
-      const postTitle = pageDom.querySelector("h1");
+    let match: RegExpMatchArray | null = null;
 
-      if (postTitle) {
-        const observer = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) {
-            setPageTitle("");
-          } else {
-            setPageTitle(postTitle.innerText);
-          }
-        });
+    if (/^\/posts\/(.+?)\/?/.test(path)) {
+      if (pageDom) {
+        const postTitle = pageDom.querySelector("h1");
 
-        observer.observe(postTitle);
-        return () => {
-          observer.unobserve(postTitle);
-        };
+        if (postTitle) {
+          // 监听博文页面滚动，更新页面标题为博文标题
+          const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+              setPageTitle(
+                <>
+                  <Icon icon={faBlog} className="p-2" />
+                  <span>博文</span>
+                </>,
+              );
+            } else {
+              setPageTitle(postTitle.innerText);
+            }
+          });
+
+          observer.observe(postTitle);
+          return () => {
+            observer.unobserve(postTitle);
+          };
+        }
       }
+    } else if (/^\/works\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faLaptopCode} className="p-2" />
+          <span>作品集</span>
+        </>,
+      );
+    } else if (/^\/about\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faPersonRays} className="p-2" />
+          <span>关于我</span>
+        </>,
+      );
+    } else if (/^\/friends\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faHeart} className="p-2" />
+          <span>朋友们</span>
+        </>,
+      );
+    } else if (/^\/tags\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faTags} className="p-2" />
+          <span>所有标签</span>
+        </>,
+      );
+    } else if ((match = path.match(/^\/tags\/(.+?)\/?$/))) {
+      setPageTitle(
+        <>
+          <Icon icon={faTag} className="p-2" />
+          <span>{decodeURIComponent(match[1])}</span>
+        </>,
+      );
+    } else if (/^\/categories\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faFolder} className="p-2" />
+          <span>所有分类</span>
+        </>,
+      );
+    } else if ((match = path.match(/^\/categories\/(.+?)\/?$/))) {
+      setPageTitle(
+        <>
+          <Icon icon={faFolderOpen} className="p-2" />
+          <span>{decodeURIComponent(match[1])}</span>
+        </>,
+      );
+    } else if (/^\/404\/?$/.test(path)) {
+      setPageTitle(
+        <>
+          <Icon icon={faWarning} className="p-2" />
+          <span>未开放区域</span>
+        </>,
+      );
     }
-  }, [path, isPostPage]);
+  }, [path]);
   //#endregion
 
   return (
@@ -227,15 +299,12 @@ const Layout = (props: PageProps) => {
           </div>
         }
       >
-        <Navbar items={NAVBAR_ITEMS} activeKey={navbarActiveKey} />
+        <Navbar items={NAVBAR_ITEMS} activeKey={path} />
       </SiderBar>
 
       <SiderBar
         activeKey={subNavbarActiveKey}
-        activeKeys={[
-          ...(showPostsList ? ["博文列表"] : []),
-          ...(isPostPage ? ["目录"] : []),
-        ]}
+        activeKeys={subNavbarActiveKeys}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
@@ -289,10 +358,7 @@ const Layout = (props: PageProps) => {
 
       <main ref={mainRef} className="flex-1 overflow-auto">
         <header className="sticky top-0 z-10 flex h-16 items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
-          <div
-            title={pageTitle}
-            className="line-clamp-1 flex-1 text-lg font-bold"
-          >
+          <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {pageTitle}
           </div>
           <div className="ml-auto justify-end pl-16">
@@ -303,10 +369,13 @@ const Layout = (props: PageProps) => {
             />
           </div>
         </header>
-        <div ref={pageRef} className="relative min-h-[calc(100vh-16rem)]">
+        <div
+          ref={pageRef}
+          className="relative min-h-[calc(100vh-16rem)] px-24 py-12"
+        >
           {children}
         </div>
-        <footer className="flex h-48 items-center border-t border-foreground-tertiary bg-neutral-800/60"></footer>
+        <footer className="flex h-48 items-center border-t border-foreground-tertiary bg-background-lighter"></footer>
       </main>
 
       {/* Algolia Search Dialog */}

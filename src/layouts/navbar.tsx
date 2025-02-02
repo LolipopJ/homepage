@@ -17,14 +17,14 @@ interface Route {
   url: string;
 }
 
-const Navbar = ({ items, activeKey, className }: NavbarProps) => {
+const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
   return (
     <div className={className}>
       {items.map((item) => {
         return (
           <nav className="mb-6" key={item.title}>
             {item.title && (
-              <div className="mb-2 px-3 text-sm font-bold text-neutral-400">
+              <div className="mb-2 px-3 text-sm font-bold text-foreground-secondary">
                 {item.title}
               </div>
             )}

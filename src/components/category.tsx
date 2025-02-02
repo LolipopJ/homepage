@@ -6,11 +6,11 @@ export interface CategoryProps {
   className?: string;
 }
 
-const Category = ({ name, className = "" }: CategoryProps) => {
+const Category: React.FC<CategoryProps> = ({ name, className = "" }) => {
   return (
     <Link
       to={`/categories/${encodeURIComponent(name)}`}
-      className={`item-converse-color w-fit rounded border-b-4 border-primary px-3 py-2 text-sm leading-none hover:border-primary-dark ${className}`}
+      className={`item-converse-color w-fit rounded px-3 py-2 text-sm leading-none hover:border-primary-dark ${className}`}
     >
       {name}
     </Link>

@@ -13,7 +13,7 @@ export interface SiderBarProps
   header?: React.ReactElement;
 }
 
-const SiderBar = (props: SiderBarProps) => {
+const SiderBar: React.FC<SiderBarProps> = (props) => {
   const {
     activeKey,
     activeKeys,
@@ -30,7 +30,7 @@ const SiderBar = (props: SiderBarProps) => {
 
   return (
     <aside
-      className={`border-r border-foreground-tertiary bg-neutral-800/20 ${className}`}
+      className={`border-r border-foreground-tertiary bg-background-light ${className}`}
       {...restProps}
     >
       <div className="flex h-16 items-center">
