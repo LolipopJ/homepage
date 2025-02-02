@@ -36,7 +36,7 @@ const Categories: React.FC<PageProps> = (props) => {
 
   return (
     <div>
-      <ol className="flex flex-wrap gap-2">
+      <ol className="flex flex-wrap gap-3">
         {categories.map(([categoryName, postCount]) => {
           return (
             <li key={categoryName}>

@@ -36,7 +36,7 @@ const Tags: React.FC<PageProps> = (props) => {
 
   return (
     <div>
-      <ol className="flex flex-wrap gap-2">
+      <ol className="flex flex-wrap gap-3">
         {tags.map(([tagName, postCount]) => {
           return (
             <li key={tagName}>
