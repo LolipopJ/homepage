@@ -76,6 +76,10 @@
     }
   }
 
+  .item-link {
+    @apply text-primary-light hover:border-none hover:text-primary hover:underline hover:decoration-wavy hover:decoration-2 hover:underline-offset-2;
+  }
+
   .post-entry {
     blockquote,
     img,
@@ -98,8 +102,8 @@
       @apply -mx-6 w-[calc(100%+3rem)] max-w-none;
     }
 
-    a:not(.custom) {
-      @apply text-primary-light hover:border-none hover:text-primary hover:underline hover:decoration-wavy hover:decoration-2 hover:underline-offset-2;
+    a {
+      @apply item-link;
     }
 
     code {

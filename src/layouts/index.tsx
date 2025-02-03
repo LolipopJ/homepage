@@ -7,11 +7,13 @@ import {
   faLaptopCode,
   faPenNib,
   faPersonRays,
+  faRainbow,
   faSearch,
   faTag,
   faTags,
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
+import dayjs from "dayjs";
 import { graphql, PageProps, useStaticQuery } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
@@ -19,6 +21,8 @@ import * as React from "react";
 import AlgoliaSearch from "../components/algolia-search";
 import Icon from "../components/icon";
 import Post, { PostProps } from "../components/post";
+import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
+import { CONTACT_ITEMS } from "../constants/contact";
 import { NAVBAR_ITEMS } from "../constants/navbar";
 import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
@@ -383,7 +387,85 @@ const Layout: React.FC<PageProps> = (props) => {
         >
           {children}
         </div>
-        <footer className="flex h-48 items-center border-t border-foreground-tertiary bg-background-lighter"></footer>
+        <footer className="flex h-48 flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16">
+          <div className="flex items-center gap-2">
+            <span>
+              Powered by{" "}
+              <a
+                href="https://www.gatsbyjs.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="item-link"
+              >
+                Gatsby
+              </a>
+            </span>
+            <Icon icon={faRainbow} />
+            <span>
+              Inspired by{" "}
+              <a
+                href="https://thesis.priority.vision/"
+                target="_blank"
+                rel="noreferrer"
+                className="item-link"
+              >
+                Thesis
+              </a>
+            </span>
+          </div>
+          {(MIIT_BEIAN_LABEL || MPS_BEIAN_CODE) && (
+            <div className="flex items-center gap-2">
+              <a
+                href="https://beian.miit.gov.cn/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {MIIT_BEIAN_LABEL}
+              </a>
+              <img
+                src="/images/beian.png"
+                alt="beian-icon"
+                className="size-5"
+              />
+              <a
+                href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${MPS_BEIAN_CODE}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                京公网安备 {MPS_BEIAN_CODE}号
+              </a>
+            </div>
+          )}
+          <div className="my-2 w-full border-t-2 border-t-foreground-tertiary" />
+          <div className="flex h-6 items-center justify-between">
+            <span className="text-foreground-secondary">
+              © {dayjs().year()}{" "}
+              <a
+                href="https://github.com/LolipopJ"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Lolipop
+              </a>
+            </span>
+            <div className="flex gap-2 text-xl">
+              {CONTACT_ITEMS.map((item) => (
+                <a
+                  key={item.url}
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="leading-none"
+                >
+                  <Icon
+                    icon={item.icon}
+                    className="item-selectable rounded-md p-2"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        </footer>
       </main>
 
       {/* Algolia Search Dialog */}

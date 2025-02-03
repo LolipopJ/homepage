@@ -58,14 +58,15 @@ const IndexPage: React.FC<PageProps> = () => {
         .reverse()
         .map(([year, posts]) => (
           <div>
-            <div className="mb-4 px-4">
-              <span className="text-xl font-bold">
+            <div className="px-4">
+              <span className="text-xl font-bold text-primary">
                 {year.split("").map((num) => NUMBER_LETTER[Number(num)])}
               </span>
               <span className="text-sm text-foreground-secondary before:mx-2 before:content-['/']">
                 {posts.length} 篇
               </span>
             </div>
+            <div className="mx-4 my-2 border-b-2 border-b-foreground-tertiary" />
             <ol className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
               {posts.map((post) => {
                 return (
