@@ -371,7 +371,7 @@ const Layout: React.FC<PageProps> = (props) => {
       </SiderBar>
 
       <main ref={mainRef} className="flex-1 overflow-auto">
-        <header className="sticky top-0 z-10 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
+        <header className="sticky top-0 z-20 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {pageTitle}
           </div>

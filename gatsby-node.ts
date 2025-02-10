@@ -54,6 +54,7 @@ exports.createPages = async function ({ actions, graphql }) {
     actions.createPage({
       path: postPagePath,
       component: `${postTemplate}?__contentFilePath=${contentFilePath}`,
+      context: { slug },
     });
 
     node.slug = slug;

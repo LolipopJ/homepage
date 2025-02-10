@@ -6,6 +6,7 @@ import * as React from "react";
 
 import Card from "../components/card";
 import Category from "../components/category";
+import GitalkComponent from "../components/gitalk";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { PostFrontmatter } from "../interfaces/post";
@@ -55,6 +56,7 @@ const components: MDXProps["components"] = {
 
 interface PostPageContext {
   frontmatter: PostFrontmatter;
+  slug: string;
 }
 
 const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
@@ -62,13 +64,16 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   pageContext,
 }) => {
   const {
-    title,
-    date: dateString,
-    updated: updatedDateString,
-    categories,
-    tags,
-    timeliness = true,
-  } = pageContext.frontmatter;
+    slug,
+    frontmatter: {
+      title,
+      date: dateString,
+      updated: updatedDateString,
+      categories,
+      tags,
+      timeliness = true,
+    },
+  } = pageContext;
 
   const date = dayjs(dateString);
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
@@ -76,8 +81,8 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   const diffDays = today.diff(updatedDate, "days");
 
   return (
-    <div className="mx-auto max-w-xl">
-      <div className="mb-12 flex flex-col gap-4">
+    <div className="mx-auto flex max-w-xl flex-col gap-y-12">
+      <div className="flex flex-col gap-4">
         {categories?.length && (
           <Category name={categories[0]} className="item-selectable" />
         )}
@@ -103,7 +108,7 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
           )}
         </div>
       </div>
-      <article className="heti post-entry mb-12">
+      <article className="heti post-entry">
         {timeliness && diffDays > 365 && (
           <blockquote className="border-l-4 border-orange-400">
             这是一篇<strong>最后更新于 {diffDays} 天前</strong>
@@ -112,6 +117,7 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
         )}
         <MDXProvider components={components}>{children}</MDXProvider>
       </article>
+      <GitalkComponent gitalkId={slug} />
     </div>
   );
 };

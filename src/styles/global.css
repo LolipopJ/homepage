@@ -1,3 +1,9 @@
+@import url("https://unpkg.com/prismjs@1/themes/prism-tomorrow.min.css");
+@import url("https://unpkg.com/@fancyapps/ui@5/dist/fancybox/fancybox.css");
+@import url("https://www.unpkg.com/gitalk@1/dist/gitalk.css");
+@import url("https://www.unpkg.com/github-markdown-css/github-markdown-dark.css");
+@import url("https://unpkg.com/heti/umd/heti.min.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -92,7 +98,7 @@
     }
 
     blockquote {
-      @apply me-0 ms-0;
+      @apply me-0 ms-0 border-l-4 border-primary;
 
       :last-child {
         @apply mb-3;
@@ -183,6 +189,89 @@
 
         > a {
           @apply item-selectable rounded px-1.5 py-1 text-lg;
+        }
+      }
+    }
+  }
+
+  .gitalk {
+    .gt-container {
+      a {
+        @apply text-primary hover:text-primary-light;
+      }
+
+      .gt-btn-login,
+      .gt-btn-public {
+        @apply border-primary-dark bg-primary-dark text-foreground transition hover:bg-primary;
+      }
+
+      .gt-no-init {
+        p {
+          @apply mb-2;
+        }
+      }
+
+      .gt-meta {
+        @apply z-10 border-b-foreground-tertiary;
+
+        .gt-popup {
+          @apply bg-background-lighter;
+        }
+      }
+
+      .gt-header {
+        .gt-avatar-github {
+          .gt-ico-github svg {
+            @apply fill-foreground;
+          }
+        }
+
+        .gt-header-comment {
+          .gt-header-textarea,
+          .gt-header-preview {
+            @apply min-h-24 bg-background-lighter;
+          }
+
+          .gt-header-controls {
+            .gt-header-controls-tip {
+              .gt-ico-tip {
+                svg {
+                  @apply fill-primary;
+                }
+              }
+            }
+
+            .gt-btn-preview {
+              @apply border-primary bg-background-light text-primary transition hover:border-primary-light hover:bg-background-lighter hover:text-primary-light;
+            }
+          }
+        }
+      }
+
+      .gt-comments {
+        .gt-comment {
+          .gt-comment-content {
+            @apply bg-background-lighter hover:shadow-none;
+
+            .gt-comment-header {
+              .gt-comment-like,
+              .gt-comment-reply {
+                svg {
+                  @apply fill-primary hover:fill-primary-light;
+                }
+              }
+            }
+
+            .gt-comment-body {
+              @apply bg-inherit !text-[#f0f6fc];
+            }
+          }
+        }
+      }
+
+      .markdown-body {
+        a {
+          @apply item-link;
         }
       }
     }
