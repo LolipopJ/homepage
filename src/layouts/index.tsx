@@ -2,6 +2,7 @@ import { Fancybox } from "@fancyapps/ui";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import {
   faBlog,
+  faChevronUp,
   faFolder,
   faHeart,
   faLaptopCode,
@@ -41,7 +42,8 @@ const Layout: React.FC<PageProps> = (props) => {
     [],
   );
   const [currentHeading, setCurrentHeading] = React.useState<number>(-1);
-  const [readProgress, setReadProgress] = React.useState<number>(0);
+  const [showBackTop, setShowBackTop] = React.useState<boolean>(false);
+  const [readProgress, setReadProgress] = React.useState<number>(0); // %
 
   const hashRef = React.useRef<string>("");
   const mainRef = React.useRef<HTMLElement>(null);
@@ -185,16 +187,12 @@ const Layout: React.FC<PageProps> = (props) => {
           }
         }
 
-        const progress =
-          Math.min(
-            Math.floor(((scrollTop + mainDom.clientHeight) / pageHeight) * 100),
-            100,
-          ) / 100;
+        const progress = Math.ceil(
+          ((scrollTop + mainDom.clientHeight) / pageHeight) * 100,
+        );
         setReadProgress(progress);
       };
-      onScrolled();
-
-      const throttleOnScrolled = throttle(onScrolled, 50);
+      const throttleOnScrolled = throttle(onScrolled, 50, { leading: true });
       mainDom.addEventListener("scroll", throttleOnScrolled);
       return () => mainDom.removeEventListener("scroll", throttleOnScrolled);
     } else {
@@ -216,22 +214,30 @@ const Layout: React.FC<PageProps> = (props) => {
           <span>所有博客</span>
         </>,
       );
-    } else if (/^\/posts\/(.+?)\/?/.test(path)) {
+    } else if (isPostPage) {
       if (pageDom) {
         const postTitle = pageDom.querySelector("h1");
-
         if (postTitle) {
           // 监听博客页面滚动，更新页面标题为博客标题
           const observer = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
               setPageTitle(
-                <>
-                  <Icon icon={faBlog} className="p-2" />
-                  <span>博客</span>
-                </>,
+                /^\/about\/?$/.test(path) ? (
+                  <>
+                    <Icon icon={faPersonRays} className="p-2" />
+                    <span>关于我</span>
+                  </>
+                ) : (
+                  <>
+                    <Icon icon={faBlog} className="p-2" />
+                    <span>博客</span>
+                  </>
+                ),
               );
+              setShowBackTop(false);
             } else {
               setPageTitle(postTitle.innerText);
+              setShowBackTop(true);
             }
           });
 
@@ -239,6 +245,8 @@ const Layout: React.FC<PageProps> = (props) => {
           return () => {
             observer.unobserve(postTitle);
           };
+        } else {
+          setShowBackTop(true);
         }
       }
     } else if (/^\/works\/?$/.test(path)) {
@@ -246,13 +254,6 @@ const Layout: React.FC<PageProps> = (props) => {
         <>
           <Icon icon={faLaptopCode} className="p-2" />
           <span>作品集</span>
-        </>,
-      );
-    } else if (/^\/about\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faPersonRays} className="p-2" />
-          <span>关于我</span>
         </>,
       );
     } else if (/^\/friends\/?$/.test(path)) {
@@ -298,15 +299,16 @@ const Layout: React.FC<PageProps> = (props) => {
         </>,
       );
     }
-  }, [path]);
+  }, [isPostPage, path]);
   //#endregion
 
   return (
     <div className="flex h-screen overflow-y-hidden">
       <SiderBar
-        className="w-80 px-4"
+        className="w-72"
+        bodyClassName="px-4"
         header={
-          <div className="mx-3 flex h-16 items-center">
+          <div className="mx-3 flex h-header items-center px-4">
             <div className="text-lg font-bold">{siteTitle}</div>
           </div>
         }
@@ -320,7 +322,7 @@ const Layout: React.FC<PageProps> = (props) => {
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className={`w-96`}
+        className="w-88"
       >
         <ol
           className={`${subNavbarActiveKey === "博客列表" ? "block" : "hidden"}`}
@@ -369,7 +371,7 @@ const Layout: React.FC<PageProps> = (props) => {
       </SiderBar>
 
       <main ref={mainRef} className="flex-1 overflow-auto">
-        <header className="sticky top-0 z-10 flex h-16 items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
+        <header className="sticky top-0 z-10 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {pageTitle}
           </div>
@@ -383,11 +385,32 @@ const Layout: React.FC<PageProps> = (props) => {
         </header>
         <div
           ref={pageRef}
-          className="relative min-h-[calc(100vh-16rem)] px-24 py-12"
+          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] px-24 py-12"
         >
           {children}
+
+          {/* Actions bar in post page */}
+          {isPostPage && (
+            <div className="sticky bottom-8 ml-auto flex w-0 flex-col gap-4 text-sm">
+              <div
+                className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
+                style={{
+                  background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
+                }}
+              >
+                <div
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-full bg-background transition hover:bg-foreground hover:text-background"
+                  onClick={() =>
+                    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+                  }
+                >
+                  <Icon icon={faChevronUp} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        <footer className="flex h-48 flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16">
+        <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16">
           <div className="flex items-center gap-2">
             <span>
               Powered by{" "}
@@ -436,7 +459,7 @@ const Layout: React.FC<PageProps> = (props) => {
               </a>
             </div>
           )}
-          <div className="my-2 w-full border-t-2 border-t-foreground-tertiary" />
+          <div className="my-3 w-full border border-foreground-tertiary" />
           <div className="flex h-6 items-center justify-between">
             <span className="text-foreground-secondary">
               © {dayjs().year()}{" "}
@@ -475,7 +498,7 @@ const Layout: React.FC<PageProps> = (props) => {
       >
         <AlgoliaSearch
           onClose={() => setOpenAlgoliaSearch(false)}
-          className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-neutral-900/90"
+          className="max-h-[calc(100vh-4rem)]] mx-auto mt-16 border border-foreground-tertiary bg-neutral-900/90"
         />
       </div>
     </div>

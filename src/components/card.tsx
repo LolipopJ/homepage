@@ -12,7 +12,7 @@ const Card: React.FC<CardProps> = (props) => {
 
   return (
     <div
-      className={`rounded-lg border border-foreground-tertiary bg-background-light px-6 py-4 text-foreground shadow-sm shadow-primary-dark transition hover:shadow hover:shadow-primary ${className}`}
+      className={`rounded-lg border border-foreground-tertiary bg-background px-6 py-4 text-foreground shadow-sm shadow-primary-dark transition hover:shadow hover:shadow-primary ${className}`}
       {...restProps}
     >
       <div className="text-lg font-bold">{headline}</div>

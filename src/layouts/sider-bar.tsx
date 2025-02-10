@@ -33,7 +33,7 @@ const SiderBar: React.FC<SiderBarProps> = (props) => {
       className={`border-r border-foreground-tertiary bg-background-light ${className}`}
       {...restProps}
     >
-      <div className="flex h-16 items-center">
+      <div className="flex h-header items-center">
         {header || (
           <div className={headerClassName}>
             <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-neutral-800 p-0.5">
@@ -52,7 +52,7 @@ const SiderBar: React.FC<SiderBarProps> = (props) => {
           </div>
         )}
       </div>
-      <div className="h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className="h-[calc(100vh-var(--height-header))] overflow-y-auto">
         <div className={bodyClassName}>{children}</div>
       </div>
     </aside>

@@ -4,6 +4,8 @@
 
 @layer base {
   :root {
+    --height-header: 4rem;
+    --height-footer: 14rem;
     --primary: #61bfad;
     --primary-light: #80cbbd;
     --primary-dark: #438579;

@@ -23,6 +23,7 @@ export interface AlgoliaSearchProps
   extends Omit<InstantSearchProps, "searchClient" | "indexName"> {
   onClose: () => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 interface AlgoliaIndexRecord {
@@ -55,6 +56,7 @@ const Hit: React.FC<
 const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
   onClose,
   className,
+  style,
   ...restProps
 }) => {
   React.useEffect(() => {
@@ -72,6 +74,7 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
     <div
       onClick={(e) => e.stopPropagation()}
       className={`flex h-[568px] max-w-2xl flex-col rounded-xl ${className}`}
+      style={style}
     >
       <InstantSearch
         insights

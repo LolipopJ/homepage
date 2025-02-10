@@ -8,6 +8,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      width: {
+        88: "22rem",
+      },
+      height: {
+        header: "var(--height-header)",
+        footer: "var(--height-footer)",
+      },
       colors: {
         primary: "var(--primary)",
         "primary-light": "var(--primary-light)",
