@@ -304,14 +304,13 @@ const Layout: React.FC<PageProps> = (props) => {
     <div className="flex h-screen overflow-y-hidden">
       <SiderBar
         className="w-72"
-        bodyClassName="px-4"
         header={
           <div className="mx-3 flex h-header items-center px-4">
             <div className="text-lg font-bold">{siteTitle}</div>
           </div>
         }
       >
-        <Navbar items={NAVBAR_ITEMS} activeKey={path} />
+        <Navbar items={NAVBAR_ITEMS} activeKey={path} className="px-4" />
       </SiderBar>
 
       <SiderBar<SubNavbarActiveKey>
