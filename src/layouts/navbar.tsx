@@ -11,7 +11,7 @@ export interface NavbarProps {
   className?: string;
 }
 
-interface Route {
+export interface Route {
   icon: IconDefinition;
   label: string;
   url: string;

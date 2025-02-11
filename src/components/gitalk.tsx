@@ -44,7 +44,7 @@ const GitalkComponent: React.FC<GitalkProps> = ({
         admin: GITALK_ADMIN,
         id,
         distractionFreeMode: false,
-        createIssueManually: true,
+        createIssueManually: false,
         enableHotKey: false,
       };
       // @ts-expect-error: import Gitalk from CDN

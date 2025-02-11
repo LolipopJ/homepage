@@ -23,8 +23,7 @@ import AlgoliaSearch from "../components/algolia-search";
 import Icon from "../components/icon";
 import Post, { PostProps } from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
-import { CONTACT_ITEMS } from "../constants/contact";
-import { NAVBAR_ITEMS } from "../constants/navbar";
+import { NAVBAR_ITEMS, SOCIAL_ITEMS } from "../constants/navbar";
 import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
@@ -472,9 +471,10 @@ const Layout: React.FC<PageProps> = (props) => {
               </a>
             </span>
             <div className="flex gap-2 text-xl">
-              {CONTACT_ITEMS.map((item) => (
+              {SOCIAL_ITEMS.map((item) => (
                 <a
                   key={item.url}
+                  title={item.label}
                   href={item.url}
                   target="_blank"
                   rel="noreferrer"

@@ -1,31 +1,40 @@
-import {
-  faGithub,
-  faSteam,
-  faXTwitter,
-} from "@fortawesome/free-brands-svg-icons";
+import { faGithub, faSteam } from "@fortawesome/free-brands-svg-icons";
 import {
   faCommentDots,
   faEnvelope,
   faFolder,
   // faFeatherPointed,
-  faHeart,
+  // faHeart,
   faHouse,
   faIdCard,
-  faLaptopCode,
+  // faLaptopCode,
   // faRss,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { NavbarProps } from "../layouts/navbar";
+import { NavbarProps, Route } from "../layouts/navbar";
+
+export const SOCIAL_ITEMS: Route[] = [
+  {
+    icon: faGithub,
+    label: "@LolipopJ",
+    url: "https://github.com/LolipopJ",
+  },
+  {
+    icon: faSteam,
+    label: "@lolipopj_703",
+    url: "https://steamcommunity.com/id/lolipopj_703",
+  },
+];
 
 export const NAVBAR_ITEMS: NavbarProps["items"] = [
   {
     title: "",
     routes: [
       { icon: faHouse, label: "主页", url: "/" },
-      { icon: faLaptopCode, label: "作品集", url: "/works/" },
+      // { icon: faLaptopCode, label: "作品集", url: "/works/" },
       { icon: faIdCard, label: "关于我", url: "/about/" },
-      { icon: faHeart, label: "朋友们", url: "/friends/" },
+      // { icon: faHeart, label: "朋友们", url: "/friends/" },
     ],
   },
   {
@@ -46,25 +55,11 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
         url: "https://timeline.towind.fun",
       },
       {
-        icon: faGithub,
-        label: "@LolipopJ",
-        url: "https://github.com/LolipopJ",
-      },
-      {
-        icon: faXTwitter,
-        label: "@Lolipop_0703",
-        url: "https://x.com/Lolipop_0703",
-      },
-      {
-        icon: faSteam,
-        label: "@lolipopj_703",
-        url: "https://steamcommunity.com/id/lolipopj_703",
-      },
-      {
         icon: faEnvelope,
         label: "mail@towind.fun",
         url: "mailto:mail@towind.fun",
       },
+      ...SOCIAL_ITEMS,
     ],
   },
 ];
