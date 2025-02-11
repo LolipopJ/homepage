@@ -9,20 +9,8 @@ import {
   GITHUB_REPO_OWNER,
 } from "../constants/gitalk";
 
-interface GitalkOptions {
-  clientID: string;
-  clientSecret: string;
-  repo: string;
-  owner: string;
-  admin: string[];
-  id: string;
-  distractionFreeMode?: boolean;
-  createIssueManually?: boolean;
-  enableHotKey?: boolean;
-}
-
 export interface GitalkProps {
-  gitalkId: GitalkOptions["id"];
+  gitalkId: Gitalk.default.GitalkOptions["id"];
   className?: string;
 }
 
@@ -32,26 +20,25 @@ const GitalkComponent: React.FC<GitalkProps> = ({
 }) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
-  const renderGitalk = React.useCallback((id: GitalkOptions["id"]) => {
-    const gitalkContainer = ref.current;
-    // @ts-expect-error: import Gitalk from CDN
-    if (gitalkContainer && window.Gitalk) {
-      const gitalkOptions: GitalkOptions = {
-        clientID: GITHUB_APP_CLIENT_ID,
-        clientSecret: GITHUB_APP_CLIENT_SECRET,
-        repo: GITHUB_REPO,
-        owner: GITHUB_REPO_OWNER,
-        admin: GITALK_ADMIN,
-        id,
-        distractionFreeMode: false,
-        createIssueManually: false,
-        enableHotKey: false,
-      };
-      // @ts-expect-error: import Gitalk from CDN
-      const gitalk = new window.Gitalk(gitalkOptions);
-      gitalk.render(gitalkContainer);
-    }
-  }, []);
+  const renderGitalk = React.useCallback(
+    (id: Gitalk.default.GitalkOptions["id"]) => {
+      const gitalkContainer = ref.current;
+      if (gitalkContainer && window.Gitalk) {
+        const gitalk = new window.Gitalk({
+          clientID: GITHUB_APP_CLIENT_ID,
+          clientSecret: GITHUB_APP_CLIENT_SECRET,
+          repo: GITHUB_REPO,
+          owner: GITHUB_REPO_OWNER,
+          admin: GITALK_ADMIN,
+          id,
+          distractionFreeMode: false,
+          enableHotKey: false,
+        });
+        gitalk.render(gitalkContainer);
+      }
+    },
+    [],
+  );
 
   React.useEffect(() => {
     renderGitalk(gitalkId);
@@ -61,6 +48,7 @@ const GitalkComponent: React.FC<GitalkProps> = ({
     <>
       <Script
         src="https://unpkg.com/gitalk@1/dist/gitalk.min.js"
+        strategy="idle"
         onLoad={() => renderGitalk(gitalkId)}
       />
       <div
