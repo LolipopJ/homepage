@@ -14,7 +14,7 @@ export interface SiderBarProps<T = string>
   header?: React.ReactElement;
 }
 
-export interface SiderBarItem<T> {
+export interface SiderBarItem<T = string> {
   key: T;
   label: string;
   children: React.ReactElement;
@@ -48,45 +48,40 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
     }
   }, [activeKey, transitionRef]);
 
-  if (!children && items.length === 0) return null;
-
   return (
     <aside
       className={`border-r border-foreground-tertiary bg-background-light ${className}`}
       {...restProps}
     >
-      <div className="flex h-header items-center">
+      <div className={`flex h-header items-center ${headerClassName}`}>
         {header || (
-          <div className={headerClassName}>
-            <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-neutral-800 p-0.5">
-              {items.map((item) => (
-                <li
-                  key={item.key}
-                  className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === item.key ? "item-converse-color" : ""}`}
-                  onClick={() => {
-                    onActiveKeyChange?.(item.key);
-                  }}
-                >
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-neutral-800 p-0.5">
+            {items.map((item) => (
+              <li
+                key={item.key}
+                className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === item.key ? "item-converse-color" : ""}`}
+                onClick={() => {
+                  onActiveKeyChange?.(item.key);
+                }}
+              >
+                {item.label}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
-      <div className="h-[calc(100vh-var(--height-header))] overflow-y-auto">
-        {children || (
-          <div className={bodyClassName}>
-            {transitions((style, key) => {
-              const item = items.find((item) => item.key === key);
-              return (
-                <animated.div key={item?.key} style={style}>
-                  {item?.children}
-                </animated.div>
-              );
-            })}
-          </div>
-        )}
+      <div
+        className={`h-[calc(100vh-var(--height-header))] overflow-y-auto ${bodyClassName}`}
+      >
+        {children ||
+          transitions((style, key) => {
+            const item = items.find((item) => item.key === key);
+            return (
+              <animated.div key={item?.key} style={style}>
+                {item?.children}
+              </animated.div>
+            );
+          })}
       </div>
     </aside>
   );

@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
         return (
           <nav className="mb-6" key={item.title}>
             {item.title && (
-              <div className="mb-2 px-3 text-sm font-bold text-foreground-secondary">
+              <div className="mb-2 px-5 text-sm font-bold text-foreground-secondary">
                 {item.title}
               </div>
             )}
@@ -32,7 +32,7 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
               {item.routes.map((route) => {
                 const isSelected = activeKey === route.url;
                 const isExternal = !/^\//.test(route.url);
-                const linkClassName = `item-selectable flex items-center rounded-lg px-1 py-2 mb-1 text-base ${isSelected ? "item-selected" : ""}`;
+                const linkClassName = `item-selectable flex items-center rounded-lg px-3 py-2 mb-1 text-base ${isSelected ? "item-selected" : ""}`;
 
                 return React.cloneElement(
                   isExternal ? (

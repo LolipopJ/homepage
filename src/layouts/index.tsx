@@ -3,9 +3,11 @@ import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import {
   faBlog,
   faChevronUp,
+  faClose,
   faFolder,
   faHeart,
   faLaptopCode,
+  faNavicon,
   faPenNib,
   faPersonRays,
   faRainbow,
@@ -36,6 +38,9 @@ const Layout: React.FC<PageProps> = (props) => {
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<SubNavbarActiveKey>();
+  /** 小屏幕开启导航栏抽屉状态 */
+  const [openSubNavbarDrawer, setOpenSubNavbarDrawer] =
+    React.useState<boolean>(false);
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -94,21 +99,24 @@ const Layout: React.FC<PageProps> = (props) => {
     [nodes],
   );
 
-  /** 是否显示博客列表 */
-  const showPostsList = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
-  /** 是否为博客页 */
+  /** 当前路由是否为博客页 */
   const isPostPage = /^(\/about|\/posts)/.test(path);
 
+  //#region 切换路由时初始化页面状态
   React.useEffect(() => {
     setPageTitle("");
+    setOpenSubNavbarDrawer(false);
     mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
 
     if (isPostPage) {
+      // 访问博客页面时，侧边栏切换到目录页
       setSubNavbarActiveKey("toc");
     } else {
+      // 访问其它页面时，侧边栏切换到第一页
       setSubNavbarActiveKey("posts");
     }
   }, [path, isPostPage]);
+  //#endregion
 
   //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
@@ -234,7 +242,11 @@ const Layout: React.FC<PageProps> = (props) => {
               );
               setShowBackTop(false);
             } else {
-              setPageTitle(postTitle.innerText);
+              setPageTitle(
+                <span className="line-clamp-1" title={postTitle.innerText}>
+                  {postTitle.innerText}
+                </span>,
+              );
               setShowBackTop(true);
             }
           });
@@ -300,82 +312,78 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [isPostPage, path]);
   //#endregion
 
+  const siderBarItemNav = <Navbar items={NAVBAR_ITEMS} activeKey={path} />;
+
+  const siderBarItemPosts = (
+    <ol>
+      {posts.map((post) => {
+        const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
+
+        return (
+          <li key={post.id}>
+            <Post
+              post={post}
+              className={`mb-2 ${isActive ? "item-selected" : ""}`}
+            />
+          </li>
+        );
+      })}
+    </ol>
+  );
+
+  const siderBarItemToc = (
+    <ol className={`px-3`}>
+      {pageHeadings.map((heading, index) => {
+        const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+
+        return (
+          <li
+            key={heading.innerText}
+            ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
+            style={{ marginLeft }}
+            className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
+          >
+            <a href={`#${heading.id}`} className="block px-3 py-2 transition">
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: heading.innerHTML,
+                }}
+                className="pointer-events-none"
+              />
+            </a>
+          </li>
+        );
+      })}
+    </ol>
+  );
+
   return (
     <div className="flex h-screen overflow-y-hidden">
+      {/* #region 大屏幕端侧边栏 */}
       <SiderBar
-        className="w-72"
+        className="hidden w-72 2xl:block"
         header={
-          <div className="mx-3 flex h-header items-center px-4">
+          <div className="mx-5 flex h-header items-center px-4">
             <div className="text-lg font-bold">{siteTitle}</div>
           </div>
         }
+        bodyClassName="px-4"
       >
-        <Navbar items={NAVBAR_ITEMS} activeKey={path} className="px-4" />
+        {siderBarItemNav}
       </SiderBar>
-
       <SiderBar<SubNavbarActiveKey>
         items={[
-          ...(showPostsList
-            ? [
-                {
-                  key: "posts" as SubNavbarActiveKey,
-                  label: "博客列表",
-                  children: (
-                    <ol>
-                      {posts.map((post) => {
-                        const isActive = new RegExp(
-                          `^/posts/${post.slug}`,
-                        ).test(path);
-
-                        return (
-                          <li key={post.id}>
-                            <Post
-                              post={post}
-                              className={`mb-2 ${isActive ? "item-selected" : ""}`}
-                            />
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  ),
-                },
-              ]
-            : []),
+          {
+            key: "posts" as SubNavbarActiveKey,
+            label: "博客列表",
+            children: siderBarItemPosts,
+          },
           ...(isPostPage
             ? [
                 {
                   key: "toc" as SubNavbarActiveKey,
                   label: "目录",
-                  children: (
-                    <ol className={`px-3`}>
-                      {pageHeadings.map((heading, index) => {
-                        const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-
-                        return (
-                          <li
-                            key={heading.innerText}
-                            ref={(el) =>
-                              (tocRefs.current[index] = el as HTMLLIElement)
-                            }
-                            style={{ marginLeft }}
-                            className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
-                          >
-                            <a
-                              href={`#${heading.id}`}
-                              className="block px-3 py-2 transition"
-                            >
-                              <span
-                                dangerouslySetInnerHTML={{
-                                  __html: heading.innerHTML,
-                                }}
-                                className="pointer-events-none"
-                              />
-                            </a>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  ),
+                  children: siderBarItemToc,
                 },
               ]
             : []),
@@ -384,11 +392,75 @@ const Layout: React.FC<PageProps> = (props) => {
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className="w-88"
+        className="hidden w-88 2xl:block"
       />
+      {/* #endregion */}
+      {/* #region 中屏幕端侧边栏 */}
+      <SiderBar<SubNavbarActiveKey>
+        items={[
+          { key: "nav", label: "导航", children: siderBarItemNav },
+          {
+            key: "posts",
+            label: "博客列表",
+            children: siderBarItemPosts,
+          },
+          ...(isPostPage
+            ? [
+                {
+                  key: "toc" as SubNavbarActiveKey,
+                  label: "目录",
+                  children: siderBarItemToc,
+                },
+              ]
+            : []),
+        ]}
+        activeKey={subNavbarActiveKey}
+        onActiveKeyChange={setSubNavbarActiveKey}
+        headerClassName="px-4 mx-3"
+        bodyClassName="px-4"
+        className="hidden w-96 lg:block 2xl:!hidden"
+      />
+      {/* #endregion */}
+      {/* #region 小屏幕端侧边栏 */}
+      <SiderBar<SubNavbarActiveKey>
+        items={[
+          { key: "nav", label: "导航", children: siderBarItemNav },
+          {
+            key: "posts",
+            label: "博客列表",
+            children: siderBarItemPosts,
+          },
+          ...(isPostPage
+            ? [
+                {
+                  key: "toc" as SubNavbarActiveKey,
+                  label: "目录",
+                  children: siderBarItemToc,
+                },
+              ]
+            : []),
+        ]}
+        activeKey={subNavbarActiveKey}
+        onActiveKeyChange={setSubNavbarActiveKey}
+        headerClassName="px-4 mx-3"
+        bodyClassName="px-4"
+        className={`fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 lg:hidden ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`}
+      />
+      {/* #endregion */}
 
       <main ref={mainRef} className="flex-1 overflow-auto">
         <header className="sticky top-0 z-20 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
+          <div
+            className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
+            onClick={() => {
+              setOpenSubNavbarDrawer((prev) => !prev);
+            }}
+          >
+            <Icon
+              icon={openSubNavbarDrawer ? faClose : faNavicon}
+              className="size-4"
+            />
+          </div>
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {pageTitle}
           </div>
@@ -402,13 +474,13 @@ const Layout: React.FC<PageProps> = (props) => {
         </header>
         <div
           ref={pageRef}
-          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] px-24 py-12"
+          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] px-8 py-4 lg:px-16 lg:py-8 2xl:px-24 2xl:py-12"
         >
           {children}
 
           {/* Actions bar in post page */}
           {isPostPage && (
-            <div className="sticky bottom-8 ml-auto flex w-0 flex-col gap-4 text-sm">
+            <div className="sticky bottom-8 mt-12 flex justify-end gap-4 text-sm">
               <div
                 className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
                 style={{
