@@ -28,12 +28,14 @@ import { parseFilePathToPostSlug } from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar from "./sider-bar";
 
+type SubNavbarActiveKey = "nav" | "posts" | "toc";
+
 const Layout: React.FC<PageProps> = (props) => {
   const { children, path = "/", location } = props;
   const { hash } = location;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
-    React.useState<string>("博客列表");
+    React.useState<SubNavbarActiveKey>();
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -96,19 +98,15 @@ const Layout: React.FC<PageProps> = (props) => {
   const showPostsList = /^(\/posts|\/categories|\/tags|\/authors)/.test(path);
   /** 是否为博客页 */
   const isPostPage = /^(\/about|\/posts)/.test(path);
-  const subNavbarActiveKeys = [
-    ...(showPostsList ? ["博客列表"] : []),
-    ...(isPostPage ? ["目录"] : []),
-  ];
 
   React.useEffect(() => {
     setPageTitle("");
     mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
 
     if (isPostPage) {
-      setSubNavbarActiveKey("目录");
+      setSubNavbarActiveKey("toc");
     } else {
-      setSubNavbarActiveKey("博客列表");
+      setSubNavbarActiveKey("posts");
     }
   }, [path, isPostPage]);
 
@@ -177,12 +175,12 @@ const Layout: React.FC<PageProps> = (props) => {
           const { offsetTop } = pageHeadings[index];
           if (Math.ceil(scrollTop) >= offsetTop) {
             setCurrentHeading(index);
-            tocRefs.current[index].scrollIntoView();
+            tocRefs.current[index]?.scrollIntoView();
             break;
           }
           if (index === 0) {
             setCurrentHeading(-1);
-            tocRefs.current[0].scrollIntoView();
+            tocRefs.current[0]?.scrollIntoView();
           }
         }
 
@@ -191,7 +189,8 @@ const Layout: React.FC<PageProps> = (props) => {
         );
         setReadProgress(progress);
       };
-      const throttleOnScrolled = throttle(onScrolled, 50, { leading: true });
+      onScrolled();
+      const throttleOnScrolled = throttle(onScrolled, 50);
       mainDom.addEventListener("scroll", throttleOnScrolled);
       return () => mainDom.removeEventListener("scroll", throttleOnScrolled);
     } else {
@@ -315,59 +314,79 @@ const Layout: React.FC<PageProps> = (props) => {
         <Navbar items={NAVBAR_ITEMS} activeKey={path} />
       </SiderBar>
 
-      <SiderBar
+      <SiderBar<SubNavbarActiveKey>
+        items={[
+          ...(showPostsList
+            ? [
+                {
+                  key: "posts" as SubNavbarActiveKey,
+                  label: "博客列表",
+                  children: (
+                    <ol>
+                      {posts.map((post) => {
+                        const isActive = new RegExp(
+                          `^/posts/${post.slug}`,
+                        ).test(path);
+
+                        return (
+                          <li key={post.id}>
+                            <Post
+                              post={post}
+                              className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                            />
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  ),
+                },
+              ]
+            : []),
+          ...(isPostPage
+            ? [
+                {
+                  key: "toc" as SubNavbarActiveKey,
+                  label: "目录",
+                  children: (
+                    <ol className={`px-3`}>
+                      {pageHeadings.map((heading, index) => {
+                        const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+
+                        return (
+                          <li
+                            key={heading.innerText}
+                            ref={(el) =>
+                              (tocRefs.current[index] = el as HTMLLIElement)
+                            }
+                            style={{ marginLeft }}
+                            className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
+                          >
+                            <a
+                              href={`#${heading.id}`}
+                              className="block px-3 py-2 transition"
+                            >
+                              <span
+                                dangerouslySetInnerHTML={{
+                                  __html: heading.innerHTML,
+                                }}
+                                className="pointer-events-none"
+                              />
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  ),
+                },
+              ]
+            : []),
+        ]}
         activeKey={subNavbarActiveKey}
-        activeKeys={subNavbarActiveKeys}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
         className="w-88"
-      >
-        <ol
-          className={`${subNavbarActiveKey === "博客列表" ? "block" : "hidden"}`}
-        >
-          {posts.map((post) => {
-            const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
-
-            return (
-              <li key={post.id}>
-                <Post
-                  post={post}
-                  className={`mb-2 ${isActive ? "item-selected" : ""}`}
-                />
-              </li>
-            );
-          })}
-        </ol>
-        <ol
-          className={`px-3 ${subNavbarActiveKey === "目录" ? "block" : "hidden"}`}
-        >
-          {pageHeadings.map((heading, index) => {
-            const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-
-            return (
-              <li
-                key={heading.innerText}
-                ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
-                style={{ marginLeft }}
-                className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
-              >
-                <a
-                  href={`#${heading.id}`}
-                  className="block px-3 py-2 transition"
-                >
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: heading.innerHTML,
-                    }}
-                    className="pointer-events-none"
-                  />
-                </a>
-              </li>
-            );
-          })}
-        </ol>
-      </SiderBar>
+      />
 
       <main ref={mainRef} className="flex-1 overflow-auto">
         <header className="sticky top-0 z-20 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
