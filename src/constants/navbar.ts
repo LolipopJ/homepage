@@ -40,9 +40,14 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
   {
     title: "发现博客",
     routes: [
-      { icon: faFolder, label: "分类", url: "/categories/" },
-      { icon: faTags, label: "标签", url: "/tags/" },
-      // { icon: faFeatherPointed, label: "作者", url: "/authors/" },
+      {
+        icon: faFolder,
+        label: "分类",
+        url: "/categories/",
+        regexp: /^\/categories\//,
+      },
+      { icon: faTags, label: "标签", url: "/tags/", regexp: /^\/tags\// },
+      // { icon: faFeatherPointed, label: "作者", url: "/authors/", regexp: /^\/authors\// },
       // { icon: faRss, label: "RSS", url: "/rss/" },
     ],
   },

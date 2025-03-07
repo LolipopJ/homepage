@@ -15,6 +15,7 @@ export interface Route {
   icon: IconDefinition;
   label: string;
   url: string;
+  regexp?: RegExp;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
@@ -30,7 +31,9 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
             )}
             <ul>
               {item.routes.map((route) => {
-                const isSelected = activeKey === route.url;
+                const isSelected = route.regexp
+                  ? route.regexp.test(activeKey)
+                  : activeKey === route.url;
                 const isExternal = !/^\//.test(route.url);
                 const linkClassName = `item-selectable flex items-center rounded-lg px-3 py-2 mb-1 text-base ${isSelected ? "item-selected" : ""}`;
 
