@@ -1,27 +1,15 @@
-import { graphql, HeadFC, Link, PageProps, useStaticQuery } from "gatsby";
+import { HeadFC, Link, PageProps } from "gatsby";
 import * as React from "react";
 
 import SEO from "../components/seo";
+import useAllMdx from "../hooks/useAllMdx";
 
-const Categories: React.FC<PageProps> = (props) => {
-  const {
-    allMdx: { nodes },
-  } = useStaticQuery(graphql`
-    query {
-      allMdx(
-        filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
-      ) {
-        nodes {
-          frontmatter {
-            categories
-          }
-        }
-      }
-    }
-  `);
+const Categories: React.FC<PageProps> = () => {
+  const posts = useAllMdx();
+
   const categories = React.useMemo(() => {
     const result: Record<string, number> = {};
-    nodes.forEach((node: { frontmatter: { categories: string[] } }) => {
+    posts.forEach((node: { frontmatter: { categories: string[] } }) => {
       const postCategories = node.frontmatter.categories ?? [];
       postCategories.forEach((category) => {
         if (result[category]) {
@@ -32,7 +20,7 @@ const Categories: React.FC<PageProps> = (props) => {
       });
     });
     return Object.entries(result).sort((a, b) => b[1] - a[1]);
-  }, [nodes]);
+  }, [posts]);
 
   return (
     <div>

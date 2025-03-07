@@ -1,11 +1,11 @@
 import { HeadProps, PageProps } from "gatsby";
 import * as React from "react";
 
-import Post, { PostItem } from "../components/post";
+import Post, { type PostProps } from "../components/post";
 import SEO from "../components/seo";
 
 interface PostPageContext {
-  posts: PostItem[];
+  posts: PostProps["post"][];
   category?: string;
   tag?: string;
 }

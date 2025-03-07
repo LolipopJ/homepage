@@ -16,7 +16,7 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_INDEX_NAME,
 } from "../constants/algolia";
-import { PostFrontmatter, PostInternal } from "../interfaces/post";
+import { type Post as PostType } from "../hooks/useAllMdx";
 import Post from "./post";
 
 export interface AlgoliaSearchProps
@@ -26,20 +26,12 @@ export interface AlgoliaSearchProps
   style?: React.CSSProperties;
 }
 
-interface AlgoliaIndexRecord {
-  excerpt: string;
-  frontmatter: PostFrontmatter;
-  id: string;
-  internal: Pick<PostInternal, "contentFilePath">;
-  slug: string;
-}
-
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_PUBLIC_KEY);
 
 const Hit: React.FC<
-  React.ComponentProps<
-    NonNullable<HitsProps<AlgoliaIndexRecord>["hitComponent"]>
-  > & { onPostClick: () => void }
+  React.ComponentProps<NonNullable<HitsProps<PostType>["hitComponent"]>> & {
+    onPostClick: () => void;
+  }
 > = ({ hit, onPostClick }) => {
   return (
     <Post
@@ -87,7 +79,7 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
           className="algolia-search-box"
           onResetCapture={() => onClose()}
         />
-        <Hits<AlgoliaIndexRecord>
+        <Hits<PostType>
           className="algolia-hints"
           hitComponent={(props) => <Hit {...props} onPostClick={onClose} />}
         />

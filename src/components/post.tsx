@@ -2,22 +2,18 @@ import dayjs from "dayjs";
 import { Link } from "gatsby";
 import * as React from "react";
 
-import { Post as PostType } from "../interfaces/post";
-
-export type PostItem = Pick<PostType, "excerpt" | "frontmatter" | "id"> & {
-  slug: string;
-};
+import { type Post as PostType } from "../hooks/useAllMdx";
 
 export interface PostProps {
-  post: PostItem;
+  post: PostType;
   onClick?: () => void;
   titleRenderer?: (
-    title: PostItem["frontmatter"]["title"],
-    post: PostItem,
+    title: PostType["frontmatter"]["title"],
+    post: PostType,
   ) => React.ReactElement;
   excerptRenderer?: (
-    excerpt: PostItem["excerpt"],
-    post: PostItem,
+    excerpt: PostType["excerpt"],
+    post: PostType,
   ) => React.ReactElement;
   size?: "normal" | "large";
   className?: string;
@@ -59,7 +55,7 @@ const Post: React.FC<PostProps> = (props) => {
       onClick={onClick}
       className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
     >
-      {categories.length && (
+      {categories?.length && (
         <div
           className={`line-clamp-1 font-medium text-foreground opacity-80 ${size === "large" ? "text-base" : "text-sm"} ${categoryClassName}`}
         >
@@ -88,7 +84,7 @@ const Post: React.FC<PostProps> = (props) => {
             size === "large" ? "MM 月 DD 日 YYYY 年" : "MM月DD日YYYY年",
           )}
         </div>
-        {tags.length && (
+        {tags?.length && (
           <div
             title={tags.join(" ")}
             className={`line-clamp-1 flex-1 before:content-['•'] ${size === "large" ? "before:mx-1.5" : "before:mx-1"}`}

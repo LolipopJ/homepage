@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
 
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
+import { getAllMdxQueryString } from "./src/utils/graphql";
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
 dotenv.config({
@@ -95,24 +96,7 @@ const config: GatsbyConfig = {
           {
             query: `
 query {
-  allMdx(filter: {internal: {contentFilePath: {regex: "//blog/posts//"}}}) {
-    nodes {
-      excerpt
-      frontmatter {
-        categories
-        tags
-        title
-        date
-        updated
-        timeliness
-      }
-      id
-      internal {
-        contentDigest
-        contentFilePath
-      }
-    }
-  }
+  ${getAllMdxQueryString({ sortByDate: "DESC", includePosts: true, excerpt: 200 })}
 }
 `,
             queryVariables: {},

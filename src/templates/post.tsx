@@ -9,7 +9,7 @@ import Category from "../components/category";
 import GitalkComponent from "../components/gitalk";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
-import { PostFrontmatter } from "../interfaces/post";
+import { type Post } from "../hooks/useAllMdx";
 
 const FancyBoxImage = (props: { alt?: string; src?: string }) => {
   const {
@@ -54,10 +54,7 @@ const components: MDXProps["components"] = {
   Link,
 };
 
-interface PostPageContext {
-  frontmatter: PostFrontmatter;
-  slug: string;
-}
+type PostPageContext = Pick<Post, "frontmatter" | "slug">;
 
 const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   children,

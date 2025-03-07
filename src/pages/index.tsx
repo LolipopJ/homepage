@@ -1,43 +1,19 @@
 import dayjs from "dayjs";
-import { graphql, HeadFC, PageProps, useStaticQuery } from "gatsby";
+import { HeadFC, PageProps } from "gatsby";
 import * as React from "react";
 
 import Post, { PostProps } from "../components/post";
 import SEO from "../components/seo";
 import { NUMBER_LETTER } from "../constants/utils";
+import useAllMdx from "../hooks/useAllMdx";
 import { parseFilePathToPostSlug } from "../utils/post";
 
 const IndexPage: React.FC<PageProps> = () => {
-  const {
-    allMdx: { nodes },
-  } = useStaticQuery(graphql`
-    query {
-      allMdx(
-        sort: { frontmatter: { date: DESC } }
-        filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
-      ) {
-        nodes {
-          excerpt(pruneLength: 200)
-          frontmatter {
-            categories
-            tags
-            title
-            date
-            updated
-            timeliness
-          }
-          id
-          internal {
-            contentFilePath
-          }
-        }
-      }
-    }
-  `);
+  const posts = useAllMdx();
+
   const postsWithYear = React.useMemo(() => {
     const result: Record<number, PostProps["post"][]> = {};
-    // @ts-expect-error: ignored
-    nodes.forEach((node) => {
+    posts.forEach((node) => {
       const post = {
         ...node,
         slug: parseFilePathToPostSlug(node.internal.contentFilePath),
@@ -50,7 +26,7 @@ const IndexPage: React.FC<PageProps> = () => {
       }
     });
     return result;
-  }, [nodes]);
+  }, [posts]);
 
   return (
     <div>

@@ -1,63 +1,41 @@
 import path from "path";
 
-import { Post, PostInternal } from "./src/interfaces/post";
+import { IS_DEVELOPMENT } from "./src/constants/utils";
+import { type Post } from "./src/hooks/useAllMdx";
+import { getAllMdxQueryString } from "./src/utils/graphql";
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
 const postTemplate = path.resolve("./src/templates/post.tsx");
 const postListTemplate = path.resolve("./src/templates/post-list.tsx");
 
-interface PostNode extends Pick<Post, "excerpt" | "frontmatter" | "id"> {
-  internal: Pick<PostInternal, "contentFilePath">;
-  slug: string;
-}
-
 // @ts-expect-error: ignored
 exports.createPages = async function ({ actions, graphql }) {
   const { data } = await graphql(`
     query {
-      allMdx(
-        sort: { frontmatter: { date: DESC } }
-        filter: {
-          internal: {
-            contentFilePath: { regex: "//blog/posts/|/blog/about.mdx/" }
-          }
-        }
-      ) {
-        nodes {
-          excerpt(pruneLength: 200)
-          frontmatter {
-            categories
-            tags
-            title
-            date
-            updated
-            timeliness
-          }
-          id
-          internal {
-            contentFilePath
-          }
-        }
-      }
+      ${getAllMdxQueryString({ sortByDate: "DESC", includeAbout: true, includeDrafts: IS_DEVELOPMENT, includePosts: true, excerpt: 200 })}
     }
   `);
 
-  const postsFilteredByCategory: Record<string, PostNode[]> = {};
-  const postsFilteredByTag: Record<string, PostNode[]> = {};
+  const postsFilteredByCategory: Record<string, Post[]> = {};
+  const postsFilteredByTag: Record<string, Post[]> = {};
 
-  data.allMdx.nodes.forEach((node: PostNode) => {
+  data.allMdx.nodes.forEach((node: Post) => {
     const contentFilePath = node.internal.contentFilePath;
     const slug = parseFilePathToPostSlug(contentFilePath);
-    const postPagePath = contentFilePath.endsWith("/blog/about.mdx")
+    node.slug = slug;
+
+    const postPagePath = /\/blog\/about\.mdx$/.test(contentFilePath)
       ? "/about"
       : `/posts/${slug}`;
+
+    // Create post pages through template
     actions.createPage({
       path: postPagePath,
       component: `${postTemplate}?__contentFilePath=${contentFilePath}`,
       context: { slug },
     });
 
-    node.slug = slug;
+    // Filter posts by category
     (node.frontmatter.categories ?? []).forEach((category) => {
       if (Array.isArray(postsFilteredByCategory[category])) {
         postsFilteredByCategory[category].push(node);
@@ -65,6 +43,8 @@ exports.createPages = async function ({ actions, graphql }) {
         postsFilteredByCategory[category] = [node];
       }
     });
+
+    // Filter posts by tag
     (node.frontmatter.tags ?? []).forEach((tag) => {
       if (Array.isArray(postsFilteredByTag[tag])) {
         postsFilteredByTag[tag].push(node);
@@ -74,6 +54,7 @@ exports.createPages = async function ({ actions, graphql }) {
     });
   });
 
+  // Create category pages through filtered posts
   Object.entries(postsFilteredByCategory).forEach(([category, posts]) => {
     const postListPagePath = `/categories/${category}`;
     actions.createPage({
@@ -83,6 +64,7 @@ exports.createPages = async function ({ actions, graphql }) {
     });
   });
 
+  // Create tag pages through filtered posts
   Object.entries(postsFilteredByTag).forEach(([tag, posts]) => {
     const postListPagePath = `/tags/${tag}`;
     actions.createPage({

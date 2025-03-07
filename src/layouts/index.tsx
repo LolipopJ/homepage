@@ -17,18 +17,20 @@ import {
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
-import { graphql, PageProps, useStaticQuery } from "gatsby";
+import { PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 
 import AlgoliaSearch from "../components/algolia-search";
 import Icon from "../components/icon";
-import Post, { PostProps } from "../components/post";
+import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { NAVBAR_ITEMS, SOCIAL_ITEMS } from "../constants/navbar";
-import { parseFilePathToPostSlug } from "../utils/post";
+import useAllMdx from "../hooks/useAllMdx";
+import useTailwindBreakpoint from "../hooks/useScreenBreakPoint";
+import useSiteMetadata from "../hooks/useSiteMetadata";
 import Navbar from "./navbar";
-import SiderBar from "./sider-bar";
+import SiderBar, { SiderBarProps } from "./sider-bar";
 
 type SubNavbarActiveKey = "nav" | "posts" | "toc";
 
@@ -56,67 +58,34 @@ const Layout: React.FC<PageProps> = (props) => {
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
 
-  const {
-    site: {
-      siteMetadata: { title: siteTitle },
-    },
-    allMdx: { nodes },
-  } = useStaticQuery(graphql`
-    query {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-      allMdx(
-        sort: { frontmatter: { date: DESC } }
-        filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
-      ) {
-        nodes {
-          frontmatter {
-            categories
-            tags
-            title
-            date
-            updated
-            timeliness
-          }
-          id
-          internal {
-            contentFilePath
-          }
-        }
-      }
-    }
-  `);
-  const posts: PostProps["post"][] = React.useMemo(
-    () =>
-      // @ts-expect-error: ignored
-      nodes.map((node) => ({
-        ...node,
-        slug: parseFilePathToPostSlug(node.internal.contentFilePath),
-      })),
-    [nodes],
-  );
+  const { title: siteTitle } = useSiteMetadata();
+  const posts = useAllMdx();
+  const breakpoint = useTailwindBreakpoint();
 
   /** 当前路由是否为博客页 */
-  const isPostPage = /^(\/about|\/posts)/.test(path);
+  const isPostPage = /^(\/about|\/posts\/)/.test(path);
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
     setPageTitle("");
     setOpenSubNavbarDrawer(false);
     mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  }, [path]);
+  //#endregion
 
+  //#region 自动设置侧边栏激活的页面
+  React.useEffect(() => {
     if (isPostPage) {
       // 访问博客页面时，侧边栏切换到目录页
       setSubNavbarActiveKey("toc");
     } else {
-      // 访问其它页面时，侧边栏切换到第一页
-      setSubNavbarActiveKey("posts");
+      if (breakpoint["2xl"]) {
+        setSubNavbarActiveKey("posts");
+      } else {
+        setSubNavbarActiveKey("nav");
+      }
     }
-  }, [path, isPostPage]);
-  //#endregion
+  }, [breakpoint, isPostPage]);
 
   //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
@@ -312,54 +281,77 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [isPostPage, path]);
   //#endregion
 
+  const subNavbarItems: SiderBarProps<SubNavbarActiveKey>["items"] = [
+    {
+      key: "posts",
+      label: "博客列表",
+      children: (
+        <ol>
+          {posts.map((post) => {
+            const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
+
+            return (
+              <li key={post.id}>
+                <Post
+                  post={post}
+                  className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                  excerptClassName="line-clamp-3"
+                />
+              </li>
+            );
+          })}
+        </ol>
+      ),
+    },
+  ];
+
+  if (isPostPage) {
+    subNavbarItems.push({
+      key: "toc",
+      label: "目录",
+      children: (
+        <ol className={`px-3`}>
+          {pageHeadings.map((heading, index) => {
+            const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+
+            return (
+              <li
+                key={heading.innerText}
+                ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
+                style={{ marginLeft }}
+                className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
+              >
+                <a
+                  href={`#${heading.id}`}
+                  className="block px-3 py-2 transition"
+                >
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: heading.innerHTML,
+                    }}
+                    className="pointer-events-none"
+                  />
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      ),
+    });
+  }
+
   const siderBarItemNav = <Navbar items={NAVBAR_ITEMS} activeKey={path} />;
-
-  const siderBarItemPosts = (
-    <ol>
-      {posts.map((post) => {
-        const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
-
-        return (
-          <li key={post.id}>
-            <Post
-              post={post}
-              className={`mb-2 ${isActive ? "item-selected" : ""}`}
-            />
-          </li>
-        );
-      })}
-    </ol>
-  );
-
-  const siderBarItemToc = (
-    <ol className={`px-3`}>
-      {pageHeadings.map((heading, index) => {
-        const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-
-        return (
-          <li
-            key={heading.innerText}
-            ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
-            style={{ marginLeft }}
-            className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
-          >
-            <a href={`#${heading.id}`} className="block px-3 py-2 transition">
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: heading.innerHTML,
-                }}
-                className="pointer-events-none"
-              />
-            </a>
-          </li>
-        );
-      })}
-    </ol>
-  );
+  if (!breakpoint["2xl"]) {
+    subNavbarItems.unshift({
+      key: "nav",
+      label: "导航",
+      children: siderBarItemNav,
+    });
+  }
 
   return (
     <div className="flex h-screen overflow-y-hidden">
-      {/* #region 大屏幕端侧边栏 */}
+      {/* 侧边栏 */}
       <SiderBar
         className="hidden w-72 2xl:block"
         header={
@@ -372,84 +364,24 @@ const Layout: React.FC<PageProps> = (props) => {
         {siderBarItemNav}
       </SiderBar>
       <SiderBar<SubNavbarActiveKey>
-        items={[
-          {
-            key: "posts" as SubNavbarActiveKey,
-            label: "博客列表",
-            children: siderBarItemPosts,
-          },
-          ...(isPostPage
-            ? [
-                {
-                  key: "toc" as SubNavbarActiveKey,
-                  label: "目录",
-                  children: siderBarItemToc,
-                },
-              ]
-            : []),
-        ]}
+        items={subNavbarItems}
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className="hidden w-88 2xl:block"
+        className={
+          breakpoint["lg"]
+            ? "w-96 2xl:w-88"
+            : `fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
+        }
       />
-      {/* #endregion */}
-      {/* #region 中屏幕端侧边栏 */}
-      <SiderBar<SubNavbarActiveKey>
-        items={[
-          { key: "nav", label: "导航", children: siderBarItemNav },
-          {
-            key: "posts",
-            label: "博客列表",
-            children: siderBarItemPosts,
-          },
-          ...(isPostPage
-            ? [
-                {
-                  key: "toc" as SubNavbarActiveKey,
-                  label: "目录",
-                  children: siderBarItemToc,
-                },
-              ]
-            : []),
-        ]}
-        activeKey={subNavbarActiveKey}
-        onActiveKeyChange={setSubNavbarActiveKey}
-        headerClassName="px-4 mx-3"
-        bodyClassName="px-4"
-        className="hidden w-96 lg:block 2xl:!hidden"
-      />
-      {/* #endregion */}
-      {/* #region 小屏幕端侧边栏 */}
-      <SiderBar<SubNavbarActiveKey>
-        items={[
-          { key: "nav", label: "导航", children: siderBarItemNav },
-          {
-            key: "posts",
-            label: "博客列表",
-            children: siderBarItemPosts,
-          },
-          ...(isPostPage
-            ? [
-                {
-                  key: "toc" as SubNavbarActiveKey,
-                  label: "目录",
-                  children: siderBarItemToc,
-                },
-              ]
-            : []),
-        ]}
-        activeKey={subNavbarActiveKey}
-        onActiveKeyChange={setSubNavbarActiveKey}
-        headerClassName="px-4 mx-3"
-        bodyClassName="px-4"
-        className={`fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 lg:hidden ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`}
-      />
-      {/* #endregion */}
 
-      <main ref={mainRef} className="flex-1 overflow-auto">
-        <header className="sticky top-0 z-20 flex h-header items-center bg-neutral-900/80 px-8 backdrop-blur-sm">
+      {/* 路由主体 */}
+      <main
+        ref={mainRef}
+        className={`flex-1 ${openSubNavbarDrawer ? "overflow-hidden" : "overflow-auto"}`}
+      >
+        <header className="sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80">
           <div
             className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
             onClick={() => {
@@ -579,9 +511,15 @@ const Layout: React.FC<PageProps> = (props) => {
             </div>
           </div>
         </footer>
+
+        {/* 小屏幕：打开侧边栏抽屉时的蒙版层 */}
+        <div
+          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-neutral-900/80 backdrop-blur-sm lg:hidden`}
+          onClick={() => setOpenSubNavbarDrawer(false)}
+        />
       </main>
 
-      {/* Algolia Search Dialog */}
+      {/* Algolia 搜索窗口 */}
       <div
         onClick={() => setOpenAlgoliaSearch(false)}
         className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm ${openAlgoliaSearch ? "block" : "hidden"}`}
