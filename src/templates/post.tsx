@@ -1,3 +1,4 @@
+import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
 import { HeadProps, Link, PageProps } from "gatsby";
@@ -76,6 +77,22 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
   const today = dayjs();
   const diffDays = today.diff(updatedDate, "days");
+
+  //#region 初始化博客页面的图片预览功能
+  React.useEffect(() => {
+    const optimizedImageLinks = document.querySelectorAll<HTMLLinkElement>(
+      "a.gatsby-resp-image-link",
+    );
+    optimizedImageLinks.forEach((link) => {
+      const image = link.children.item(1) as HTMLImageElement;
+      link.setAttribute("data-fancybox", "gallery");
+      link.setAttribute("data-caption", image.alt);
+    });
+
+    Fancybox.bind("[data-fancybox]");
+    return () => Fancybox.unbind("[data-fancybox]");
+  }, []);
+  //#endregion
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-y-12">

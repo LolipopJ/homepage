@@ -64,9 +64,14 @@ const config: GatsbyConfig = {
         extensions: [".mdx", ".md"],
         gatsbyRemarkPlugins: [
           {
+            resolve: "gatsby-remark-images",
+            options: {
+              maxWidth: 624,
+            },
+          },
+          {
             resolve: `gatsby-remark-copy-linked-files`,
             options: {
-              ignoreFileExtensions: [],
               destinationDir: (file: { name: string; hash: string }) =>
                 `images/${file.name}+${file.hash}`,
             },

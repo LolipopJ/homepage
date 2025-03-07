@@ -1,4 +1,3 @@
-import { Fancybox } from "@fancyapps/ui";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import {
   faBlog,
@@ -86,15 +85,6 @@ const Layout: React.FC<PageProps> = (props) => {
       }
     }
   }, [breakpoint, isPostPage]);
-
-  //#region 初始化博客页面的图片预览功能
-  React.useEffect(() => {
-    if (isPostPage) {
-      Fancybox.bind("[data-fancybox]");
-      return () => Fancybox.unbind("[data-fancybox]");
-    }
-  }, [path, isPostPage]);
-  //#endregion
 
   //#region 更新博客中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
   React.useEffect(() => {

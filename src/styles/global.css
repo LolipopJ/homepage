@@ -106,9 +106,15 @@
       }
     }
 
-    img,
+    img:not(.gatsby-resp-image-image),
+    .gatsby-resp-image-wrapper,
     video {
-      @apply -mx-6 w-[calc(100%+3rem)] max-w-none;
+      @apply !-mx-6 w-[calc(100%+3rem)] max-w-none;
+    }
+
+    img:not(.gatsby-resp-image-image),
+    .gatsby-resp-image-wrapper {
+      @apply mb-6 mt-3;
     }
 
     a {
@@ -117,10 +123,6 @@
 
     code {
       @apply break-all;
-    }
-
-    img {
-      @apply mb-6 mt-3;
     }
 
     h1,
