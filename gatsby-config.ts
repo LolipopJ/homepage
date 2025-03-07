@@ -64,6 +64,14 @@ const config: GatsbyConfig = {
         extensions: [".mdx", ".md"],
         gatsbyRemarkPlugins: [
           {
+            resolve: `gatsby-remark-copy-linked-files`,
+            options: {
+              ignoreFileExtensions: [],
+              destinationDir: (file: { name: string; hash: string }) =>
+                `images/${file.name}+${file.hash}`,
+            },
+          },
+          {
             resolve: "gatsby-remark-prismjs",
             options: {
               classPrefix: "language-",
