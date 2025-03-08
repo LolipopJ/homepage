@@ -1,8 +1,10 @@
-@import url("https://unpkg.com/prismjs@1/themes/prism-tomorrow.min.css");
-@import url("https://unpkg.com/@fancyapps/ui@5/dist/fancybox/fancybox.css");
-@import url("https://www.unpkg.com/gitalk@1/dist/gitalk.css");
-@import url("https://www.unpkg.com/github-markdown-css/github-markdown-dark.css");
-@import url("https://unpkg.com/heti/umd/heti.min.css");
+@import url("https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css");
+@import url("https://unpkg.com/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css");
+@import url("https://unpkg.com/gitalk@1.8.0/dist/gitalk.css");
+@import url("https://unpkg.com/github-markdown-css@5.8.1/github-markdown-dark.css");
+@import url("https://unpkg.com/heti@0.9.5/umd/heti.min.css");
+
+@import "./nprogress.css";
 
 @tailwind base;
 @tailwind components;
