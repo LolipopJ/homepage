@@ -23,20 +23,23 @@ const GitalkComponent: React.FC<GitalkProps> = ({
   const renderGitalk = React.useCallback(
     (id: Gitalk.default.GitalkOptions["id"]) => {
       const gitalkContainer = ref.current;
-      if (gitalkContainer && window.Gitalk) {
+
+      if (gitalkContainer) {
         gitalkContainer.replaceChildren();
 
-        const gitalk = new window.Gitalk({
-          clientID: GITHUB_APP_CLIENT_ID,
-          clientSecret: GITHUB_APP_CLIENT_SECRET,
-          repo: GITHUB_REPO,
-          owner: GITHUB_REPO_OWNER,
-          admin: GITALK_ADMIN,
-          id,
-          distractionFreeMode: false,
-          enableHotKey: false,
-        });
-        gitalk.render(gitalkContainer);
+        if (id && window.Gitalk) {
+          const gitalk = new window.Gitalk({
+            clientID: GITHUB_APP_CLIENT_ID,
+            clientSecret: GITHUB_APP_CLIENT_SECRET,
+            repo: GITHUB_REPO,
+            owner: GITHUB_REPO_OWNER,
+            admin: GITALK_ADMIN,
+            id,
+            distractionFreeMode: false,
+            enableHotKey: false,
+          });
+          gitalk.render(gitalkContainer);
+        }
       }
     },
     [],
