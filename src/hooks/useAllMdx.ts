@@ -2,7 +2,7 @@ import { graphql, useStaticQuery } from "gatsby";
 
 import { parseFilePathToPostSlug } from "../utils/post";
 
-interface MdxNode {
+export interface MdxNode {
   excerpt: string;
   frontmatter: {
     categories: string[];

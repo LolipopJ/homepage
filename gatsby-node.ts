@@ -9,7 +9,7 @@ const postTemplate = path.resolve("./src/templates/post.tsx");
 const postListTemplate = path.resolve("./src/templates/post-list.tsx");
 
 // @ts-expect-error: ignored
-exports.createPages = async function ({ actions, graphql }) {
+export const createPages = async function ({ actions, graphql }) {
   const { data } = await graphql(`
     query {
       ${getAllMdxQueryString({ sortByDate: "DESC", includeAbout: true, includeDrafts: IS_DEVELOPMENT, includePosts: true, excerpt: 200 })}

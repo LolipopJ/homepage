@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
+import remarkGfm from "remark-gfm";
 
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
+import { MdxNode } from "./src/hooks/useAllMdx";
 import { getAllMdxQueryString } from "./src/utils/graphql";
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
@@ -76,6 +78,7 @@ const config: GatsbyConfig = {
                 `images/${file.name}+${file.hash}`,
             },
           },
+          "gatsby-remark-responsive-iframe",
           {
             resolve: "gatsby-remark-prismjs",
             options: {
@@ -94,6 +97,9 @@ const config: GatsbyConfig = {
             },
           },
         ],
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+        },
       },
     },
     {
@@ -113,9 +119,11 @@ query {
 }
 `,
             queryVariables: {},
-            // @ts-expect-error: ignored
-            transformer: ({ data }) => {
-              // @ts-expect-error: ignored
+            transformer: ({
+              data,
+            }: {
+              data: { allMdx: { nodes: MdxNode[] } };
+            }) => {
               return data.allMdx.nodes.map((node) => ({
                 ...node,
                 slug: parseFilePathToPostSlug(node.internal.contentFilePath),

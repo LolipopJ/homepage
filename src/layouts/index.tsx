@@ -26,7 +26,7 @@ import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { NAVBAR_ITEMS, SOCIAL_ITEMS } from "../constants/navbar";
 import useAllMdx from "../hooks/useAllMdx";
-import useTailwindBreakpoint from "../hooks/useScreenBreakPoint";
+import useTailwindBreakpoint from "../hooks/useScreenBreakpoint";
 import useSiteMetadata from "../hooks/useSiteMetadata";
 import Navbar from "./navbar";
 import SiderBar, { SiderBarProps } from "./sider-bar";

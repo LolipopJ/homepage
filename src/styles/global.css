@@ -93,8 +93,8 @@
     blockquote,
     img,
     video,
-    pre,
-    table {
+    iframe,
+    pre {
       @apply rounded-lg;
     }
 
@@ -106,19 +106,30 @@
       }
     }
 
-    img:not(.gatsby-resp-image-image),
-    .gatsby-resp-image-wrapper,
-    video {
-      @apply !-mx-6 w-[calc(100%+3rem)] max-w-none;
+    /* 突出显示图片、视频、表格以及引入的 iframe */
+    > img,
+    > a > img,
+    > span.gatsby-resp-image-wrapper,
+    > span > span.gatsby-resp-image-wrapper,
+    > video,
+    > a > video,
+    > table,
+    > iframe {
+      @apply !-mx-6 mb-6 mt-3 w-[calc(100%+3rem)] max-w-none;
     }
 
-    img:not(.gatsby-resp-image-image),
-    .gatsby-resp-image-wrapper {
-      @apply mb-6 mt-3;
+    /* 加载中和加载失败的图片显示深色占位背景 */
+    img.gatsby-resp-image-image {
+      box-shadow: var(--background-light) 0px 0px 0px 400px inset !important;
     }
 
     a {
       @apply item-link;
+
+      /* 覆盖 Heti 的相关样式，避免鼠标悬浮在图片上时引起间距变化 */
+      &.gatsby-resp-image-link {
+        @apply hover:pb-0;
+      }
     }
 
     code {
