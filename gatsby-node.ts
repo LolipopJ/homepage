@@ -32,7 +32,6 @@ export const createPages = async function ({ actions, graphql }) {
     actions.createPage({
       path: postPagePath,
       component: `${postTemplate}?__contentFilePath=${contentFilePath}`,
-      context: { slug },
     });
 
     // Filter posts by category

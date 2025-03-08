@@ -21,6 +21,7 @@ import { throttle } from "lodash-es";
 import * as React from "react";
 
 import AlgoliaSearch from "../components/algolia-search";
+import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
 import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
@@ -62,7 +63,14 @@ const Layout: React.FC<PageProps> = (props) => {
   const breakpoint = useTailwindBreakpoint();
 
   /** 当前路由是否为博客页 */
-  const isPostPage = /^(\/about|\/posts\/)/.test(path);
+  const [isPostPage, postSlug] = React.useMemo(() => {
+    if (/^\/about\//.test(path)) {
+      return [true, "about"];
+    }
+
+    const result = path.match(/^\/posts\/(.+)\//);
+    return [result !== null, result?.[1]];
+  }, [path]);
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
@@ -394,13 +402,19 @@ const Layout: React.FC<PageProps> = (props) => {
             />
           </div>
         </header>
+
         <div
           ref={pageRef}
           className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] px-8 py-4 lg:px-16 lg:py-8 2xl:px-24 2xl:py-12"
         >
           {children}
 
-          {/* Actions bar in post page */}
+          {/* 博客页的评论系统 */}
+          {isPostPage && !!postSlug && (
+            <GitalkComponent gitalkId={postSlug} className="mt-12" />
+          )}
+
+          {/* 博客页的操作按钮 */}
           {isPostPage && (
             <div className="sticky bottom-8 mt-12 flex justify-end gap-4 text-sm">
               <div
@@ -421,6 +435,7 @@ const Layout: React.FC<PageProps> = (props) => {
             </div>
           )}
         </div>
+
         <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16">
           <div className="flex items-center gap-2">
             <span>

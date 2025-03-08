@@ -7,7 +7,6 @@ import * as React from "react";
 
 import Card from "../components/card";
 import Category from "../components/category";
-import GitalkComponent from "../components/gitalk";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { type Post } from "../hooks/useAllMdx";
@@ -55,14 +54,13 @@ const components: MDXProps["components"] = {
   Link,
 };
 
-type PostPageContext = Pick<Post, "frontmatter" | "slug">;
+type PostPageContext = Pick<Post, "frontmatter">;
 
 const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   children,
   pageContext,
 }) => {
   const {
-    slug,
     frontmatter: {
       title,
       date: dateString,
@@ -73,6 +71,8 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
     },
   } = pageContext;
 
+  const articleRef = React.useRef<HTMLElement>(null);
+
   const date = dayjs(dateString);
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
   const today = dayjs();
@@ -80,10 +80,11 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
 
   //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
-    const optimizedImageLinks = document.querySelectorAll<HTMLLinkElement>(
-      "a.gatsby-resp-image-link",
-    );
-    optimizedImageLinks.forEach((link) => {
+    const optimizedImageLinks =
+      articleRef.current?.querySelectorAll<HTMLLinkElement>(
+        "a.gatsby-resp-image-link",
+      );
+    optimizedImageLinks?.forEach((link) => {
       const image = link.children.item(1) as HTMLImageElement;
       link.setAttribute("data-fancybox", "gallery");
       link.setAttribute("data-caption", image.alt);
@@ -122,7 +123,8 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
           )}
         </div>
       </div>
-      <article className="heti post-entry">
+
+      <article ref={articleRef} className="heti post-entry">
         {timeliness && diffDays > 365 && (
           <blockquote className="border-l-4 border-orange-400">
             这是一篇<strong>最后更新于 {diffDays} 天前</strong>
@@ -131,7 +133,6 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
         )}
         <MDXProvider components={components}>{children}</MDXProvider>
       </article>
-      <GitalkComponent gitalkId={slug} />
     </div>
   );
 };
