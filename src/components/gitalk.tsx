@@ -24,6 +24,8 @@ const GitalkComponent: React.FC<GitalkProps> = ({
     (id: Gitalk.default.GitalkOptions["id"]) => {
       const gitalkContainer = ref.current;
       if (gitalkContainer && window.Gitalk) {
+        gitalkContainer.replaceChildren();
+
         const gitalk = new window.Gitalk({
           clientID: GITHUB_APP_CLIENT_ID,
           clientSecret: GITHUB_APP_CLIENT_SECRET,
