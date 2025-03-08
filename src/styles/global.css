@@ -212,6 +212,7 @@
 
             .gt-comment-header {
               .gt-comment-like,
+              .gt-comment-edit,
               .gt-comment-reply {
                 svg {
                   @apply fill-primary hover:fill-primary-light;
