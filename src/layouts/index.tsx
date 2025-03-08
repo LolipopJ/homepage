@@ -293,7 +293,7 @@ const Layout: React.FC<PageProps> = (props) => {
                 <Post
                   post={post}
                   className={`mb-2 ${isActive ? "item-selected" : ""}`}
-                  excerptClassName="line-clamp-3"
+                  excerptClassName="hidden"
                 />
               </li>
             );
