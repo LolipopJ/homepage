@@ -36,7 +36,7 @@ type SubNavbarActiveKey = "nav" | "posts" | "toc";
 
 const Layout: React.FC<PageProps> = (props) => {
   const { children, path = "/", location } = props;
-  const { hash } = location;
+  const { hash, href } = location;
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<SubNavbarActiveKey>();
@@ -348,10 +348,10 @@ const Layout: React.FC<PageProps> = (props) => {
   }
 
   return (
-    <div className="flex h-screen overflow-y-hidden">
+    <div className="flex h-screen print:h-auto">
       {/* 侧边栏 */}
       <SiderBar
-        className="hidden w-72 2xl:block"
+        className="hidden w-72 2xl:block print:hidden"
         header={
           <div className="mx-5 flex h-header items-center px-4">
             <div className="text-lg font-bold">{siteTitle}</div>
@@ -367,11 +367,11 @@ const Layout: React.FC<PageProps> = (props) => {
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className={
+        className={`print:hidden ${
           breakpoint["lg"]
             ? "w-96 2xl:w-88"
             : `fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
-        }
+        }`}
       />
 
       {/* 路由主体 */}
@@ -379,7 +379,7 @@ const Layout: React.FC<PageProps> = (props) => {
         ref={mainRef}
         className={`flex-1 ${openSubNavbarDrawer ? "overflow-hidden" : "overflow-auto"}`}
       >
-        <header className="sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80">
+        <header className="sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden">
           <div
             className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
             onClick={() => {
@@ -405,18 +405,37 @@ const Layout: React.FC<PageProps> = (props) => {
 
         <div
           ref={pageRef}
-          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] px-8 py-4 lg:px-16 lg:py-8 2xl:px-24 2xl:py-12"
+          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] p-8 lg:px-16 lg:py-12 2xl:px-24"
         >
+          <div className="mb-12 hidden print:block">
+            <div>Site: {siteTitle}</div>
+            <div>Date: {dayjs().toISOString()}</div>
+            <div>
+              Source:{" "}
+              <a
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="item-link"
+              >
+                {href}
+              </a>
+            </div>
+          </div>
+
           {children}
 
           {/* 博客页的评论系统 */}
           {isPostPage && !!postSlug && (
-            <GitalkComponent gitalkId={postSlug} className="mt-12" />
+            <GitalkComponent
+              gitalkId={postSlug}
+              className="mt-12 print:hidden"
+            />
           )}
 
           {/* 博客页的操作按钮 */}
           {isPostPage && (
-            <div className="sticky bottom-8 mt-12 flex justify-end gap-4 text-sm">
+            <div className="sticky bottom-8 mt-12 flex justify-end gap-4 text-sm print:hidden">
               <div
                 className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
                 style={{
@@ -436,7 +455,7 @@ const Layout: React.FC<PageProps> = (props) => {
           )}
         </div>
 
-        <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16">
+        <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16 print:hidden">
           <div className="flex items-center gap-2">
             <span>
               Powered by{" "}
@@ -519,7 +538,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
         {/* 小屏幕：打开侧边栏抽屉时的蒙版层 */}
         <div
-          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-neutral-900/80 backdrop-blur-sm lg:hidden`}
+          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-neutral-900/80 backdrop-blur-sm lg:hidden print:hidden`}
           onClick={() => setOpenSubNavbarDrawer(false)}
         />
       </main>
@@ -527,7 +546,7 @@ const Layout: React.FC<PageProps> = (props) => {
       {/* Algolia 搜索窗口 */}
       <div
         onClick={() => setOpenAlgoliaSearch(false)}
-        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm ${openAlgoliaSearch ? "block" : "hidden"}`}
+        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm print:hidden ${openAlgoliaSearch ? "block" : "hidden"}`}
       >
         <AlgoliaSearch
           onClose={() => setOpenAlgoliaSearch(false)}
