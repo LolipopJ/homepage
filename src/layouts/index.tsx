@@ -458,7 +458,7 @@ const Layout: React.FC<PageProps> = (props) => {
         </div>
 
         <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16 print:hidden">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center">
             <span>
               Powered by{" "}
               <a
@@ -470,7 +470,7 @@ const Layout: React.FC<PageProps> = (props) => {
                 Gatsby
               </a>
             </span>
-            <Icon icon={faRainbow} />
+            <Icon icon={faRainbow} className="hidden md:block" />
             <span>
               Inspired by{" "}
               <a
@@ -484,7 +484,7 @@ const Layout: React.FC<PageProps> = (props) => {
             </span>
           </div>
           {(MIIT_BEIAN_LABEL || MPS_BEIAN_CODE) && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <a
                 href="https://beian.miit.gov.cn/"
                 target="_blank"
@@ -495,7 +495,7 @@ const Layout: React.FC<PageProps> = (props) => {
               <img
                 src="/images/beian.png"
                 alt="beian-icon"
-                className="size-5"
+                className="hidden size-5 md:block"
               />
               <a
                 href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${MPS_BEIAN_CODE}`}

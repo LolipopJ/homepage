@@ -107,7 +107,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
           <Category name={categories[0]} className="item-selectable" />
         )}
         <h1 className="text-3xl font-bold">{title}</h1>
-        <div className="item-secondary flex gap-2">
+        <div className="item-secondary flex flex-col gap-2 lg:flex-row">
           {dateString && (
             <span
               title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
@@ -116,7 +116,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
             </span>
           )}
           {tags?.length && (
-            <div className="flex flex-1 flex-wrap gap-2 before:content-['•']">
+            <div className="flex flex-1 flex-wrap gap-2 lg:before:content-['•']">
               {tags.map((tag) => (
                 <Tag
                   key={tag}
