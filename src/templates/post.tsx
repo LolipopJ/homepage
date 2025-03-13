@@ -2,7 +2,7 @@ import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
 import { graphql, HeadProps, Link, PageProps } from "gatsby";
-import { MDXProps } from "mdx/types";
+import { type MDXProps } from "mdx/types";
 import * as React from "react";
 
 import Card from "../components/card";
@@ -53,9 +53,9 @@ const components: MDXProps["components"] = {
   Link,
 };
 
-interface PostPageData {
+type PostPageData = {
   mdx: Pick<MdxNode, "frontmatter">;
-}
+};
 
 type PostPageContext = Pick<MdxNode, "id">;
 

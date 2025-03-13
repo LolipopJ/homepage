@@ -66,7 +66,7 @@ const config: GatsbyConfig = {
             },
           },
           {
-            resolve: `gatsby-remark-copy-linked-files`,
+            resolve: "gatsby-remark-copy-linked-files",
             options: {
               destinationDir: (file: { name: string; hash: string }) =>
                 `images/${file.name}+${file.hash}`,
@@ -98,7 +98,7 @@ const config: GatsbyConfig = {
     },
     {
       // This plugin must be placed last in your list of plugins to ensure that it can query all the GraphQL data
-      resolve: `gatsby-plugin-algolia`,
+      resolve: "gatsby-plugin-algolia",
       options: {
         appId: ALGOLIA_APP_ID,
         // Use Admin API key without GATSBY_ prefix, so that the key isn't exposed in the application
