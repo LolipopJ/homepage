@@ -238,24 +238,24 @@
 
   /* #region Algolia 搜索器 */
   .algolia-search-box {
-    @apply -mr-2 border-b border-foreground-tertiary px-8 py-4 text-foreground;
+    @apply border-b border-foreground-tertiary px-6 py-3 text-foreground md:px-8 md:py-4;
 
     > form {
-      @apply flex w-full gap-2;
+      @apply flex w-full flex-wrap gap-2;
 
       > input {
-        @apply flex-1 rounded-lg bg-neutral-700/80 px-3 py-1.5 text-lg;
+        @apply max-w-full flex-1 rounded-lg bg-neutral-700/80 px-2 py-1 text-base md:px-3 md:py-1.5 md:text-lg;
       }
 
       svg {
-        @apply size-5 fill-current;
+        @apply size-4 fill-current md:size-5;
       }
 
       button {
-        @apply item-selectable rounded-md px-2;
+        @apply item-selectable -mr-2 rounded-md px-2;
 
         &.ais-SearchBox-reset {
-          @apply block;
+          @apply hidden md:block;
         }
       }
     }
@@ -276,7 +276,7 @@
   }
 
   .algolia-pagination {
-    @apply select-none border-t border-foreground-tertiary px-8 py-3;
+    @apply select-none border-t border-foreground-tertiary px-6 py-2 md:px-8 md:py-3;
 
     > ul {
       @apply flex items-center justify-center gap-2;
