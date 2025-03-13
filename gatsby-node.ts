@@ -1,75 +1,114 @@
+import { type CreateNodeArgs, type CreatePagesArgs } from "gatsby";
 import path from "path";
 
-import { IS_DEVELOPMENT } from "./src/constants/utils";
-import { type Post } from "./src/hooks/useAllMdx";
-import { getAllMdxQueryString } from "./src/utils/graphql";
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
 const postTemplate = path.resolve("./src/templates/post.tsx");
 const postListTemplate = path.resolve("./src/templates/post-list.tsx");
 
-// @ts-expect-error: ignored
-export const createPages = async function ({ actions, graphql }) {
-  const { data } = await graphql(`
+export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
+  const { createNodeField } = actions;
+  if (node.internal.type === "Mdx") {
+    createNodeField({
+      node,
+      name: "slug",
+      value: parseFilePathToPostSlug(String(node.internal.contentFilePath)),
+    });
+  }
+};
+
+export const createPages = async function ({
+  actions,
+  graphql,
+}: CreatePagesArgs) {
+  const { data } = await graphql<{
+    allMdx: {
+      nodes: (Pick<MdxNode, "fields" | "id"> & {
+        frontmatter: Pick<MdxNode["frontmatter"], "categories" | "tags">;
+        internal: Pick<MdxNode["internal"], "contentFilePath">;
+      })[];
+    };
+  }>(`
     query {
-      ${getAllMdxQueryString({ sortByDate: "DESC", includeAbout: true, includeDrafts: IS_DEVELOPMENT, includePosts: true, excerpt: 200 })}
+      allMdx(
+        sort: { frontmatter: { date: DESC } }
+        filter: {
+          internal: {
+            contentFilePath: {
+              regex: "//blog/posts/|/blog/drafts/|/blog/about-me.mdx/"
+            }
+          }
+        }
+      ) {
+        nodes {
+          fields {
+            slug
+          }
+          frontmatter {
+            categories
+            tags
+          }
+          id
+          internal {
+            contentFilePath
+          }
+        }
+      }
     }
   `);
 
-  const postsFilteredByCategory: Record<string, Post[]> = {};
-  const postsFilteredByTag: Record<string, Post[]> = {};
+  const postsFilteredByCategory: Record<string, string[]> = {};
+  const postsFilteredByTag: Record<string, string[]> = {};
 
-  data.allMdx.nodes.forEach((node: Post) => {
-    const contentFilePath = node.internal.contentFilePath;
-    const slug = parseFilePathToPostSlug(contentFilePath);
-    node.slug = slug;
-
-    const postPagePath = /\/blog\/about\.mdx$/.test(contentFilePath)
-      ? "/about"
-      : `/posts/${slug}`;
+  data?.allMdx.nodes.forEach((node) => {
+    const slug = node.fields.slug;
+    const path = slug === "about-me" ? "/about-me" : `/posts/${slug}`;
 
     // Create post pages through template
     actions.createPage({
-      path: postPagePath,
-      component: `${postTemplate}?__contentFilePath=${contentFilePath}`,
+      path,
+      component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
+      context: {
+        id: node.id,
+      },
     });
 
     // Filter posts by category
     (node.frontmatter.categories ?? []).forEach((category) => {
       if (Array.isArray(postsFilteredByCategory[category])) {
-        postsFilteredByCategory[category].push(node);
+        postsFilteredByCategory[category].push(node.id);
       } else {
-        postsFilteredByCategory[category] = [node];
+        postsFilteredByCategory[category] = [node.id];
       }
     });
 
     // Filter posts by tag
     (node.frontmatter.tags ?? []).forEach((tag) => {
       if (Array.isArray(postsFilteredByTag[tag])) {
-        postsFilteredByTag[tag].push(node);
+        postsFilteredByTag[tag].push(node.id);
       } else {
-        postsFilteredByTag[tag] = [node];
+        postsFilteredByTag[tag] = [node.id];
       }
     });
   });
 
   // Create category pages through filtered posts
-  Object.entries(postsFilteredByCategory).forEach(([category, posts]) => {
+  Object.entries(postsFilteredByCategory).forEach(([category, ids]) => {
     const postListPagePath = `/categories/${category}`;
     actions.createPage({
       path: postListPagePath,
       component: postListTemplate,
-      context: { posts, category },
+      context: { ids, category },
     });
   });
 
   // Create tag pages through filtered posts
-  Object.entries(postsFilteredByTag).forEach(([tag, posts]) => {
+  Object.entries(postsFilteredByTag).forEach(([tag, ids]) => {
     const postListPagePath = `/tags/${tag}`;
     actions.createPage({
       path: postListPagePath,
       component: postListTemplate,
-      context: { posts, tag },
+      context: { ids, tag },
     });
   });
 };

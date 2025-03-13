@@ -2,10 +2,8 @@ import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
 
+import { type AlgoliaPostItem } from "./src/components/algolia-search";
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
-import { MdxNode } from "./src/hooks/useAllMdx";
-import { getAllMdxQueryString } from "./src/utils/graphql";
-import { parseFilePathToPostSlug } from "./src/utils/post";
 
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
@@ -18,10 +16,6 @@ const config: GatsbyConfig = {
       "Personal blog of Lolipop, share knowledge about software / frontend development.",
     siteUrl: "https://lolipopj.github.io/blog",
   },
-  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
-  // If you use VSCode you can also use the GraphQL plugin
-  // Learn more at: https://gatsby.dev/graphql-typegen
-  graphqlTypegen: true,
   plugins: [
     "gatsby-plugin-layout",
     "gatsby-plugin-postcss",
@@ -55,10 +49,10 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-source-filesystem",
       options: {
-        name: "about",
-        path: "./blog/about.mdx",
+        name: "about-me",
+        path: "./blog/about-me.mdx",
       },
-      __key: "about",
+      __key: "about-me",
     },
     {
       resolve: "gatsby-plugin-mdx",
@@ -114,21 +108,45 @@ const config: GatsbyConfig = {
         queries: [
           {
             query: `
-query {
-  ${getAllMdxQueryString({ sortByDate: "DESC", includePosts: true, excerpt: 200 })}
-}
-`,
+              query {
+                allMdx(
+                  sort: { frontmatter: { date: DESC} }
+                  filter: {
+                    internal: {
+                      contentFilePath: { regex: "//blog/posts//" }
+                    }
+                  }
+                ) {
+                  nodes {
+                    excerpt(pruneLength: 200)
+                    fields {
+                      slug
+                    }
+                    frontmatter {
+                      categories
+                      tags
+                      title
+                      date
+                      updated
+                      timeliness
+                    }
+                    id
+                    internal {
+                      contentDigest
+                    }
+                  }
+                }
+              }`,
             queryVariables: {},
             transformer: ({
               data,
             }: {
-              data: { allMdx: { nodes: MdxNode[] } };
-            }) => {
-              return data.allMdx.nodes.map((node) => ({
-                ...node,
-                slug: parseFilePathToPostSlug(node.internal.contentFilePath),
-              }));
-            },
+              data: {
+                allMdx: {
+                  nodes: AlgoliaPostItem[];
+                };
+              };
+            }) => data.allMdx.nodes,
             indexName: ALGOLIA_INDEX_NAME,
             settings: {},
             mergeSettings: false,

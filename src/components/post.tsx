@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { Link } from "gatsby";
 import * as React from "react";
 
-import { type Post as PostType } from "../hooks/useAllMdx";
+export type PostType = Pick<MdxNode, "excerpt" | "fields" | "frontmatter">;
 
 export interface PostProps {
   post: PostType;
@@ -37,7 +37,11 @@ const Post: React.FC<PostProps> = (props) => {
     excerptClassName = "",
     footerClassName = "",
   } = props;
-  const { slug, frontmatter, excerpt } = post;
+  const {
+    fields: { slug },
+    frontmatter,
+    excerpt,
+  } = post;
   const {
     categories = [],
     date: dateString,

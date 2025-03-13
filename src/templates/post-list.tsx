@@ -1,23 +1,29 @@
-import { HeadProps, PageProps } from "gatsby";
+import { graphql, HeadProps, PageProps } from "gatsby";
 import * as React from "react";
 
-import Post, { type PostProps } from "../components/post";
+import Post, { type PostType } from "../components/post";
 import SEO from "../components/seo";
 
-interface PostPageContext {
-  posts: PostProps["post"][];
+interface PostListPageData {
+  allMdx: { nodes: PostType[] };
+}
+
+interface PostListPageContext {
+  ids: string[];
   category?: string;
   tag?: string;
 }
 
-const PostListTemplate: React.FC<PageProps<object, PostPageContext>> = ({
-  pageContext,
-}) => {
-  const { posts = [] } = pageContext;
+const PostListTemplate: React.FC<
+  PageProps<PostListPageData, PostListPageContext>
+> = ({ data }) => {
+  const {
+    allMdx: { nodes: posts = [] },
+  } = data;
   return (
     <ol className="mb-8 grid grid-cols-1 gap-4">
       {posts.map((post) => (
-        <li key={post.id}>
+        <li key={post.fields.slug}>
           <Post post={post} size="large" />
         </li>
       ))}
@@ -25,7 +31,33 @@ const PostListTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   );
 };
 
-export const Head = ({ pageContext }: HeadProps<object, PostPageContext>) => {
+export const query = graphql`
+  query ($ids: [String]) {
+    allMdx(
+      sort: { frontmatter: { date: DESC } }
+      filter: { id: { in: $ids } }
+    ) {
+      nodes {
+        excerpt(pruneLength: 200)
+        fields {
+          slug
+        }
+        frontmatter {
+          categories
+          tags
+          title
+          date
+          updated
+          timeliness
+        }
+      }
+    }
+  }
+`;
+
+export const Head = ({
+  pageContext,
+}: HeadProps<PostListPageData, PostListPageContext>) => {
   const { category, tag } = pageContext;
   return <SEO title={category ?? tag ?? "博客列表"} />;
 };

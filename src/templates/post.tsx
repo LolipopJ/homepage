@@ -1,7 +1,7 @@
 import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
-import { HeadProps, Link, PageProps } from "gatsby";
+import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import { MDXProps } from "mdx/types";
 import * as React from "react";
 
@@ -9,7 +9,6 @@ import Card from "../components/card";
 import Category from "../components/category";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
-import { type Post } from "../hooks/useAllMdx";
 
 const FancyBoxImage = (props: { alt?: string; src?: string }) => {
   const {
@@ -54,22 +53,28 @@ const components: MDXProps["components"] = {
   Link,
 };
 
-type PostPageContext = Pick<Post, "frontmatter">;
+interface PostPageData {
+  mdx: Pick<MdxNode, "frontmatter">;
+}
 
-const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
+type PostPageContext = Pick<MdxNode, "id">;
+
+const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
   children,
-  pageContext,
+  data,
 }) => {
   const {
-    frontmatter: {
-      title,
-      date: dateString,
-      updated: updatedDateString,
-      categories,
-      tags,
-      timeliness = true,
+    mdx: {
+      frontmatter: {
+        title,
+        date: dateString,
+        updated: updatedDateString,
+        categories,
+        tags,
+        timeliness = true,
+      },
     },
-  } = pageContext;
+  } = data;
 
   const articleRef = React.useRef<HTMLElement>(null);
 
@@ -137,8 +142,23 @@ const PostTemplate: React.FC<PageProps<object, PostPageContext>> = ({
   );
 };
 
-export const Head = ({ pageContext }: HeadProps<object, PostPageContext>) => {
-  return <SEO title={pageContext.frontmatter.title} />;
+export const query = graphql`
+  query ($id: String!) {
+    mdx(id: { eq: $id }) {
+      frontmatter {
+        categories
+        tags
+        title
+        date
+        updated
+        timeliness
+      }
+    }
+  }
+`;
+
+export const Head = ({ data }: HeadProps<PostPageData, PostPageContext>) => {
+  return <SEO title={String(data.mdx.frontmatter.title)} />;
 };
 
 export default PostTemplate;

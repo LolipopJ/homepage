@@ -64,8 +64,8 @@ const Layout: React.FC<PageProps> = (props) => {
 
   /** 当前路由是否为博客页 */
   const [isPostPage, postSlug] = React.useMemo(() => {
-    if (/^\/about\//.test(path)) {
-      return [true, "about"];
+    if (/^\/about-me\//.test(path)) {
+      return [true, "about-me"];
     }
 
     const result = path.match(/^\/posts\/(.+)\//);
@@ -195,7 +195,7 @@ const Layout: React.FC<PageProps> = (props) => {
           const observer = new IntersectionObserver(([entry]) => {
             if (entry.isIntersecting) {
               setPageTitle(
-                /^\/about\/?$/.test(path) ? (
+                postSlug === "about-me" ? (
                   <>
                     <Icon icon={faPersonRays} className="p-2" />
                     <span>关于我</span>
@@ -276,7 +276,7 @@ const Layout: React.FC<PageProps> = (props) => {
         </>,
       );
     }
-  }, [isPostPage, path]);
+  }, [isPostPage, path, postSlug]);
   //#endregion
 
   const subNavbarItems: SiderBarProps<SubNavbarActiveKey>["items"] = [
@@ -286,10 +286,12 @@ const Layout: React.FC<PageProps> = (props) => {
       children: (
         <ol>
           {posts.map((post) => {
-            const isActive = new RegExp(`^/posts/${post.slug}`).test(path);
+            const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(
+              path,
+            );
 
             return (
-              <li key={post.id}>
+              <li key={post.fields.slug}>
                 <Post
                   post={post}
                   className={`mb-2 ${isActive ? "item-selected" : ""}`}
@@ -377,7 +379,7 @@ const Layout: React.FC<PageProps> = (props) => {
       {/* 路由主体 */}
       <main
         ref={mainRef}
-        className={`flex-1 ${openSubNavbarDrawer ? "overflow-hidden" : "overflow-auto"}`}
+        className={`flex-1 ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
         <header className="sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden">
           <div
@@ -516,7 +518,7 @@ const Layout: React.FC<PageProps> = (props) => {
                 Lolipop
               </a>
             </span>
-            <div className="flex gap-2 text-xl">
+            <div className="-mr-2 flex gap-2 text-xl">
               {SOCIAL_ITEMS.map((item) => (
                 <a
                   key={item.url}

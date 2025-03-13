@@ -16,7 +16,6 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_INDEX_NAME,
 } from "../constants/algolia";
-import { type Post as PostType } from "../hooks/useAllMdx";
 import Post from "./post";
 
 export interface AlgoliaSearchProps
@@ -26,10 +25,19 @@ export interface AlgoliaSearchProps
   style?: React.CSSProperties;
 }
 
+export type AlgoliaPostItem = Pick<
+  MdxNode,
+  "excerpt" | "fields" | "frontmatter" | "id"
+> & {
+  internal: Pick<MdxNode["internal"], "contentDigest">;
+};
+
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_PUBLIC_KEY);
 
 const Hit: React.FC<
-  React.ComponentProps<NonNullable<HitsProps<PostType>["hitComponent"]>> & {
+  React.ComponentProps<
+    NonNullable<HitsProps<AlgoliaPostItem>["hitComponent"]>
+  > & {
     onPostClick: () => void;
   }
 > = ({ hit, onPostClick }) => {
@@ -41,6 +49,7 @@ const Hit: React.FC<
         <Highlight attribute={["frontmatter", "title"]} hit={hit} />
       )}
       excerptRenderer={() => <Highlight attribute={["excerpt"]} hit={hit} />}
+      excerptClassName="line-clamp-3 md:line-clamp-4"
     />
   );
 };
@@ -79,7 +88,7 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
           className="algolia-search-box"
           onResetCapture={() => onClose()}
         />
-        <Hits<PostType>
+        <Hits<AlgoliaPostItem>
           className="algolia-hints"
           hitComponent={(props) => <Hit {...props} onPostClick={onClose} />}
         />

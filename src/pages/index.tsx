@@ -6,19 +6,14 @@ import Post, { PostProps } from "../components/post";
 import SEO from "../components/seo";
 import { NUMBER_LETTER } from "../constants/utils";
 import useAllMdx from "../hooks/useAllMdx";
-import { parseFilePathToPostSlug } from "../utils/post";
 
 const IndexPage: React.FC<PageProps> = () => {
   const posts = useAllMdx();
 
   const postsWithYear = React.useMemo(() => {
     const result: Record<number, PostProps["post"][]> = {};
-    posts.forEach((node) => {
-      const post = {
-        ...node,
-        slug: parseFilePathToPostSlug(node.internal.contentFilePath),
-      };
-      const postYear = dayjs(node.frontmatter.date).year();
+    posts.forEach((post) => {
+      const postYear = dayjs(post.frontmatter.date).year();
       if (Array.isArray(result[postYear])) {
         result[postYear].push(post);
       } else {
@@ -45,7 +40,7 @@ const IndexPage: React.FC<PageProps> = () => {
             <ol className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               {posts.map((post) => {
                 return (
-                  <li key={post.id}>
+                  <li key={post.fields.slug}>
                     <Post post={post} size="large" />
                   </li>
                 );

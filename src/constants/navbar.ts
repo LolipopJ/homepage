@@ -33,7 +33,7 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
     routes: [
       { icon: faHouse, label: "主页", url: "/" },
       // { icon: faLaptopCode, label: "作品集", url: "/works/" },
-      { icon: faIdCard, label: "关于我", url: "/about/" },
+      { icon: faIdCard, label: "关于我", url: "/about-me/" },
       // { icon: faHeart, label: "朋友们", url: "/friends/" },
     ],
   },

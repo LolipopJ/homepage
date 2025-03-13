@@ -9,8 +9,8 @@ const Tags: React.FC<PageProps> = () => {
 
   const tags = React.useMemo(() => {
     const result: Record<string, number> = {};
-    posts.forEach((node: { frontmatter: { tags: string[] } }) => {
-      const postTags = node.frontmatter.tags ?? [];
+    posts.forEach((post) => {
+      const postTags = post.frontmatter.tags ?? [];
       postTags.forEach((tag) => {
         if (result[tag]) {
           result[tag] += 1;

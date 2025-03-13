@@ -1,32 +1,10 @@
 import { graphql, useStaticQuery } from "gatsby";
 
-import { parseFilePathToPostSlug } from "../utils/post";
-
-export interface MdxNode {
-  excerpt: string;
-  frontmatter: {
-    categories: string[];
-    tags: string[];
-    title: string;
-    date: string;
-    updated: string;
-    timeliness: boolean;
-  };
-  id: string;
-  internal: {
-    contentFilePath: string;
-  };
-}
-
-export interface Post extends MdxNode {
-  slug: string;
-}
-
 export const useAllMdx = () => {
   const {
-    allMdx: { nodes },
+    allMdx: { nodes: posts },
   } = useStaticQuery<{
-    allMdx: { nodes: MdxNode[] };
+    allMdx: { nodes: Pick<MdxNode, "excerpt" | "fields" | "frontmatter">[] };
   }>(graphql`
     query {
       allMdx(
@@ -35,6 +13,9 @@ export const useAllMdx = () => {
       ) {
         nodes {
           excerpt(pruneLength: 200)
+          fields {
+            slug
+          }
           frontmatter {
             categories
             tags
@@ -43,19 +24,10 @@ export const useAllMdx = () => {
             updated
             timeliness
           }
-          id
-          internal {
-            contentFilePath
-          }
         }
       }
     }
   `);
-
-  const posts: Post[] = nodes.map((node) => ({
-    ...node,
-    slug: parseFilePathToPostSlug(node.internal.contentFilePath),
-  }));
 
   return posts;
 };

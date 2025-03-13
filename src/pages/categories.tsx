@@ -9,8 +9,8 @@ const Categories: React.FC<PageProps> = () => {
 
   const categories = React.useMemo(() => {
     const result: Record<string, number> = {};
-    posts.forEach((node: { frontmatter: { categories: string[] } }) => {
-      const postCategories = node.frontmatter.categories ?? [];
+    posts.forEach((post) => {
+      const postCategories = post.frontmatter.categories ?? [];
       postCategories.forEach((category) => {
         if (result[category]) {
           result[category] += 1;
