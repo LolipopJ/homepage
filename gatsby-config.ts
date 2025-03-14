@@ -3,7 +3,6 @@ import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
 
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
-import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
 
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
@@ -97,14 +96,11 @@ const config: GatsbyConfig = {
       },
     },
     {
-      // This plugin must be placed last in your list of plugins to ensure that it can query all the GraphQL data
       resolve: "gatsby-plugin-algolia",
       options: {
-        appId: ALGOLIA_APP_ID,
-        // Use Admin API key without GATSBY_ prefix, so that the key isn't exposed in the application
-        // Tip: use Search API key with GATSBY_ prefix to access the service from within components
+        appId: process.env.GATSBY_ALGOLIA_APP_ID,
         apiKey: process.env.ALGOLIA_API_KEY,
-        indexName: ALGOLIA_INDEX_NAME,
+        indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
         queries: [
           {
             query: `
@@ -147,7 +143,7 @@ const config: GatsbyConfig = {
                 };
               };
             }) => data.allMdx.nodes,
-            indexName: ALGOLIA_INDEX_NAME,
+            indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
             settings: {},
             mergeSettings: false,
           },
