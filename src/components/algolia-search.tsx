@@ -11,6 +11,11 @@ import {
   SearchBox,
 } from "react-instantsearch";
 
+import {
+  ALGOLIA_API_PUBLIC_KEY,
+  ALGOLIA_APP_ID,
+  ALGOLIA_INDEX_NAME,
+} from "../constants/algolia";
 import Post from "./post";
 
 export interface AlgoliaSearchProps
@@ -28,8 +33,8 @@ export type AlgoliaPostItem = Pick<
 };
 
 const searchClient = algoliasearch(
-  String(process.env.GATSBY_ALGOLIA_APP_ID),
-  String(process.env.GATSBY_ALGOLIA_API_PUBLIC_KEY),
+  String(ALGOLIA_APP_ID),
+  String(ALGOLIA_API_PUBLIC_KEY),
 );
 
 const Hit: React.FC<
@@ -78,7 +83,7 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
       <InstantSearch
         insights
         searchClient={searchClient}
-        indexName={process.env.GATSBY_ALGOLIA_INDEX_NAME}
+        indexName={ALGOLIA_INDEX_NAME}
         {...restProps}
       >
         <Configure hitsPerPage={10} />

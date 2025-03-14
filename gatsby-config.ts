@@ -3,6 +3,7 @@ import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
 
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
+import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
 
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
@@ -98,9 +99,9 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-algolia",
       options: {
-        appId: process.env.GATSBY_ALGOLIA_APP_ID,
+        appId: ALGOLIA_APP_ID,
         apiKey: process.env.ALGOLIA_API_KEY,
-        indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
+        indexName: ALGOLIA_INDEX_NAME,
         queries: [
           {
             query: `
@@ -143,7 +144,7 @@ const config: GatsbyConfig = {
                 };
               };
             }) => data.allMdx.nodes,
-            indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
+            indexName: ALGOLIA_INDEX_NAME,
             settings: {},
             mergeSettings: false,
           },
