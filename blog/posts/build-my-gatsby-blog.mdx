@@ -1,7 +1,7 @@
 ---
 title: 基于 Gatsby 打造我的个人博客系统
 date: 2025-03-12
-updated: 2025-03-13
+updated: 2025-03-14
 timeliness: false
 categories:
   - 前端开发
@@ -339,6 +339,8 @@ const PostTemplate = ({ children }) => {
 
 现在，在编写 MDX 博客文件的时候，就可以像使用 JSX 一样使用 `<Card>` 组件了！
 
+![card](./build-my-gatsby-blog/card.png)
+
 另外，还可以自定义现有标签渲染的结果。例如想要为图片文件添加 FancyBox 的支持，可以编写代码如下：
 
 ```tsx
@@ -377,11 +379,13 @@ const PostTemplate = ({ children }) => {
 };
 ```
 
-MDX 渲染得到的 `<img>` 组件将自动被替换为 `<FancyBoxImage>` 组件，而后正确地被 FancyBox 绑定。
+MDX 渲染得到的 `<img>` 组件将自动被替换为 `<FancyBoxImage>` 组件，随后正确地被 FancyBox 绑定。
 
 ### 静态资源的访问与优化
 
-使用插件 `gatsby-remark-images`，Gatsby 将自动压缩博客中使用到的本地图片，减少流量压力，同时生成占位图片，避免博客高度突然变化，提升阅读体验。处理后的图片资源将自动生成到 `public` 的对应目录下，确保能被正确地访问。结合插件 `gatsby-plugin-mdx` 使用，可以配置如下：
+使用插件 `gatsby-remark-images`，Gatsby 将自动压缩博客中使用到的本地图片，减少流量压力，同时生成占位图片，避免博客高度突然变化，提升阅读体验。处理后的图片资源将自动生成到 `public` 的对应目录下，确保能被正确地访问。在 Gatsby 的最佳实践中，应当始终使用类似 `gatsby-remark-images` 插件的方案来优化图片类型的静态资源。
+
+结合插件 `gatsby-plugin-mdx` 使用，可以配置如下：
 
 ```ts
 const config: GatsbyConfig = {
@@ -407,7 +411,7 @@ const config: GatsbyConfig = {
 
 其中，`gatsby-plugin-sharp` 是插件 `gatsby-remark-images` 的必要依赖，需要添加到插件列表中。
 
-插件 `gatsby-remark-images` 仅支持压缩、处理部分的图片格式如 `.jpeg`，其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助原封不动地移动到 `public` 里的对应目录。两个插件协同使用即可达成最好的静态资源访问效果。
+需要留意的是：插件 `gatsby-remark-images` 仅支持压缩、处理部分的图片格式如 `.jpeg`。其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助，原封不动地移动到 `public` 里的对应目录。协同使用这两个插件即可达成最好的静态资源访问效果。
 
 由于 `gatsby-remark-images` 会相应地封装 MDX 渲染结果里的 `<img>` 标签，为了兼容 FancyBox 能力，可以编写 `useEffect()` 钩子方法如下：
 
@@ -437,6 +441,145 @@ const PostTemplate = ({ children }) => {
   );
 };
 ```
+
+## 博客搜索
+
+笔者基于 Algolia 实现博客搜索的能力，插件 [`gatsby-plugin-algolia`](https://www.gatsbyjs.com/plugins/gatsby-plugin-algolia/) 能帮助项目快速实现索引数据并上传的功能。
+
+在 Algolia 控制台创建索引并获取密钥等的操作不再冗述，将这些值塞到环境变量里即可被 Gatsby 访问：
+
+```bash
+# 包含 GATSBY_ 前缀的环境变量将暴露到客户端环境中
+# 后续将用到下面三个变量实现客户端检索功能
+GATSBY_ALGOLIA_APP_ID=YOUR_ALGOLIA_APP_ID
+GATSBY_ALGOLIA_API_PUBLIC_KEY=YOUR_ALGOLIA_API_PUBLIC_KEY
+GATSBY_ALGOLIA_INDEX_NAME=YOUR_ALGOLIA_INDEX_NAME
+# 用于上传数据等的 Algolia 管理秘钥切勿添加 GATSBY_ 前缀
+ALGOLIA_API_KEY=YOUR_ALGOLIA_API_PRIVATE_KEY
+```
+
+为了上传用于检索的博客元数据到 Algolia，可以像这么配置 `gatsby-config.ts`：
+
+```ts
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: [".env", `.env.${process.env.NODE_ENV}`],
+});
+
+const config: GatsbyConfig = {
+  plugins: [
+    {
+      // ... 其它的插件
+    },
+    {
+      // 应当将 gatsby-plugin-algolia 插件放到列表的最后
+      // 确保 GraphQL 查询到的结果是经过其它插件处理后的最终结果
+      resolve: "gatsby-plugin-algolia",
+      options: {
+        appId: process.env.GATSBY_ALGOLIA_APP_ID,
+        apiKey: process.env.ALGOLIA_API_KEY,
+        indexName: process.env.GATSBY_ALGOLIA_INDEX_NAME,
+        queries: [
+          {
+            query: `
+              query {
+                allMdx(
+                  filter: {
+                    internal: {
+                      contentFilePath: { regex: "//blog/posts//" }
+                    }
+                  }
+                ) {
+                  nodes {
+                    excerpt(pruneLength: 200)
+                    fields {
+                      slug
+                    }
+                    frontmatter {
+                      categories
+                      tags
+                      title
+                      date
+                      updated
+                      timeliness
+                    }
+                    id
+                    internal {
+                      contentDigest
+                    }
+                  }
+                }
+              }`,
+            transformer: ({
+              data,
+            }: {
+              data: {
+                allMdx: {
+                  nodes: MdxNode[];
+                };
+              };
+            }) => data.allMdx.nodes,
+          },
+        ],
+      },
+    },
+  ],
+};
+```
+
+插件 `gatsby-plugin-algolia` 需要一个包含博客元数据的数组以执行上传操作，而 GraphQL 查询的结果是一个形如 `{ addMdx: { nodes: MdxNode[] }}` 的对象，因此要使用插件提供的 `transformer()` 方法，返回里面的 `nodes` 数组。
+
+为了确保博客在索引里的唯一性，并确保索引里的数据始终最新，在 GraphQL 查询的时候必须提供 `id` 和 `internal.contentDigest`。
+
+这样，当执行构建操作时，插件将自动把查询得到的博客元数据上传到指定的 Algolia 索引中去。登录 Algolia 控制台，即可查看上传的结果啦：
+
+![algolia index item](./build-my-gatsby-blog/algolia-index-item.png)
+
+客户端搜索博客的功能可以基于 Algolia 提供的前端组件实现，笔者实现的一个简单的例子是：
+
+```tsx
+import { liteClient as algoliasearch } from "algoliasearch/lite";
+import {
+  Configure,
+  Hits,
+  InstantSearch,
+  Pagination,
+  SearchBox,
+} from "react-instantsearch";
+
+import Post from "path/to/post";
+
+const searchClient = algoliasearch(
+  String(process.env.GATSBY_ALGOLIA_APP_ID),
+  String(process.env.GATSBY_ALGOLIA_API_PUBLIC_KEY),
+);
+
+const Hit = ({ hit }) => {
+  return <Post post={hit} />;
+};
+
+const AlgoliaSearch = () => {
+  return (
+    <InstantSearch
+      insights
+      searchClient={searchClient}
+      indexName={process.env.GATSBY_ALGOLIA_INDEX_NAME}
+    >
+      <Configure hitsPerPage={10} />
+      <SearchBox />
+      <Hits<AlgoliaPostItem> hitComponent={Hit} />
+      <Pagination />
+    </InstantSearch>
+  );
+};
+
+export default AlgoliaSearch;
+```
+
+这样，客户端的博客搜索能力就实现了：
+
+![algolia search item](./build-my-gatsby-blog/algolia-search-item.png)
 
 ## 路由切换体验优化
 
