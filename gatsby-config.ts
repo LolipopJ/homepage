@@ -14,7 +14,7 @@ const config: GatsbyConfig = {
     title: "Lolipop's Studio",
     description:
       "Personal blog of Lolipop, share knowledge about software / frontend development.",
-    siteUrl: "https://lolipopj.github.io/blog",
+    siteUrl: "https://blog.towind.fun",
   },
   plugins: [
     "gatsby-plugin-layout",
@@ -94,6 +94,76 @@ const config: GatsbyConfig = {
         mdxOptions: {
           remarkPlugins: [remarkGfm],
         },
+      },
+    },
+    {
+      resolve: "gatsby-plugin-feed",
+      options: {
+        feeds: [
+          {
+            query: `
+              query {
+                allMdx(
+                  sort: { frontmatter: { date: DESC} }
+                  filter: {
+                    internal: {
+                      contentFilePath: { regex: "//blog/posts//" }
+                    }
+                  }
+                ) {
+                  nodes {
+                    body
+                    excerpt(pruneLength: 200)
+                    fields {
+                      slug
+                    }
+                    frontmatter {
+                      categories
+                      tags
+                      title
+                      date
+                      updated
+                      timeliness
+                    }
+                  }
+                }
+              }`,
+            serialize: ({
+              query: { site, allMdx },
+            }: {
+              query: {
+                site: { siteMetadata: SiteMetadata };
+                allMdx: {
+                  nodes: Pick<
+                    MdxNode,
+                    "body" | "excerpt" | "fields" | "frontmatter"
+                  >[];
+                };
+              };
+            }) => {
+              return allMdx.nodes.map((node) => {
+                return Object.assign({}, node.frontmatter, {
+                  description: node.excerpt,
+                  date: node.frontmatter.date,
+                  url: `${site.siteMetadata.siteUrl}/posts/${node.fields.slug}`,
+                  guid: node.fields.slug,
+                  custom_elements: [
+                    {
+                      "content:original-text": node.body,
+                    },
+                    {
+                      "content:updated-at": new Date(
+                        String(node.frontmatter.updated),
+                      ).toISOString(),
+                    },
+                  ],
+                });
+              });
+            },
+            output: "/rss.xml",
+            title: "Lolipop's Studio | RSS Feed",
+          },
+        ],
       },
     },
     {

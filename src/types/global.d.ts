@@ -7,6 +7,12 @@ declare global {
     Gitalk?: Gitalk.default.Constructor;
   }
 
+  interface SiteMetadata {
+    title: string;
+    description: string;
+    siteUrl: string;
+  }
+
   interface MdxNode {
     body: string;
     excerpt: string;
