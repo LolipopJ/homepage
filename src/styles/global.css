@@ -1,10 +1,9 @@
 @import "prismjs/themes/prism-tomorrow.min.css";
 @import "@fancyapps/ui/dist/fancybox/fancybox.css";
+@import "./gitalk.css";
 @import "github-markdown-css/github-markdown-dark.css";
 @import "heti/umd/heti.min.css";
-
 @import "./nprogress.css";
-@import "./gitalk.css";
 
 @tailwind base;
 @tailwind components;
@@ -138,6 +137,11 @@
       /* 覆盖 Heti 的相关样式，避免鼠标悬浮在图片上时引起间距变化 */
       &.gatsby-resp-image-link {
         @apply hover:pb-0;
+      }
+
+      /* 覆盖 prism 的相关样式，继承链接的颜色 */
+      code[class*="language-"] {
+        @apply text-inherit;
       }
     }
 
