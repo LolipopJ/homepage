@@ -52,7 +52,7 @@ const GitalkComponent: React.FC<GitalkProps> = ({
   return (
     <>
       <Script
-        src="https://unpkg.com/gitalk@1/dist/gitalk.min.js"
+        src="https://unpkg.com/gitalk@1.8.0/dist/gitalk.min.js"
         strategy="idle"
         onLoad={() => renderGitalk(gitalkId)}
       />

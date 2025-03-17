@@ -1,10 +1,10 @@
-@import url("https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css");
-@import url("https://unpkg.com/@fancyapps/ui@5.0.36/dist/fancybox/fancybox.css");
-@import url("https://unpkg.com/gitalk@1.8.0/dist/gitalk.css");
-@import url("https://unpkg.com/github-markdown-css@5.8.1/github-markdown-dark.css");
-@import url("https://unpkg.com/heti@0.9.5/umd/heti.min.css");
+@import "prismjs/themes/prism-tomorrow.min.css";
+@import "@fancyapps/ui/dist/fancybox/fancybox.css";
+@import "github-markdown-css/github-markdown-dark.css";
+@import "heti/umd/heti.min.css";
 
 @import "./nprogress.css";
+@import "./gitalk.css";
 
 @tailwind base;
 @tailwind components;
@@ -118,12 +118,18 @@
     > a > video,
     > table,
     > iframe {
-      @apply !-mx-6 mb-6 mt-3 w-[calc(100%+3rem)] max-w-none;
+      @apply !-mx-6 mb-6 mt-3 w-[calc(100%+3rem)] !max-w-none;
     }
 
     /* 加载中和加载失败的图片显示深色占位背景 */
     img.gatsby-resp-image-image {
       box-shadow: var(--background-light) 0px 0px 0px 400px inset !important;
+    }
+
+    li {
+      :last-child {
+        @apply mb-6;
+      }
     }
 
     a {
