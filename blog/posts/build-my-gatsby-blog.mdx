@@ -1,7 +1,7 @@
 ---
 title: 基于 Gatsby 打造我的个人博客系统
 date: 2025-03-12
-updated: 2025-03-14
+updated: 2025-03-17
 timeliness: false
 categories:
   - 前端开发
@@ -383,7 +383,7 @@ MDX 渲染得到的 `<img>` 组件将自动被替换为 `<FancyBoxImage>` 组件
 
 ### 静态资源的访问与优化
 
-使用插件 `gatsby-remark-images`，Gatsby 将自动压缩博客中使用到的本地图片，减少流量压力，同时生成占位图片，避免博客高度突然变化，提升阅读体验。处理后的图片资源将自动生成到 `public` 的对应目录下，确保能被正确地访问。在 Gatsby 的最佳实践中，应当始终使用类似 `gatsby-remark-images` 插件的方案来优化图片类型的静态资源。
+插件 `gatsby-remark-images` 将自动压缩博客中使用到的本地图片的体积，减少流量压力；同时生成占位图片，避免博客高度突然变化，提升阅读体验。在 Gatsby 的最佳实践中，应当始终使用类似 `gatsby-remark-images` 这样的插件来优化图片类型的静态资源。
 
 结合插件 `gatsby-plugin-mdx` 使用，可以配置如下：
 
@@ -411,9 +411,9 @@ const config: GatsbyConfig = {
 
 其中，`gatsby-plugin-sharp` 是插件 `gatsby-remark-images` 的必要依赖，需要添加到插件列表中。
 
-需要留意的是：插件 `gatsby-remark-images` 仅支持压缩、处理部分的图片格式如 `.jpeg`。其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助，原封不动地移动到 `public` 里的对应目录。协同使用这两个插件即可达成最好的静态资源访问效果。
+需要留意的是，插件 `gatsby-remark-images` 仅支持压缩、处理部分的图片格式如 `.jpeg`。其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助，原封不动地移动到对应的目录里。协同使用这两个插件即可达成最好的静态资源访问效果。
 
-由于 `gatsby-remark-images` 会相应地封装 MDX 渲染结果里的 `<img>` 标签，为了兼容 FancyBox 能力，可以编写 `useEffect()` 钩子方法如下：
+除此之外，由于 `gatsby-remark-images` 会相应地封装 MDX 渲染结果里的 `<img>` 标签，为了兼容 FancyBox 能力，可以更新 `useEffect()` 钩子方法如下：
 
 ```tsx
 const PostTemplate = ({ children }) => {
@@ -580,6 +580,8 @@ export default AlgoliaSearch;
 这样，客户端的博客搜索能力就实现了：
 
 ![algolia search item](./build-my-gatsby-blog/algolia-search-item.png)
+
+更多的功能例如自动生成 RSS 订阅也可以参考上面的处理方案，搜索合适的插件配置实现。
 
 ## 路由切换体验优化
 
