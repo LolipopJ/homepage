@@ -60,7 +60,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
   const { title: siteTitle } = useSiteMetadata();
   const posts = useAllMdx();
-  const breakpoint = useTailwindBreakpoint();
+  const [breakpoint, breakpointInitialized] = useTailwindBreakpoint();
 
   /** 当前路由是否为博客页 */
   const [isPostPage, postSlug] = React.useMemo(() => {
@@ -351,6 +351,11 @@ const Layout: React.FC<PageProps> = (props) => {
 
   return (
     <div className="flex h-screen print:h-auto">
+      {/* 初始化完成前的蒙版层 */}
+      <div
+        className={`absolute inset-0 z-50 bg-neutral-900 transition duration-500 ${breakpointInitialized ? "pointer-events-none bg-neutral-900/0" : ""}`}
+      ></div>
+
       {/* 侧边栏 */}
       <SiderBar
         className="hidden w-72 2xl:block print:hidden"
@@ -548,7 +553,7 @@ const Layout: React.FC<PageProps> = (props) => {
       {/* Algolia 搜索窗口 */}
       <div
         onClick={() => setOpenAlgoliaSearch(false)}
-        className={`absolute inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm print:hidden ${openAlgoliaSearch ? "block" : "hidden"}`}
+        className={`absolute inset-0 z-30 bg-neutral-900/60 backdrop-blur-sm print:hidden ${openAlgoliaSearch ? "block" : "hidden"}`}
       >
         <AlgoliaSearch
           onClose={() => setOpenAlgoliaSearch(false)}
