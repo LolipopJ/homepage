@@ -149,6 +149,10 @@
       @apply my-6;
     }
 
+    :not(pre) > code[class*="language-"] {
+      @apply mx-0.5 px-1.5;
+    }
+
     h1,
     h2,
     h3,
