@@ -13,7 +13,7 @@ const config: GatsbyConfig = {
   siteMetadata: {
     title: "Lolipop's Studio",
     description:
-      "Personal blog of Lolipop, share knowledge about software / frontend development.",
+      "Homepage and blog of Lolipop, share knowledge about software / frontend development.",
     siteUrl: "https://blog.towind.fun",
   },
   plugins: [
@@ -69,7 +69,7 @@ const config: GatsbyConfig = {
             resolve: "gatsby-remark-copy-linked-files",
             options: {
               destinationDir: (file: { name: string; hash: string }) =>
-                `images/${file.name}+${file.hash}`,
+                `static/${file.name}+${file.hash}`,
             },
           },
           "gatsby-remark-responsive-iframe",
@@ -94,6 +94,19 @@ const config: GatsbyConfig = {
         mdxOptions: {
           remarkPlugins: [remarkGfm],
         },
+      },
+    },
+    {
+      resolve: "gatsby-plugin-manifest",
+      options: {
+        name: "Lolipop's Studio",
+        short_name: "Lolipop's Studio",
+        lang: "zh-CN",
+        start_url: "/",
+        background_color: "#f7f0eb",
+        theme_color: "#438579",
+        display: "standalone",
+        icon: "static/icons/favicon.png",
       },
     },
     {
