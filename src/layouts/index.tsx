@@ -414,11 +414,12 @@ const Layout: React.FC<PageProps> = (props) => {
           ref={pageRef}
           className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] p-8 lg:px-16 lg:py-12 2xl:px-24"
         >
+          {/* 站点信息（打印时显示） */}
           <div className="mb-12 hidden print:block">
-            <div>Site: {siteTitle}</div>
-            <div>Date: {dayjs().toISOString()}</div>
+            <div>Site: {document.title || siteTitle}</div>
+            <div>Print Date: {dayjs().toISOString()}</div>
             <div>
-              Source:{" "}
+              Link:{" "}
               <a
                 href={href}
                 target="_blank"
@@ -442,7 +443,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
           {/* 博客页的操作按钮 */}
           {isPostPage && (
-            <div className="sticky bottom-8 mt-12 flex justify-end gap-4 text-sm print:hidden">
+            <div className="sticky bottom-8 z-10 mt-12 flex justify-end gap-4 text-sm print:hidden">
               <div
                 className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
                 style={{

@@ -11,7 +11,7 @@ module.exports = {
       width: {
         88: "22rem",
       },
-      height: {
+      spacing: {
         header: "var(--height-header)",
         footer: "var(--height-footer)",
       },
