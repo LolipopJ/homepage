@@ -3,6 +3,8 @@ import {
   faBlog,
   faChevronUp,
   faClose,
+  faCookie,
+  faCookieBite,
   faFolder,
   faHeart,
   faLaptopCode,
@@ -20,6 +22,7 @@ import { PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 
+import ActionButton from "../components/action-button";
 import AlgoliaSearch from "../components/algolia-search";
 import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
@@ -43,6 +46,7 @@ const Layout: React.FC<PageProps> = (props) => {
   /** 小屏幕开启导航栏抽屉状态 */
   const [openSubNavbarDrawer, setOpenSubNavbarDrawer] =
     React.useState<boolean>(false);
+  const [isImmersive, setIsImmersive] = React.useState<boolean>(false);
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -71,6 +75,11 @@ const Layout: React.FC<PageProps> = (props) => {
     const result = path.match(/^\/posts\/(.+)\//);
     return [result !== null, result?.[1]];
   }, [path]);
+
+  /** 是否激活了沉浸模式 */
+  const isImmersiveActivated = React.useMemo(() => {
+    return isImmersive && isPostPage && breakpoint["lg"];
+  }, [breakpoint, isImmersive, isPostPage]);
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
@@ -358,7 +367,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
       {/* 侧边栏 */}
       <SiderBar
-        className="hidden w-72 2xl:block print:hidden"
+        className={`hidden w-72 2xl:block print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
         header={
           <div className="mx-5 flex h-header items-center px-4">
             <div className="text-lg font-bold">{siteTitle}</div>
@@ -374,9 +383,9 @@ const Layout: React.FC<PageProps> = (props) => {
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
         bodyClassName="px-4"
-        className={`print:hidden ${
+        className={`print:hidden ${isImmersiveActivated ? "!hidden" : ""} ${
           breakpoint["lg"]
-            ? "w-96 2xl:w-88"
+            ? `w-96 2xl:w-88`
             : `fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
         }`}
       />
@@ -386,7 +395,9 @@ const Layout: React.FC<PageProps> = (props) => {
         ref={mainRef}
         className={`flex-1 ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
-        <header className="sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden">
+        <header
+          className={`sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+        >
           <div
             className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
             onClick={() => {
@@ -437,33 +448,43 @@ const Layout: React.FC<PageProps> = (props) => {
           {isPostPage && !!postSlug && (
             <GitalkComponent
               gitalkId={postSlug}
-              className="mx-auto mt-12 max-w-xl print:hidden"
+              className="mx-auto mt-24 max-w-xl print:hidden"
             />
           )}
 
           {/* 博客页的操作按钮 */}
           {isPostPage && (
-            <div className="sticky bottom-8 z-10 mt-12 flex justify-end gap-4 text-sm print:hidden">
+            <div className="sticky bottom-8 z-10 mt-12 flex flex-col items-end justify-end gap-4 text-sm print:hidden">
+              {/* 回到顶部按钮 */}
               <div
                 className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
                 style={{
                   background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
                 }}
               >
-                <div
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-full bg-background transition hover:bg-foreground hover:text-background"
+                <ActionButton
+                  icon={faChevronUp}
                   onClick={() =>
                     mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
                   }
-                >
-                  <Icon icon={faChevronUp} />
-                </div>
+                />
+              </div>
+              {/* 沉浸式浏览按钮 */}
+              <div className="hidden lg:block">
+                <ActionButton
+                  icon={isImmersive ? faCookieBite : faCookie}
+                  onClick={() => setIsImmersive((prev) => !prev)}
+                  className={`size-9 border-2 ${isImmersive ? "border-foreground" : "border-foreground-tertiary"}`}
+                  title={isImmersive ? "退出沉浸模式" : "进入沉浸模式"}
+                />
               </div>
             </div>
           )}
         </div>
 
-        <footer className="flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16 print:hidden">
+        <footer
+          className={`flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16 print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+        >
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
             <span>
               Powered by{" "}
