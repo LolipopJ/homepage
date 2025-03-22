@@ -16,6 +16,13 @@ const config: GatsbyConfig = {
       "Homepage and blog of Lolipop, share knowledge about software / frontend development.",
     siteUrl: "https://blog.towind.fun",
   },
+  flags: {
+    DEV_SSR: true,
+    // FAST_DEV: true,
+    // PRESERVE_FILE_DOWNLOAD_CACHE: true,
+    // DETECT_NODE_MUTATIONS: true,
+  },
+  // graphqlTypegen: true,
   plugins: [
     "gatsby-plugin-layout",
     "gatsby-plugin-postcss",

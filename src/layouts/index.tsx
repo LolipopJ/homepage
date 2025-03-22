@@ -427,7 +427,7 @@ const Layout: React.FC<PageProps> = (props) => {
         >
           {/* 站点信息（打印时显示） */}
           <div className="mb-12 hidden print:block">
-            <div>Site: {document.title || siteTitle}</div>
+            <div>Site: {siteTitle}</div>
             <div>Print Date: {dayjs().toISOString()}</div>
             <div>
               Link:{" "}
