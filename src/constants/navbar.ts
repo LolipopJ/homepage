@@ -7,6 +7,7 @@ import {
   // faHeart,
   faHouse,
   faIdCard,
+  faRss,
   // faLaptopCode,
   // faRss,
   faTags,
@@ -14,7 +15,12 @@ import {
 
 import { NavbarProps, Route } from "../layouts/navbar";
 
-export const SOCIAL_ITEMS: Route[] = [
+export const FOOTER_SOCIAL_ITEMS: Route[] = [
+  {
+    icon: faRss,
+    label: "RSS",
+    url: "/rss.xml",
+  },
   {
     icon: faGithub,
     label: "@LolipopJ",
@@ -64,7 +70,16 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
         label: "mail@towind.fun",
         url: "mailto:mail@towind.fun",
       },
-      ...SOCIAL_ITEMS,
+      {
+        icon: faGithub,
+        label: "@LolipopJ",
+        url: "https://github.com/LolipopJ",
+      },
+      {
+        icon: faSteam,
+        label: "@lolipopj_703",
+        url: "https://steamcommunity.com/id/lolipopj_703",
+      },
     ],
   },
 ];

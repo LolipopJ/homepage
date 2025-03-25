@@ -17,7 +17,7 @@ const config: GatsbyConfig = {
     siteUrl: "https://blog.towind.fun",
   },
   flags: {
-    DEV_SSR: true,
+    // DEV_SSR: true,
     // FAST_DEV: true,
     // PRESERVE_FILE_DOWNLOAD_CACHE: true,
     // DETECT_NODE_MUTATIONS: true,

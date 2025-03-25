@@ -84,6 +84,7 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
         insights
         searchClient={searchClient}
         indexName={ALGOLIA_INDEX_NAME}
+        future={{ preserveSharedStateOnUnmount: true }}
         {...restProps}
       >
         <Configure hitsPerPage={10} />

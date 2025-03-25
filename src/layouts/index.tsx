@@ -28,7 +28,7 @@ import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
 import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
-import { NAVBAR_ITEMS, SOCIAL_ITEMS } from "../constants/navbar";
+import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
 import useAllMdx from "../hooks/useAllMdx";
 import useTailwindBreakpoint from "../hooks/useScreenBreakpoint";
 import useSiteMetadata from "../hooks/useSiteMetadata";
@@ -546,7 +546,7 @@ const Layout: React.FC<PageProps> = (props) => {
               </a>
             </span>
             <div className="-mr-2 flex gap-2 text-xl">
-              {SOCIAL_ITEMS.map((item) => (
+              {FOOTER_SOCIAL_ITEMS.map((item) => (
                 <a
                   key={item.url}
                   title={item.label}
