@@ -1,7 +1,7 @@
 ---
 title: 部署自己的 WebDAV 服务，同步应用数据与软件配置
 date: 2025-04-03
-updated: 2025-04-03
+updated: 2025-04-04
 categories:
   - 技术琐事
 tags:
@@ -17,11 +17,11 @@ tags:
 
 ![WebDAV 镜像列表](./private-webdav/docker-hub-webdav.png)
 
-笔者尝试了下载量和收藏数最高的 `bytemark/webdav`，但发现设置了挂载目录后无法正常上传文件，仔细阅读说明文档才看到，必须要将宿主机的挂载目录设置为写死的 `/srv/dav`，意味着如果想要用其它目录来存放 WebDAV 里的文件的话，还需要额外添加一个软链接。这样的限制感觉笨笨的，很不优雅，于是找了找它的 [Github 仓库](https://github.com/BytemarkHosting/docker-webdav)，发现作者在写完这个镜像，发了一篇[部署文档](https://docs.bytemark.co.uk/article/run-your-own-webdav-server-with-docker/)后就再没有更新了，代码也就停留在了 2018 年。也许 WebDAV 协议已经相当稳定了，但是笔者还是不想使用这样不活跃仓库的镜像服务。
+笔者尝试了下载量和收藏数最高的 `bytemark/webdav`，但发现设置了挂载目录后无法正常上传文件，仔细阅读说明文档才看到，必须要将宿主机的挂载目录设置为写死的 `/srv/dav`，意味着如果想要用其它目录来存放 WebDAV 里的文件的话，还需要额外添加一个软链接。这样的限制感觉笨笨的，很不优雅，于是找了找它的 [Github 仓库](https://github.com/BytemarkHosting/docker-webdav)，发现作者在写完这个镜像，发了一篇[部署文档](https://docs.bytemark.co.uk/article/run-your-own-webdav-server-with-docker/)后就再没有更新了，代码也就停留在了 2018 年。也许 WebDAV 协议已经相当稳定了，但是笔者还是想要找一个稍微好一点的 WebDAV 服务。
 
-接着，笔者尝试了 Github 上以 `webdav` 为关键词搜索，关联度和星标均为最高，并且活跃更新的 [`hacdias/webdav`](https://github.com/hacdias/webdav)。它的权限管理能力非常强，笔者很喜欢。问题是将本地的 `local/path/to/data` 目录关联给容器的 `/data` 目录后，同步的数据仍然被放置在了容器的根目录里，导致无法持久化备份文件。这也许是当前版本的 Bug，也许是笔者自己没配置对的原因，总之笔者又着眼于找下一个 WebDAV 镜像去了。
+接着，笔者尝试在 Github 上以 `webdav` 为关键词搜索，发现了关联度和星标均为最高，并且活跃更新的 [`hacdias/webdav`](https://github.com/hacdias/webdav)。它针对不同用户组的权限管理能力非常强，笔者很喜欢。但笔者遇到的一个问题是：将本地的 `local/path/to/data` 目录关联给容器的 `/data` 目录后，同步的数据仍然被放置在了容器的根目录里，导致无法持久化备份文件。这也许是当前版本的 Bug，也有可能是没配置对的原因，总之笔者又着眼于找下一个 WebDAV 镜像去了。
 
-最后，笔者尝试了 Docker Hub 上目前下载量和收藏数均为第二的 `ugeek/webdav`，满足了笔者的需要。首先拉取它的镜像，笔者在 MacOS 系统上部署 WebDAV 服务，因此要拉取它的 `arm64` 版本：
+最后，笔者尝试了 Docker Hub 上目前下载量和收藏数均为第二的 `ugeek/webdav`，没有上述的问题，满足了笔者的需要。笔者在 MacOS 系统上部署 WebDAV 服务，因此要拉取它的 `arm64` 版本：
 
 ```bash
 docker pull ugeek/webdav:arm64
@@ -84,9 +84,11 @@ docker run --name webdav \
 
 ### 备份 Next Chat 数据到 WebDAV
 
-笔者使用 Next Chat 的桌面端应用来跟上 AI 的浪潮，撰写此文时使用的版本为 `v2.15.8`，在设置中它提供了同步配置和聊天记录到 WebDAV 的能力，但无论怎么配置也无法成功同步数据，翻看好多 Issues 和相关的帖子才终于理出来要如何使用。
+笔者撰写此文时使用的 Next Chat 版本为 `v2.15.8`。
 
-Next Chat 设计为 Web 端使用，部署时需要配置环境变量 `WHITE_WEBDAV_ENDPOINTS` 以添加 WebDAV 服务白名单。官方构建版本仅对一些常见 WebDAV 服务域名开了白名单，像笔者这样的自建 WebDAV 服务自然是不在名单中。因此就需要手动部署一个属于自己的 Next Chat 的 Web 版本，在环境变量中为 WebDAV 服务开放白名单。同步数据时，使用自建站点的域名作为代理服务器就可以了。
+尽管在设置中它提供了同步配置和聊天记录到 WebDAV 的能力，但无论怎么配置也无法成功同步数据，翻看好多 Issues 和相关的帖子才终于理出来要如何使用。
+
+Next Chat 设计为 Web 端使用，部署时需要配置环境变量 `WHITE_WEBDAV_ENDPOINTS` 以添加 WebDAV 服务白名单。官方构建版本仅对一些常见 WebDAV 服务域名开了白名单，但像笔者这样的自建 WebDAV 服务自然是不可能在名单内。因此需要手动部署一个属于自己的 Next Chat 的 Web 版本，在环境变量中为 WebDAV 服务开放白名单。这样，在同步数据时，使用自建站点的域名作为代理服务器就可以了。
 
 参考部署 Next Chat 到 Vercel 的[官方文档](https://github.com/ChatGPTNextWeb/NextChat/blob/48469bd8ca4b29d40db0ade61b57f9be6f601e01/docs/vercel-cn.md)，部署自己的 Next Chat 站点，将 `WHITE_WEBDAV_ENDPOINTS=https://webdav.towind.fun` 作为构建环境变量：
 
@@ -110,7 +112,7 @@ tail -n 10 /var/log/nginx/error.log
 [error] 2107#2107: *36701359 client intended to send too large body: 1663429 bytes, client: xxx.xx.xxx.xxx, server: webdav.towind.fun, request: "PUT /chatgpt-next-web/backup.json HTTP/2.0", host: "webdav.towind.fun"
 ```
 
-可知 Nginx 拒绝了包含超过设定大小数据的请求，那么只需要将设定的大小放开一点就好。编辑对应的 Nginx 配置：
+可知 Nginx 拒绝了包含超过设定大小数据的请求，那么只需要将设定的大小放开一点就好。编辑对应的 Nginx 配置，例如设置允许的最大请求体为 `50M`：
 
 ```nginx
 server {
@@ -123,7 +125,7 @@ server {
 
 ![Next Chat 同步成功](./private-webdav/webdav-backup-next-chat.png)
 
-未来在新的客户端使用 Next Chat 时，也可以同步配置数据和聊天记录了！
+未来无论在什么客户端使用 Next Chat 时，都可以同步配置数据和聊天记录了！
 
 ## 参考文章
 
