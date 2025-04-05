@@ -103,8 +103,12 @@
     blockquote {
       @apply me-0 ms-0 border-l-4 border-primary;
 
+      :first-child {
+        @apply mt-2;
+      }
+
       :last-child {
-        @apply mb-3;
+        @apply mb-2;
       }
     }
 
