@@ -59,6 +59,8 @@ Docker 是管理本地服务的无二之选，首先在 Mac Mini 上下载并安
 
 拉取 Rust Desk 的服务端镜像 `rustdesk/rustdesk-server`，运行 hbbs 和 hbbr 容器服务：
 
+> 官方文档使用“Host”网络模式来免除一个一个手动设置端口号的麻烦，但是 MacOS 系统并不支持这种网络模式。
+
 ```bash
 # RustDesk 的中介服务器，用于管理和协调客户端连接
 docker run --name hbbs -p 21115:21115 -p 21116:21116 -p 21116:21116/udp -p 21118:21118 -v path/to/rustdesk/data:/root -td rustdesk/rustdesk-server hbbs
