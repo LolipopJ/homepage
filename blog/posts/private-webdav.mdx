@@ -2,6 +2,7 @@
 title: 部署自己的 WebDAV 服务，同步应用数据与软件配置
 date: 2025-04-03
 updated: 2025-04-05
+timeliness: false
 categories:
   - 技术琐事
 tags:
@@ -13,8 +14,7 @@ tags:
 
 ## Docker 部署 WebDAV 服务
 
-> 此章节里笔者选用了纯净的 WebDAV 服务镜像。如果想要更友好的交互体验，可以选用支持 WebDAV 协议的文件服务器镜像，例如 [`drakkan
-sftpgo`](https://github.com/drakkan/sftpgo) 以及 [`sigoden/dufs`](https://github.com/sigoden/dufs) 等等。
+> 此章节里笔者选用了纯净的 WebDAV 服务镜像。如果想要更友好的交互体验，可以选用支持 WebDAV 协议的文件服务器镜像，例如 [`drakkan/sftpgo`](https://github.com/drakkan/sftpgo) 以及 [`sigoden/dufs`](https://github.com/sigoden/dufs) 等等。
 
 一旦使用上了 Docker，就再也不想回去那种将服务运行在机器本体上的时代了。笔者首选使用 Docker 部署 WebDAV 服务，在 Docker Hub 以 `webdav` 为关键词搜索，有如下结果：
 
@@ -85,7 +85,9 @@ docker run --name webdav \
 
 ![配置 Obsidian 插件 Remotely Save](./private-webdav/webdav-sync-obsidian.png)
 
-点击同步按钮，笔记数据就光速保存到 WebDAV 上啦！相比 OneDrive，使用 WebDAV 同步的速度要显著更快，源于少走了不少鉴权和请求接口罢。
+点击同步按钮，笔记数据就光速保存到 WebDAV 上啦！相比 OneDrive，使用 WebDAV 同步的速度要显著更快，但是也失去了 OneDrive 提供的历史版本管理能力，得失兼而有之。
+
+尽管 OneDrive 的能力更加强大，但笔者还是倾心于玩弄自己的小玩具，暂且不与 OneDrive 同步了 XD。
 
 ### 备份 Next Chat 数据到 WebDAV
 
