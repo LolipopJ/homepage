@@ -71,7 +71,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
         updated: updatedDateString,
         categories,
         tags,
-        timeliness = true,
+        timeliness,
       },
     },
   } = data;
@@ -130,7 +130,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
       </div>
 
       <article ref={articleRef} className="heti post-entry">
-        {timeliness && diffDays > 365 && (
+        {timeliness !== false && diffDays > 365 && (
           <blockquote className="border-l-4 border-orange-400">
             这是一篇<strong>最后更新于 {diffDays} 天前</strong>
             的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估信息的有效性。
