@@ -7084,10 +7084,10 @@ get-symbol-description@^1.1.0:
     es-errors "^1.3.0"
     get-intrinsic "^1.2.6"
 
-gitalk-react@^1.0.0-beta.3:
-  version "1.0.0-beta.3"
-  resolved "https://registry.npmjs.org/gitalk-react/-/gitalk-react-1.0.0-beta.3.tgz#b1ef6cce6a9e2df8c49d1a8c0b27c531cab4ee18"
-  integrity sha512-CoLZIh3IT/SuA8IN7zhBfxDxtrKJm6f9YX0f9v4bGDfrrG0SNwsG7NlLKRKxE/mJQEqPMQtfK0UDPyOKkUOyVQ==
+gitalk-react@^1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.npmjs.org/gitalk-react/-/gitalk-react-1.0.0-beta.4.tgz#c8cbeb68c2e9cc4e3e8ca7970a2e9198c04c39d6"
+  integrity sha512-5r/42x8UFmL/MAG2liB58kL9jB5gBWWLYLtSk7tOqKwT0SBlOYpRqjr6D+gSzE3lPKZ2Ldf76FHhglGLF+4W2Q==
   dependencies:
     ahooks "^3.0.0"
     date-fns "^4.0.0"
@@ -7099,11 +7099,6 @@ github-from-package@0.0.0:
   version "0.0.0"
   resolved "https://registry.npmjs.org/github-from-package/-/github-from-package-0.0.0.tgz#97fb5d96bfde8973313f20e8288ef9a167fa64ce"
   integrity sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==
-
-github-markdown-css@^5.8.1:
-  version "5.8.1"
-  resolved "https://registry.npmjs.org/github-markdown-css/-/github-markdown-css-5.8.1.tgz#2a53cf17f0c9bde5ff9e83710a3310a02f5278a7"
-  integrity sha512-8G+PFvqigBQSWLQjyzgpa2ThD9bo7+kDsriUIidGcRhXgmcaAWUIpCZf8DavJgc+xifjbCG+GvMyWr0XMXmc7g==
 
 github-slugger@^2.0.0:
   version "2.0.0"
