@@ -448,7 +448,7 @@ const Layout: React.FC<PageProps> = (props) => {
           {isPostPage && !!postSlug && (
             <GitalkComponent
               gitalkId={postSlug}
-              className="mx-auto mt-24 max-w-xl print:hidden"
+              className="gitalk mx-auto mt-24 max-w-xl print:hidden"
             />
           )}
 

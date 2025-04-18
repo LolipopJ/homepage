@@ -1,4 +1,6 @@
-import { Script } from "gatsby";
+import "gitalk-react/gitalk-dark.css";
+
+import Gitalk from "gitalk-react";
 import * as React from "react";
 
 import {
@@ -10,58 +12,23 @@ import {
 } from "../constants/gitalk";
 
 export interface GitalkProps {
-  gitalkId: Gitalk.default.GitalkOptions["id"];
+  gitalkId: string;
   className?: string;
 }
 
-const GitalkComponent: React.FC<GitalkProps> = ({
-  gitalkId,
-  className = "",
-}) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  const renderGitalk = React.useCallback(
-    (id: Gitalk.default.GitalkOptions["id"]) => {
-      const gitalkContainer = ref.current;
-
-      if (gitalkContainer) {
-        gitalkContainer.replaceChildren();
-
-        if (id && window.Gitalk) {
-          const gitalk = new window.Gitalk({
-            clientID: GITHUB_APP_CLIENT_ID,
-            clientSecret: GITHUB_APP_CLIENT_SECRET,
-            repo: GITHUB_REPO,
-            owner: GITHUB_REPO_OWNER,
-            admin: GITALK_ADMIN,
-            id,
-            distractionFreeMode: false,
-            enableHotKey: false,
-          });
-          gitalk.render(gitalkContainer);
-        }
-      }
-    },
-    [],
-  );
-
-  React.useEffect(() => {
-    renderGitalk(gitalkId);
-  }, [gitalkId, renderGitalk]);
-
+const GitalkComponent: React.FC<GitalkProps> = ({ gitalkId, ...restProps }) => {
   return (
-    <>
-      <Script
-        src="https://unpkg.com/gitalk@1.8.0/dist/gitalk.min.js"
-        strategy="idle"
-        onLoad={() => renderGitalk(gitalkId)}
-      />
-      <div
-        ref={ref}
-        id={`gitalk-${gitalkId}`}
-        className={`gitalk ${className}`}
-      />
-    </>
+    <Gitalk
+      {...restProps}
+      clientID={GITHUB_APP_CLIENT_ID}
+      clientSecret={GITHUB_APP_CLIENT_SECRET}
+      owner={GITHUB_REPO_OWNER}
+      repo={GITHUB_REPO}
+      admin={GITALK_ADMIN}
+      id={gitalkId}
+      enableHotKey={false}
+      createIssueManually
+    />
   );
 };
 
