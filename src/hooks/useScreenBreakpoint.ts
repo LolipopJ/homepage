@@ -19,7 +19,7 @@ const useScreenBreakpoint = () => {
 
   React.useEffect(() => {
     const checkBreakpoint = () => {
-      const newBreakpoint = DEFAULT_BREAKPOINT;
+      const newBreakpoint = { ...DEFAULT_BREAKPOINT };
       for (const [key, value] of Object.entries(SCREEN_BREAKPOINT)) {
         if (window.matchMedia(`(min-width: ${value})`).matches) {
           newBreakpoint[key as keyof typeof SCREEN_BREAKPOINT] = true;
