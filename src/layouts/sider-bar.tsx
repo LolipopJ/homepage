@@ -20,6 +20,8 @@ export interface SiderBarItem<T = string> {
   children: React.ReactElement;
 }
 
+const TRANSITION_DURATION = 150;
+
 const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
   const {
     items = [],
@@ -32,15 +34,35 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
     className = "",
     ...restProps
   } = props;
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const savedScrollTopRef = React.useRef<Record<string, number>>({});
+
   const transitionRef = useSpringRef();
   const transitions = useTransition(activeKey, {
     ref: transitionRef,
     from: { opacity: 0, transform: "translate3d(20%,0,0)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0)" },
     leave: { opacity: 0, transform: "translate3d(-40%,0,0)" },
-    config: { duration: 150 },
+    config: { duration: TRANSITION_DURATION },
     exitBeforeEnter: true,
   });
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      containerRef.current?.scrollTo({
+        top: savedScrollTopRef.current?.[String(activeKey)] ?? 0,
+        behavior: "instant",
+      });
+    }, TRANSITION_DURATION);
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      savedScrollTopRef.current[String(activeKey)] =
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        containerRef.current?.scrollTop ?? 0;
+    };
+  }, [activeKey]);
 
   React.useEffect(() => {
     if (activeKey) {
@@ -71,6 +93,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
         )}
       </div>
       <div
+        ref={containerRef}
         className={`h-[calc(100vh-var(--height-header))] overflow-y-auto ${bodyClassName}`}
       >
         {children ||
