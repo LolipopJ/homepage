@@ -7,7 +7,7 @@ import Icon from "../components/icon";
 
 export interface NavbarProps {
   items: { routes: Route[]; title?: string }[];
-  activeKey: Route["url"];
+  activeKey: string;
   className?: string;
 }
 

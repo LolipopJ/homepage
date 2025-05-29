@@ -37,9 +37,17 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
   {
     title: "",
     routes: [
-      { icon: faHouse, label: "主页", url: "/" },
+      {
+        icon: faHouse,
+        label: "主页",
+        url: "/",
+      },
       // { icon: faLaptopCode, label: "作品集", url: "/works/" },
-      { icon: faIdCard, label: "关于我", url: "/about-me/" },
+      {
+        icon: faIdCard,
+        label: "关于我",
+        url: "/about-me/",
+      },
       // { icon: faHeart, label: "朋友们", url: "/friends/" },
     ],
   },
@@ -52,7 +60,12 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
         url: "/categories/",
         regexp: /^\/categories\//,
       },
-      { icon: faTags, label: "标签", url: "/tags/", regexp: /^\/tags\// },
+      {
+        icon: faTags,
+        label: "标签",
+        url: "/tags/",
+        regexp: /^\/tags\//,
+      },
       // { icon: faFeatherPointed, label: "作者", url: "/authors/", regexp: /^\/authors\// },
       // { icon: faRss, label: "RSS", url: "/rss/" },
     ],

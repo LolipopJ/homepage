@@ -18,7 +18,7 @@ import {
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
-import { PageProps } from "gatsby";
+import { Link, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 
@@ -370,7 +370,9 @@ const Layout: React.FC<PageProps> = (props) => {
         className={`hidden w-72 2xl:block print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
         header={
           <div className="mx-5 flex h-header items-center px-4">
-            <div className="text-lg font-bold">{siteTitle}</div>
+            <Link to="/" className="text-lg font-bold">
+              {siteTitle}
+            </Link>
           </div>
         }
         bodyClassName="px-4"
