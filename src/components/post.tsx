@@ -82,9 +82,13 @@ const Post: React.FC<PostProps> = (props) => {
       className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
     >
       {showBanner ? (
-        <div className="relative -mx-4 -my-0.5">
-          <img src={banner.publicURL} alt="Banner" />
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-neutral-900/5 px-4 py-2 backdrop-blur-sm">
+        <div className="relative -mx-4">
+          <img
+            src={banner.publicURL}
+            alt="Banner"
+            className="h-auto max-h-56 min-h-52 w-full rounded-md object-cover object-center md:max-h-60 xl:max-h-64"
+          />
+          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-neutral-900/60 px-4 py-2.5 backdrop-blur-sm">
             {titleDom}
           </div>
         </div>
