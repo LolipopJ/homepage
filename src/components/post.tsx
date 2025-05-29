@@ -87,6 +87,7 @@ const Post: React.FC<PostProps> = (props) => {
             src={banner.publicURL}
             alt="Banner"
             className="h-auto max-h-56 min-h-52 w-full rounded-md object-cover object-center md:max-h-60 xl:max-h-64"
+            loading="lazy"
           />
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-neutral-900/60 px-4 py-2.5 backdrop-blur-sm">
             {titleDom}
