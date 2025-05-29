@@ -64,7 +64,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
   const { title: siteTitle } = useSiteMetadata();
   const posts = useAllMdx();
-  const [breakpoint, breakpointInitialized] = useTailwindBreakpoint();
+  const [breakpoint, layoutInitialized] = useTailwindBreakpoint();
 
   /** 当前路由是否为博客页 */
   const [isPostPage, postSlug] = React.useMemo(() => {
@@ -362,7 +362,7 @@ const Layout: React.FC<PageProps> = (props) => {
     <div className="flex h-screen print:h-auto">
       {/* 初始化完成前的蒙版层 */}
       <div
-        className={`absolute inset-0 z-50 bg-neutral-900 transition duration-500 ${breakpointInitialized ? "pointer-events-none bg-neutral-900/0" : ""}`}
+        className={`absolute inset-0 z-50 bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none bg-neutral-900/0" : ""}`}
       ></div>
 
       {/* 侧边栏 */}
@@ -444,7 +444,7 @@ const Layout: React.FC<PageProps> = (props) => {
             </div>
           </div>
 
-          {children}
+          {layoutInitialized && children}
 
           {/* 博客页的评论系统 */}
           {isPostPage && !!postSlug && (
