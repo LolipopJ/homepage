@@ -61,6 +61,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const mainRef = React.useRef<HTMLElement>(null);
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
+  const savedScrollTopRef = React.useRef<Record<string, number>>({});
 
   const { title: siteTitle } = useSiteMetadata();
   const posts = useAllMdx();
@@ -85,7 +86,15 @@ const Layout: React.FC<PageProps> = (props) => {
   React.useEffect(() => {
     setPageTitle("");
     setOpenSubNavbarDrawer(false);
-    mainRef.current?.scrollTo({ top: 0, behavior: "instant" });
+    mainRef.current?.scrollTo({
+      top: savedScrollTopRef.current?.[path] ?? 0,
+      behavior: "instant",
+    });
+
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      savedScrollTopRef.current[path] = mainRef.current?.scrollTop ?? 0;
+    };
   }, [path]);
   //#endregion
 
