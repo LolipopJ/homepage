@@ -24,7 +24,10 @@ export const createPages = async function ({
   const { data } = await graphql<{
     allMdx: {
       nodes: (Pick<MdxNode, "fields" | "id"> & {
-        frontmatter: Pick<MdxNode["frontmatter"], "categories" | "tags">;
+        frontmatter: Pick<
+          MdxNode["frontmatter"],
+          "banner" | "categories" | "tags"
+        >;
         internal: Pick<MdxNode["internal"], "contentFilePath">;
       })[];
     };
@@ -45,6 +48,9 @@ export const createPages = async function ({
             slug
           }
           frontmatter {
+            banner {
+              publicURL
+            }
             categories
             tags
           }

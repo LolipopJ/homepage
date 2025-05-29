@@ -41,7 +41,7 @@ const IndexPage: React.FC<PageProps> = () => {
               {posts.map((post) => {
                 return (
                   <li key={post.fields.slug}>
-                    <Post post={post} size="large" />
+                    <Post post={post} size="large" showBanner />
                   </li>
                 );
               })}

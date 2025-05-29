@@ -17,6 +17,9 @@ export const useAllMdx = () => {
             slug
           }
           frontmatter {
+            banner {
+              publicURL
+            }
             categories
             tags
             title

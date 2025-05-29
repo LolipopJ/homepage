@@ -12,6 +12,9 @@ declare global {
       slug: string;
     };
     frontmatter: {
+      banner?: {
+        publicURL: string;
+      };
       categories?: string[];
       tags?: string[];
       title?: string;

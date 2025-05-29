@@ -66,17 +66,20 @@ const config: GatsbyConfig = {
       options: {
         extensions: [".mdx", ".md"],
         gatsbyRemarkPlugins: [
+          // 压缩使用到的图片文件，放置到 /public/static 目录下
           {
             resolve: "gatsby-remark-images",
             options: {
               maxWidth: 624,
             },
           },
+          // 将使用到的其它类型文件放置到 /public/static 目录下
           {
             resolve: "gatsby-remark-copy-linked-files",
             options: {
-              destinationDir: (file: { name: string; hash: string }) =>
-                `static/${file.name}+${file.hash}`,
+              destinationDir: (file: { name: string; hash: string }) => {
+                return `static/${file.hash}/${file.name}`;
+              },
             },
           },
           "gatsby-remark-responsive-iframe",
@@ -138,6 +141,9 @@ const config: GatsbyConfig = {
                       slug
                     }
                     frontmatter {
+                      banner {
+                        publicURL
+                      }
                       categories
                       tags
                       title
@@ -210,6 +216,9 @@ const config: GatsbyConfig = {
                       slug
                     }
                     frontmatter {
+                      banner {
+                        publicURL
+                      }
                       categories
                       tags
                       title

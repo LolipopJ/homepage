@@ -16,6 +16,7 @@ export interface PostProps {
     post: PostType,
   ) => React.ReactElement;
   size?: "normal" | "large";
+  showBanner?: boolean;
   className?: string;
   categoryClassName?: string;
   titleClassName?: string;
@@ -31,6 +32,7 @@ const Post: React.FC<PostProps> = (props) => {
     titleRenderer,
     excerptRenderer,
     size = "normal",
+    showBanner: propsShowBanner = false,
     className = "",
     categoryClassName = "",
     titleClassName = "",
@@ -43,6 +45,7 @@ const Post: React.FC<PostProps> = (props) => {
     excerpt,
   } = post;
   const {
+    banner,
     categories = [],
     date: dateString,
     updated: updatedDateString,
@@ -50,15 +53,12 @@ const Post: React.FC<PostProps> = (props) => {
     title,
   } = frontmatter;
 
+  const showBanner = propsShowBanner && banner;
   const date = dayjs(dateString);
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
 
-  return (
-    <Link
-      to={`/posts/${slug}`}
-      onClick={onClick}
-      className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
-    >
+  const titleDom = (
+    <>
       {categories?.length && (
         <div
           className={`line-clamp-1 font-medium text-foreground opacity-80 ${size === "large" ? "text-base" : "text-sm"} ${categoryClassName}`}
@@ -72,6 +72,25 @@ const Post: React.FC<PostProps> = (props) => {
       >
         {titleRenderer?.(title, post) || title}
       </h1>
+    </>
+  );
+
+  return (
+    <Link
+      to={`/posts/${slug}`}
+      onClick={onClick}
+      className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
+    >
+      {showBanner ? (
+        <div className="relative -mx-4 -my-0.5">
+          <img src={banner.publicURL} alt="Banner" />
+          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-neutral-900/5 px-4 py-2 backdrop-blur-sm">
+            {titleDom}
+          </div>
+        </div>
+      ) : (
+        titleDom
+      )}
       {excerpt && (
         <p title={excerpt} className={`${excerptClassName}`}>
           {excerptRenderer?.(excerpt, post) || excerpt}

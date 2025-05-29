@@ -21,10 +21,10 @@ const PostListTemplate: React.FC<
     allMdx: { nodes: posts = [] },
   } = data;
   return (
-    <ol className="mb-8 grid grid-cols-1 gap-4">
+    <ol className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
       {posts.map((post) => (
         <li key={post.fields.slug}>
-          <Post post={post} size="large" />
+          <Post post={post} size="large" showBanner />
         </li>
       ))}
     </ol>
@@ -43,6 +43,9 @@ export const query = graphql`
           slug
         }
         frontmatter {
+          banner {
+            publicURL
+          }
           categories
           tags
           title
