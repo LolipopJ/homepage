@@ -15,6 +15,7 @@ export const useAllMdx = () => {
           excerpt(pruneLength: 200)
           fields {
             slug
+            isDraft
           }
           frontmatter {
             banner {

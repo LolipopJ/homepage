@@ -10,6 +10,7 @@ declare global {
     excerpt: string;
     fields: {
       slug: string;
+      isDraft: boolean;
     };
     frontmatter: {
       banner?: {

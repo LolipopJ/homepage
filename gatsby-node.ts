@@ -14,6 +14,12 @@ export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
       name: "slug",
       value: parseFilePathToPostSlug(String(node.internal.contentFilePath)),
     });
+
+    createNodeField({
+      node,
+      name: "isDraft",
+      value: /\/blog\/drafts\//.test(String(node.internal.contentFilePath)),
+    });
   }
 };
 
@@ -46,6 +52,7 @@ export const createPages = async function ({
         nodes {
           fields {
             slug
+            isDraft
           }
           frontmatter {
             banner {
