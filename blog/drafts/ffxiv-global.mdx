@@ -1,7 +1,7 @@
 ---
 title: 最终幻想 14 / Final Fantasy XIV 国际服入坑指北
 date: 2024-11-08
-updated: 2025-05-13
+updated: 2025-06-03
 ---
 
 本文档旨在帮助日文零基础或英语险胜四六级的好厚米们入坑 FF14 国际服，主要论述如何注册账号、下载客户端、汉化游戏等，此外加入自己作为程序员的理解与游戏实践，希望对你有所帮助。
@@ -16,7 +16,7 @@ updated: 2025-05-13
 - 2024.12.07（v1.1），补充遗漏的小点。
 - 2024.11.08（v1.0），撰写完成文档。
 
-## 为什么是 Final Fantasy XIV
+## 为什么玩 Final Fantasy XIV
 
 FF14 作为一款 MMORPG 拥有如下令笔者喜爱的地方：
 
@@ -72,7 +72,7 @@ FF14 账号的注册，游戏的激活和游玩时间的充值等操作都在 [M
 
 注册时填写的信息请尽可能记录保留下来，以防未来意外封禁时，验证真实身份时使用。
 
-## 游戏购买与付费机制
+## 游戏购买与点卡付费机制
 
 在没有正式购买游戏之前，你可以免费、无限时间游玩 2.0 - 4.x 版本（对应 1 - 70 级）的所有内容。当然，试玩版账号存在一些功能上的限制，例如：
 
@@ -91,7 +91,7 @@ FF14 账号的注册，游戏的激活和游玩时间的充值等操作都在 [M
 
 用于购买游戏和游玩时间的 Crysta 可以在淘宝等二次贩售商购买与代充（有代理软件的话建议购买后自行充值），注意甄别商家。
 
-## 下载与启动客户端
+## 下载并安装客户端
 
 推荐使用开源的 [FFXIVQuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher) 游戏启动器替代官方的启动器，具备保存账号密码到本地的功能，能一键打开游戏，此外还具备其它进阶能力。[在这里](https://github.com/goatcorp/FFXIVQuickLauncher/releases)下载它的最新版本：
 
@@ -109,15 +109,19 @@ FFXIVQuickLauncher 内置了 Dalamud 卫月插件加载器，未来如果需要�
 
 ## 汉化游戏
 
-如果你想要更**最佳的游戏汉化体验**，推荐使用开源的 [FFXIVChnTextPatch-Souma](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma) 模组来汉化游戏客户端。
+推荐使用开源的 [FFXIVChnTextPatch-Souma](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma) 模组来汉化游戏客户端。
 
-### 傻瓜式方案
+### 汉化工具方案
 
-下载最新版本的[汉化文件压缩包](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)（命名形如 `7.21.v1.zip`），将解压后得到的文件覆盖到 `FINAL FANTASY XIV - A Realm Reborn\game\sqpack\ffxiv` 目录。
+下载最新版本的[汉化工具压缩包](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)（命名形如 `Source code (zip)`），解压后打开目录里的 `FFXIVChnTextPatchGP.exe` 汉化工具，在设置里选中游戏安装路径，如下图所示：
+
+![chn-tool-setting](./ffxiv-global/chn-tool-setting.png)
+
+点击确定以保存设置，在主界面点击汉化按钮即可。
 
 ### 插件加载方案
 
-拓展性更好的汉化方案是通过卫月加载汉化模组，但是需要一定的动手能力。此外由于每次客户端版本更新时，卫月会无法使用（避免旧版本框架导致的游戏崩溃；根据版本更新的大小，卫月更新所需的时间也从一天到几天不等），汉化模组也**暂时无法加载**，需要忍受未汉化的客户端。
+拓展性更好的汉化方案是通过卫月加载汉化模组，但是**需要一定的动手能力**。此外由于每次客户端版本更新时，卫月会无法使用（避免旧版本框架导致的游戏崩溃；根据版本更新的大小，卫月更新所需的时间也从一天到几天不等），汉化模组也因此**无法加载**，需要暂时忍受未汉化的客户端。
 
 具体安装的方法如下：
 
@@ -125,17 +129,13 @@ FFXIVQuickLauncher 内置了 Dalamud 卫月插件加载器，未来如果需要�
 
    ![dalamud-custom-penumbra-repo](./ffxiv-global/dalamud-custom-penumbra-repo.png)
 
-2. 下载必要的[字体模组](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.4.4/HarmonyOS.Sans.pmp)和最新版本的[汉化模组文件](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)（命名形如 `7.15.v3.Mod.zip` 或 `7.16.v1.pmp`），通过 Penumbra 导入 `.pmp` 模组文件，完成对游戏客户端的汉化。如下图所示：
+2. 下载必要的[字体模组](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases/download/v2.4.4/HarmonyOS.Sans.pmp)和最新版本的[汉化模组文件](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/releases)（命名形如 `7.25.v3.1.mod.pmp`），通过 Penumbra 导入 `.pmp` 模组文件，完成对游戏客户端的汉化。如下图所示：
 
    ![penumbra-chn-patch](./ffxiv-global/penumbra-chn-patch.png)
 
 3. 在此基础上，还可以引入 [Simplified Chinese UI Replacement](https://www.nexusmods.com/finalfantasy14/mods/2048) 模组，实现对 UI 界面的完整汉化。汉化后的 UI 界面如下图所示：
 
    ![chn-ui](./ffxiv-global/chn-ui.png)
-
-### 其它方案
-
-过去笔者用过的汉化方案是：基于开源的 [FFXIVChnTextPatch-GP](https://github.com/GpointChen/FFXIVChnTextPatch-GP) 工具来汉化游戏客户端，详细步骤请参考其文档。一个比较大的缺陷是[物品搜索](#物品搜索)等地方需要用游戏客户端原文，否则无法正常使用。
 
 ## 加速器
 
@@ -255,7 +255,7 @@ ACT 即 Advanced Combat Tracker，是一款针对 MMOPRG 网游的通用战斗�
 
 如上图所示：实时上传功能需要选中 ACT 写入战斗数据的目录，如果使用的是 NGA 整合版本，目录为 `path/to/ACT.DieMoe.G/FFXIVLogs`；使用非简体中文语言的客户端才能将战斗数据上传到 JP 等区域。
 
-使用 ACT 是一个两端都很锋利的双刃剑：好的方面是会让你认真对待每一场战斗，逐渐优化自己的输出循环，拼尽全力做到力所能及的最好，为游戏多增添一些可挑战的地方；坏的方面是会降低你对“摸鱼”队友的容忍度，并且会为自己比别人高的数据感到傲慢，比别人低的数据感到焦虑。
+使用 ACT 是一个两端都很锋利的双刃剑：好的方面是会让你认真对待每一场战斗，逐渐优化自己的输出循环，拼尽全力做到力所能及的最好，为游戏多增添一些可挑战的地方；坏的方面是会降低你对“摸鱼”队友的容忍度，并且会为自己比别人低的数据感到焦虑。
 
 对于笔者来说，ACT 就是必备插件，可以记录下每天都干了些什么，既可以向别人展示，也留给以后自己回顾。
 
