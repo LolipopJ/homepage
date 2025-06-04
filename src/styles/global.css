@@ -155,6 +155,10 @@
       @apply my-6;
     }
 
+    pre > code {
+      @apply print:whitespace-pre-wrap print:break-words;
+    }
+
     :not(pre) > code[class*="language-"] {
       @apply mx-0.5 px-1.5;
     }
