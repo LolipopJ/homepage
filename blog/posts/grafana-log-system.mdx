@@ -1,7 +1,7 @@
 ---
 title: 通过 Grafana 管理日志信息
 date: 2025-06-03
-updated: 2025-06-04
+updated: 2025-06-06
 banner: ./grafana-log-system/grafana-panel.png
 timeliness: true
 categories:
@@ -14,9 +14,9 @@ tags:
   - Docker
 ---
 
-新买了服务器果然能为自己创造一个又一个接连不断的需求。例如今天，想到公网服务器上跑的定时脚本会把日志重定向到指定的文件里，但是并不会自动清理，意味着它们会在几十年后占满笔者的硬盘空间，这是不可接受不可妥协的！
+新买了服务器果然能为自己创造一个又一个接连不断的需求。例如，笔者想到公网服务器上跑的定时脚本会把日志重定向到指定的文件里，但是并不会自动清理，意味着它们会在几十年后占满笔者的硬盘空间，这是不可接受不可妥协的！
 
-因此今天，笔者打算部署统一的日志管理服务，用于存储来自各个地方的日志信息，既方便管理，也方便快速发现并修复问题。
+因此在本篇博客里，笔者计划部署统一的日志管理服务，存储来自各个地方的日志信息，既方便管理，也方便快速发现并修复问题。
 
 在 Github 上以 `log` 为关键词，按星标数排序，目前排名第一的开源软件是 [`grafana/grafana`](https://github.com/grafana/grafana)。浏览使用文档后觉得它远远超出笔者的需要，但就笔者就爱用大炮打蚊子，遂决定在 Docker 上部署之，作为笔者的日志管理服务。
 
@@ -309,7 +309,7 @@ compactor:
  ✔ Container grafana-grafana-1  Started                                                                                                                    0.9s
 ```
 
-验证 Grafana 服务是否启动成功，可以访问 Grafana 容器映射在机器上的端口（配置文件里默认为 `3000`）。如果成功的话，将正常显示控制台页面如下：
+验证 Grafana 容器是否启动成功，可以访问 Grafana 容器映射在机器上的端口（配置文件里默认为 `3000`）。如果成功的话，将正常显示控制台页面如下：
 
 ![grafana-panel](./grafana-log-system/grafana-panel.png)
 
@@ -417,9 +417,15 @@ Jun 03 21:43:30 iZ2vc17uca9zl48iicx7ojZ alloy[25555]: ts=2025-06-03T13:43:30.862
 
 ### 使用 Docker 插件重定向容器日志信息
 
-为了重定向 Docker 容器里的日志到 Loki 上，只需要安装 Loki 的 Docker 插件并添加相应的 `logging` 配置。
+为了重定向 Docker 容器里的日志到 Loki 上，只需要安装 Loki 的 Docker 插件并为容器添加相应的 `logging` 配置。
 
-但在开始前，假如您忘记了最初启动容器时 `docker run` 后面的一串参数怎么办？用 `docker inspect` 去找灵感也太麻烦了！这个问题也困扰了笔者一阵，幸运的是以前有人遇到这样的烦恼后，开发了 [`runlike`](https://github.com/lavie/runlike) 工具，它可以帮助打印出运行指定容器时可能使用到的参数。
+笔者的 Docker 服务部署在使用 ARM64 架构的机器上，因此执行如下命令安装 [Loki 的 Docker 插件](https://hub.docker.com/r/grafana/loki-docker-driver/tags)：
+
+```bash
+docker plugin install grafana/loki-docker-driver:3.5.1-arm64 --alias loki --grant-all-permissions
+```
+
+在配置容器前，假如您忘记了最初用 `docker run` 命令启动容器时后面的一串参数怎么办？用 `docker inspect` 去找灵感也太麻烦了！这个问题也困扰了笔者一阵，幸运的是以前有人遇到这样的烦恼后，开发了 [`runlike`](https://github.com/lavie/runlike) 工具，它可以帮助打印出运行指定容器时可能使用到的参数。
 
 拉取 `assaflavie/runlike` 镜像：
 
@@ -443,7 +449,7 @@ alias runlike="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock assa
 docker run --name=alist \
         --hostname=xxxxxx \
         --mac-address=xx:xx:xx:xx:xx:xx \
-        --volume /path/to/AList/data:/opt/alist/data \
+        --volume /path/to/data:/opt/alist/data \
         --network=bridge \
         --workdir=/opt/alist/ \
         -p 5244:5244 \
@@ -455,11 +461,11 @@ docker run --name=alist \
         /entrypoint.sh
 ```
 
-摘取其中笔者确实使用到的参数，简洁的启动命令就是：`docker run --name=alist --volume /path/to/AList/data:/opt/alist/data -p 5244:5244 --restart=unless-stopped xhofe/alist`。
+摘取其中笔者确实使用到的参数，简洁的启动命令就是：`docker run --name=alist --volume /path/to/data:/opt/alist/data -p 5244:5244 --restart=unless-stopped xhofe/alist`。
 
-随着服务容器化和自动化的发展，`docker run` 也该被扫进历史的垃圾堆，总是使用 `docker-compose` 命令来替代了。趁着这次机会，笔者也将所有容器的启动方式替换为了 `docker-compose`，以后再遇到需要修改参数或更新镜像等的情况，就可以省时省力一键启动更新后的容器了。
+随着容器化和自动化技术的发展，`docker run` 也该被扫进历史的垃圾堆，用 `docker-compose` 来替代了。趁着这次机会，笔者也将服务器上所有容器的启动方式替换为了 `docker-compose`，以后再遇到需要修改参数或更新镜像等的情况，就可以省时省力地一键启动新容器了。
 
-以笔者的 AList 服务为例，可以编写 `docker-compose.yaml` 文件如下：
+对于笔者的 AList 容器，可以编写 `docker-compose.yaml` 文件如下：
 
 ```yml
 services:
@@ -467,19 +473,15 @@ services:
     image: xhofe/alist
     container_name: alist-server
     volumes:
-      - /path/to/AList/data:/opt/alist/data
+      - /path/to/data:/opt/alist/data
     ports:
       - 5244:5244
     restart: unless-stopped
 ```
 
-笔者的 Docker 服务部署在使用 ARM64 架构的机器上，因此执行如下命令安装 [Loki 的 Docker 插件](https://hub.docker.com/r/grafana/loki-docker-driver/tags)：
+> 更进一步，您还可以选用 [Dockge](https://github.com/louislam/dockge) 等服务来统一管理系统上的所有 `docker-compose.yaml` 文件，不再在此博客里赘述。
 
-```bash
-docker plugin install grafana/loki-docker-driver:3.5.1-arm64 --alias loki --grant-all-permissions
-```
-
-重定向容器的日志信息到 Loki，完整的 `docker-compose.yaml` 配置文件如下：
+重定向 AList 容器的日志信息到 Loki，完整的 `docker-compose.yaml` 配置文件如下：
 
 ```yml
 services:
@@ -487,7 +489,7 @@ services:
     image: xhofe/alist
     container_name: alist-server
     volumes:
-      - /path/to/AList/data:/opt/alist/data
+      - /path/to/data:/opt/alist/data
     ports:
       - 5244:5244
     restart: unless-stopped
