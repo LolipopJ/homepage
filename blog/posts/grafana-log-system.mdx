@@ -1,7 +1,7 @@
 ---
 title: 通过 Grafana 管理日志信息
 date: 2025-06-03
-updated: 2025-06-06
+updated: 2025-06-12
 banner: ./grafana-log-system/grafana-panel.png
 timeliness: true
 categories:
@@ -470,7 +470,7 @@ docker run --name=alist \
 ```yml
 services:
   alist:
-    image: xhofe/alist
+    image: xhofe/alist:v3.40.0 # 由于 AList 已被出售给商业公司，这里笔者使用了普遍认为较安全的版本；如果出现云盘兼容性问题，请考虑使用最新版本或切换其他云盘管理工具
     container_name: alist-server
     volumes:
       - /path/to/data:/opt/alist/data
@@ -486,7 +486,7 @@ services:
 ```yml
 services:
   alist:
-    image: xhofe/alist
+    image: xhofe/alist:v3.40.0
     container_name: alist-server
     volumes:
       - /path/to/data:/opt/alist/data
