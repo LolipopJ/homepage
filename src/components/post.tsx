@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { Link } from "gatsby";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import * as React from "react";
 
 export type PostType = Pick<MdxNode, "excerpt" | "fields" | "frontmatter">;
@@ -45,7 +46,7 @@ const Post: React.FC<PostProps> = (props) => {
     excerpt,
   } = post;
   const {
-    banner,
+    banner = null,
     categories = [],
     date: dateString,
     updated: updatedDateString,
@@ -53,7 +54,8 @@ const Post: React.FC<PostProps> = (props) => {
     title,
   } = frontmatter;
 
-  const showBanner = propsShowBanner && banner;
+  const bannerImage = getImage(banner);
+  const showBanner = propsShowBanner && bannerImage;
   const date = dayjs(dateString);
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
 
@@ -83,8 +85,8 @@ const Post: React.FC<PostProps> = (props) => {
     >
       {showBanner ? (
         <div className="relative -mx-4">
-          <img
-            src={banner.publicURL}
+          <GatsbyImage
+            image={bannerImage}
             alt="Banner"
             className="h-52 w-full rounded-md object-cover object-center md:h-56 xl:h-60"
             loading="lazy"

@@ -1,3 +1,5 @@
+import type { ImageDataLike } from "gatsby-plugin-image";
+
 declare global {
   interface SiteMetadata {
     title: string;
@@ -13,9 +15,7 @@ declare global {
       isDraft: boolean;
     };
     frontmatter: {
-      banner?: {
-        publicURL: string;
-      };
+      banner?: ImageDataLike;
       categories?: string[];
       tags?: string[];
       title?: string;

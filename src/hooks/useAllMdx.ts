@@ -19,7 +19,9 @@ export const useAllMdx = () => {
           }
           frontmatter {
             banner {
-              publicURL
+              childImageSharp {
+                gatsbyImageData
+              }
             }
             categories
             tags

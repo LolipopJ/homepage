@@ -29,6 +29,7 @@ const config: GatsbyConfig = {
     "gatsby-plugin-sitemap",
     "gatsby-plugin-image",
     "gatsby-plugin-sharp",
+    "gatsby-transformer-sharp",
     {
       resolve: "gatsby-source-filesystem",
       options: {
@@ -142,7 +143,9 @@ const config: GatsbyConfig = {
                     }
                     frontmatter {
                       banner {
-                        publicURL
+                        childImageSharp {
+                          gatsbyImageData
+                        }
                       }
                       categories
                       tags
@@ -217,7 +220,9 @@ const config: GatsbyConfig = {
                     }
                     frontmatter {
                       banner {
-                        publicURL
+                        childImageSharp {
+                          gatsbyImageData
+                        }
                       }
                       categories
                       tags
