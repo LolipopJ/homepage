@@ -30,7 +30,7 @@ const IndexPage: React.FC<PageProps> = () => {
         .map(([year, posts]) => (
           <div key={year} className="mb-12">
             <div className="mb-4 px-4">
-              <span className="text-xl font-bold text-primary-light">
+              <span className="text-xl font-bold">
                 {year.split("").map((num) => NUMBER_LETTER[Number(num)])}
               </span>
               <span className="text-sm text-foreground-secondary before:mx-2 before:content-['/']">

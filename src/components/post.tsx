@@ -25,6 +25,13 @@ export interface PostProps {
   footerClassName?: string;
 }
 
+const CATEGORY_GRADIENT_CLASSNAME: Record<string, string> = {
+  技术琐事: "from-green-300 via-emerald-300 to-teal-500",
+  前端开发: "from-purple-300 via-fuchsia-400 to-pink-500",
+  后端开发: "from-sky-300 via-blue-300 to-indigo-400",
+  全栈开发: "from-amber-300 via-yellow-400 to-orange-500",
+};
+
 /** 博客列表栏的博客简介 */
 const Post: React.FC<PostProps> = (props) => {
   const {
@@ -63,7 +70,7 @@ const Post: React.FC<PostProps> = (props) => {
     <>
       {categories?.length && (
         <div
-          className={`line-clamp-1 font-medium text-foreground opacity-80 ${size === "large" ? "text-base" : "text-sm"} ${categoryClassName}`}
+          className={`w-fit bg-gradient-to-tr from-0% via-40% to-90% bg-clip-text font-bold text-transparent ${size === "large" ? "text-base" : "text-sm"} ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""} ${categoryClassName}`}
         >
           {categories[0]}
         </div>
