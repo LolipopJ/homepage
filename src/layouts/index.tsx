@@ -379,7 +379,10 @@ const Layout: React.FC<PageProps> = (props) => {
         className={`hidden w-72 2xl:block print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
         header={
           <div className="mx-5 flex h-header items-center px-4">
-            <Link to="/" className="text-lg font-bold">
+            <Link
+              to="/"
+              className="text-lg font-bold transition-colors hover:text-primary"
+            >
               {siteTitle}
             </Link>
           </div>

@@ -25,8 +25,8 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
         return (
           <nav className="mb-6" key={item.title}>
             {item.title && (
-              <div className="mb-2 px-5 text-sm font-bold text-foreground-secondary">
-                {item.title}
+              <div className="relative mb-3 flex px-5 text-sm font-bold leading-5 text-foreground-secondary after:mb-2.5 after:ml-8 after:w-full after:border-b after:border-foreground-secondary after:opacity-40 after:content-['']">
+                <span className="min-w-fit">{item.title}</span>
               </div>
             )}
             <ul>
@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
                   ? route.regexp.test(activeKey)
                   : activeKey === route.url;
                 const isExternal = !/^\//.test(route.url);
-                const linkClassName = `item-selectable flex items-center rounded-lg px-3 py-2 mb-1 text-base ${isSelected ? "item-selected" : ""}`;
+                const linkClassName = `item-selectable flex items-center rounded-lg px-3 py-2 mb-1.5 text-base ${isSelected ? "item-selected" : ""}`;
 
                 return React.cloneElement(
                   isExternal ? (
@@ -50,7 +50,9 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
                   },
                   <>
                     <Icon icon={route.icon} className="w-8" />
-                    <span className="mr-6 flex-1 overflow-hidden text-ellipsis">
+                    <span
+                      className={`mr-6 flex-1 overflow-hidden text-ellipsis`}
+                    >
                       {route.label}
                     </span>
                     {isExternal && (
