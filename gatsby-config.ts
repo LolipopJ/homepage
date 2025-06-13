@@ -12,10 +12,11 @@ dotenv.config({
 const config: GatsbyConfig = {
   siteMetadata: {
     title: "Lolipop's Studio",
+    owner: "Lolipop",
     description:
       "Homepage and blog of Lolipop, share knowledge about software / frontend development.",
     siteUrl: "https://blog.towind.fun",
-  },
+  } as SiteMetadata,
   flags: {
     // DEV_SSR: true,
     // FAST_DEV: true,

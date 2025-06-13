@@ -3,8 +3,10 @@ import type { ImageDataLike } from "gatsby-plugin-image";
 declare global {
   interface SiteMetadata {
     title: string;
+    owner: string;
     description: string;
     siteUrl: string;
+    [key: string]: unknown;
   }
 
   interface MdxNode {

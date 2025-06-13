@@ -63,7 +63,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
   const savedScrollTopRef = React.useRef<Record<string, number>>({});
 
-  const { title: siteTitle } = useSiteMetadata();
+  const { title: siteTitle, owner: siteOwner } = useSiteMetadata();
   const posts = useAllMdx();
   const [breakpoint, layoutInitialized] = useTailwindBreakpoint();
 
@@ -547,14 +547,7 @@ const Layout: React.FC<PageProps> = (props) => {
           <div className="my-3 w-full border border-foreground-tertiary" />
           <div className="flex h-6 items-center justify-between">
             <span className="text-foreground-secondary">
-              © {dayjs().year()}{" "}
-              <a
-                href="https://github.com/LolipopJ"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Lolipop
-              </a>
+              © {dayjs().year()} {siteOwner}
             </span>
             <div className="-mr-2 flex gap-2 text-xl">
               {FOOTER_SOCIAL_ITEMS.map((item) => (
