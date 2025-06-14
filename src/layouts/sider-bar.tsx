@@ -94,13 +94,13 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
       </div>
       <div
         ref={containerRef}
-        className={`h-[calc(100vh-var(--height-header))] overflow-y-auto ${bodyClassName}`}
+        className={`h-[calc(100vh-var(--height-header))] overflow-y-auto overflow-x-hidden ${bodyClassName}`}
       >
         {children ||
           transitions((style, key) => {
             const item = items.find((item) => item.key === key);
             return (
-              <animated.div key={item?.key} style={style}>
+              <animated.div key={item?.key} className="h-full" style={style}>
                 {item?.children}
               </animated.div>
             );

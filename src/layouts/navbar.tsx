@@ -9,6 +9,7 @@ export interface NavbarProps {
   items: { routes: Route[]; title?: string }[];
   activeKey: string;
   className?: string;
+  children?: React.ReactNode;
 }
 
 export interface Route {
@@ -18,7 +19,12 @@ export interface Route {
   regexp?: RegExp;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  items,
+  activeKey,
+  className,
+  children,
+}) => {
   return (
     <div className={className}>
       {items.map((item) => {
@@ -68,6 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ items, activeKey, className }) => {
           </nav>
         );
       })}
+      {children}
     </div>
   );
 };

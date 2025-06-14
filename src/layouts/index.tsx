@@ -26,6 +26,7 @@ import ActionButton from "../components/action-button";
 import AlgoliaSearch from "../components/algolia-search";
 import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
+import Planets from "../components/planets";
 import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
@@ -358,7 +359,24 @@ const Layout: React.FC<PageProps> = (props) => {
     });
   }
 
-  const siderBarItemNav = <Navbar items={NAVBAR_ITEMS} activeKey={path} />;
+  const planetSize = breakpoint["2xl"]
+    ? 260
+    : breakpoint["lg"]
+      ? 276
+      : breakpoint["sm"]
+        ? 292
+        : 0;
+  const siderBarItemNav = (
+    <>
+      <Navbar items={NAVBAR_ITEMS} activeKey={path} />
+      <div
+        className={`pointer-events-none absolute bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+        style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
+      >
+        <Planets size={planetSize} />
+      </div>
+    </>
+  );
   if (!breakpoint["2xl"]) {
     subNavbarItems.unshift({
       key: "nav",
@@ -387,7 +405,7 @@ const Layout: React.FC<PageProps> = (props) => {
             </Link>
           </div>
         }
-        bodyClassName="px-4"
+        bodyClassName="px-4 relative"
       >
         {siderBarItemNav}
       </SiderBar>
@@ -396,7 +414,7 @@ const Layout: React.FC<PageProps> = (props) => {
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
-        bodyClassName="px-4"
+        bodyClassName="px-4 h-[calc(100vh-var(--height-header)*2)] lg:h-[calc(100vh-var(--height-header))]"
         className={`print:hidden ${isImmersiveActivated ? "!hidden" : ""} ${
           breakpoint["lg"]
             ? `w-96 2xl:w-88`
@@ -407,7 +425,7 @@ const Layout: React.FC<PageProps> = (props) => {
       {/* 路由主体 */}
       <main
         ref={mainRef}
-        className={`flex-1 ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
+        className={`flex-1 bg-background ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
         <header
           className={`sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
