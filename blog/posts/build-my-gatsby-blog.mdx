@@ -1,7 +1,7 @@
 ---
 title: 基于 Gatsby 打造我的个人博客系统
 date: 2025-03-12
-updated: 2025-03-17
+updated: 2025-06-16
 banner: ./build-my-gatsby-blog/banner.jpg
 timeliness: false
 categories:
@@ -384,9 +384,9 @@ MDX 渲染得到的 `<img>` 组件将自动被替换为 `<FancyBoxImage>` 组件
 
 ### 静态资源的访问与优化
 
-插件 `gatsby-remark-images` 将自动压缩博客中使用到的本地图片的体积，减少流量压力；同时生成占位图片，避免博客高度突然变化，提升阅读体验。在 Gatsby 的最佳实践中，应当始终使用类似 `gatsby-remark-images` 这样的插件来优化图片类型的静态资源。
+插件 `gatsby-remark-images` 将自动压缩 MDX 文件中使用到的本地图片，减少流量压力；同时生成占位图片，避免博客高度突然变化，提升阅读体验。在 Gatsby 的最佳实践中，应当始终使用类似 `gatsby-remark-images` 这样的插件来优化图片类型的静态资源。
 
-结合插件 `gatsby-plugin-mdx` 使用，可以配置如下：
+结合插件 `gatsby-plugin-mdx` 使用，配置如下：
 
 ```ts
 const config: GatsbyConfig = {
@@ -395,6 +395,7 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-mdx",
       options: {
+        extensions: [".mdx", ".md"],
         gatsbyRemarkPlugins: [
           {
             resolve: "gatsby-remark-images",
@@ -410,11 +411,11 @@ const config: GatsbyConfig = {
 };
 ```
 
-其中，`gatsby-plugin-sharp` 是插件 `gatsby-remark-images` 的必要依赖，需要添加到插件列表中。
+其中，插件 `gatsby-plugin-sharp` 是实现图片压缩功能的核心，也是插件 `gatsby-remark-images` 的必要依赖，需要添加到插件列表中。
 
-需要留意的是，插件 `gatsby-remark-images` 仅支持压缩、处理部分的图片格式如 `.jpeg`。其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助，原封不动地移动到对应的目录里。协同使用这两个插件即可达成最好的静态资源访问效果。
+需要留意的是，插件 `gatsby-plugin-sharp` 仅支持压缩、处理部分的图片格式如 `.jpeg`。其它的格式如 `.gif` 则需要插件 `gatsby-remark-copy-linked-files` 帮助，原封不动地移动到对应的目录里。协同使用这两个插件即可达成最好的静态资源访问效果。
 
-除此之外，由于 `gatsby-remark-images` 会相应地封装 MDX 渲染结果里的 `<img>` 标签，为了兼容 FancyBox 能力，可以更新 `useEffect()` 钩子方法如下：
+除此之外，由于插件 `gatsby-remark-images` 会相应地封装 MDX 渲染结果里的 `<img>` 标签，为了兼容 FancyBox 能力，可以更新 `useEffect()` 钩子方法如下：
 
 ```tsx
 const PostTemplate = ({ children }) => {
@@ -439,6 +440,78 @@ const PostTemplate = ({ children }) => {
     <article ref={articleRef}>
       <MDXProvider components={components}>{children}</MDXProvider>
     </article>
+  );
+};
+```
+
+这样，MDX 正文包含的图片资源的体积得到了压缩优化。
+
+更进一步，假如我想要为每个博客指定一张封面图，要如何正确引入并压缩这张封面图文件呢？
+
+```md
+---
+title: 基于 Gatsby 打造我的个人博客系统
+banner: path/to/banner.jpg
+---
+
+...正文
+```
+
+读取源文件的 Frontmatter 信息，转换为前端可用的数据源，自然也是 Gatsby 插件的工作。新的插件列表配置如下：
+
+```ts
+const config: GatsbyConfig = {
+  plugins: [
+    "gatsby-plugin-image",
+    "gatsby-plugin-sharp",
+    "gatsby-transformer-sharp",
+    {
+      resolve: "gatsby-plugin-mdx",
+      options: {
+        // ...
+      },
+    },
+  ],
+};
+```
+
+当插件 `gatsby-transformer-sharp` 在 Frontmatter 发现图片文件路径的属性时，就会尝试调用 `gatsby-plugin-sharp` 对它进行压缩，并转换为 GraphQL 可查询的节点。例如：
+
+```graphql
+query {
+  allMdx() {
+    nodes {
+      body
+      frontmatter {
+        banner {
+          childImageSharp {
+            gatsbyImageData
+          }
+        }
+        title
+      }
+    }
+  }
+}
+```
+
+在前端，调用插件 `gatsby-plugin-image` 提供的方法与组件，即可展示指定的图片：
+
+```tsx
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
+
+const PostTemplate = ({ post }) => {
+  const {
+    title,
+    frontmatter: { banner = null },
+  } = post;
+  const bannerImage = getImage(banner);
+
+  return (
+    <div>
+      <GatsbyImage image={bannerImage} />
+      {/* ... */}
+    </div>
   );
 };
 ```
