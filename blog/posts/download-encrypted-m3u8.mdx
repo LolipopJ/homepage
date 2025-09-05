@@ -96,7 +96,7 @@ CMD 没有简易的读取文件并拼接命令的语法，但 PowerShell 和其�
 
 它表示视频分片文件基于 AES-128 加密，其中 `URI` 指向的就是密钥的地址，`IV` 是初始化向量。理论上我们只需要再使用 `curl` 命令下载这个密钥文件到本地，然后对应修改 `URI` 字段为本地文件路径即可。
 
-但本文想要探讨的正是另外一种情况：`URI` 指向的并不是直接可用的密钥，而是一个加密后的密钥，我们需要基于约定好的算法解密得到真正的密钥。
+但本文想要探讨的正是另外一种情况：**`URI` 指向的并不是直接可用的密钥，而是一个加密后的密钥，我们需要基于约定好的算法解密得到真正的密钥。**
 
 那么，这个“约定好的算法”我们要如何得知呢？答案就是去找！去分析网站的前端代码，去找出它是如何解密并获取真正的密钥的！通常来说，这个解密算法会被打包混淆在某个 JavaScript 文件里。
 
@@ -135,8 +135,9 @@ return a.default.wrap(
             c.default.get(_ + "/sign")
           );
         case 33:
-          if (((S = e.sent), (k = S.data), (w = k.nonce))) {
-            // w 为调用 /sign 接口时随机生成的参数 ${nonce}
+          if (
+            ((S = e.sent), (k = S.data), (w = k.nonce)) // w 为调用 /sign 接口时随机生成的参数 ${nonce}
+          ) {
             e.next = 38;
             break;
           }
@@ -183,11 +184,11 @@ return a.default.wrap(
 
 ![获取真正密钥](./download-encrypted-m3u8/breakpoint.png)
 
-可知，笔者所需的真正密钥为 `a1c18f6619b84605`。
+可知，解密视频分片文件所需的真正密钥为 `a1c18f6619b84605`。
 
 ## 下载并拼装视频文件
 
-剩下的工作就非常简单了，将真正密钥保存为本地的文件 `key.bin`，并且修改 `playlist.m3u8` 里 `#EXT-X-KEY` 行的 `URI` 字段为本地文件路径：
+剩下的工作就非常简单了，将真正密钥保存为本地的文件 `key.bin`，对应修改 `playlist.m3u8` 里 `#EXT-X-KEY` 行的 `URI` 字段为本地文件路径：
 
 ```m3u8
 #EXT-X-KEY:METHOD=AES-128,URI="key.bin",IV=0x00000000000000000000000000000000
@@ -205,10 +206,12 @@ https://path/to/video-00002.ts
 #EXT-X-ENDLIST
 ```
 
-一切就绪，执行 ffmpeg 命令下载并合并视频文件：
+一切就绪，执行 `ffmpeg` 命令下载并拼装视频文件：
 
 ```bash
 ffmpeg -protocol_whitelist "file,crypto,data,http,https,tcp,tls" -allowed_extensions ALL -i playlist.m3u8 -c copy output.mp4
 ```
 
 其中，ffmpeg 默认只支持从安全的协议（包括 `file,crypto,data`）获取视频分片文件，不支持 `https` 等其它协议，因此设置了命令行参数 `-protocol_whitelist "file,crypto,data,http,https,tcp,tls"`；同理，ffmpeg 默认只支持读取 `.ts` 和 `.m3u8` 等常见扩展名的文件，因此设置了命令行参数 `-allowed_extensions ALL` 来允许读取秘钥文件 `key.bin`。
+
+执行完成后，当前目录下就会生成合并后的 `output.mp4` 文件。可喜可贺，可喜可贺！
