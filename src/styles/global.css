@@ -1,6 +1,7 @@
 @import "prismjs/themes/prism-tomorrow.min.css";
 @import "@fancyapps/ui/dist/fancybox/fancybox.css";
 @import "heti/umd/heti.min.css";
+@import "rich-presence-react/style.css";
 @import "./nprogress.css";
 
 @tailwind base;

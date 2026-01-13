@@ -11304,6 +11304,11 @@ rfdc@^1.4.1:
   resolved "https://registry.npmjs.org/rfdc/-/rfdc-1.4.1.tgz#778f76c4fb731d93414e8f925fbecf64cce7f6ca"
   integrity sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==
 
+rich-presence-react@^1.0.0-beta.1:
+  version "1.0.0-beta.1"
+  resolved "https://registry.npmjs.org/rich-presence-react/-/rich-presence-react-1.0.0-beta.1.tgz#8f86ffe14db0616102373d9baeb8589ea131d709"
+  integrity sha512-8B58VrkUcsgrRDpAlCatIEL0iSnVuZvM6/eKgvBbNKvKsfVZ6azzUEJhTumohLgOSbz7FgSOmfoovRnpp8+18A==
+
 rimraf@^2.6.2:
   version "2.7.1"
   resolved "https://registry.npmjs.org/rimraf/-/rimraf-2.7.1.tgz#35797f13a7fdadc566142c29d4f07ccad483e3ec"

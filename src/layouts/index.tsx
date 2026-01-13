@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { Link, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
+import RichPresence from "rich-presence-react";
 
 import ActionButton from "../components/action-button";
 import AlgoliaSearch from "../components/algolia-search";
@@ -31,6 +32,7 @@ import Post from "../components/post";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
 import useAllMdx from "../hooks/useAllMdx";
+import useDiscordActivity from "../hooks/useDiscordActivity";
 import useTailwindBreakpoint from "../hooks/useScreenBreakpoint";
 import useSiteMetadata from "../hooks/useSiteMetadata";
 import Navbar from "./navbar";
@@ -67,6 +69,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const { title: siteTitle, owner: siteOwner } = useSiteMetadata();
   const posts = useAllMdx();
   const [breakpoint, layoutInitialized] = useTailwindBreakpoint();
+  const { activities } = useDiscordActivity();
 
   /** 当前路由是否为博客页 */
   const [isPostPage, postSlug] = React.useMemo(() => {
@@ -369,8 +372,19 @@ const Layout: React.FC<PageProps> = (props) => {
   const siderBarItemNav = (
     <>
       <Navbar items={NAVBAR_ITEMS} activeKey={path} />
+      <div className={`relative z-10 flex flex-col gap-3`}>
+        {activities.map((activity, index) => (
+          <RichPresence
+            className="opacity-80 transition-opacity hover:opacity-100"
+            key={index}
+            activity={activity}
+            theme="dark"
+            size="normal"
+          />
+        ))}
+      </div>
       <div
-        className={`pointer-events-none absolute bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+        className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
         style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
       >
         <Planets size={planetSize} />
