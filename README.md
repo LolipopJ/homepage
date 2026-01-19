@@ -4,17 +4,19 @@
 
 ## Development
 
+Make sure your Node.js >= 24.0.0, pnpm >= 9.0.0.
+
 ```bash
-yarn
-yarn develop
+pnpm install
+pnpm develop
 ```
 
 ```bash
-yarn lint
+pnpm lint
 ```
 
 ## Deployment
 
 ```bash
-yarn build
+pnpm build
 ```
