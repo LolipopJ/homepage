@@ -3,7 +3,7 @@ title: 下载动态加密的 m3u8 视频文件到本地
 date: 2025-09-05
 updated: 2025-09-12
 banner: ./download-encrypted-m3u8/banner.jpg
-timeliness: false
+timeliness: -1
 categories:
   - 技术琐事
 tags:
@@ -151,10 +151,10 @@ return a.default.wrap(
             (E = h.default.enc.Utf8.parse(C)), // 将字符串 C 按 UTF-8 编码转换为二进制数据，作为后续 AES 加解密使用的对称密钥
             (x = _ + "?nonce=" + w + "&sign=" + C),
             (e.next = 43),
-            c.default.get(x) // 将前端生成的密钥发送给后端，后端对视频密钥进行加密
-          );
+            c.default.get(x)
+          ); // 将前端生成的密钥发送给后端，后端对视频密钥进行加密
         case 43:
-          (A = e.sent),
+          ((A = e.sent),
             (P = A.data), // 后端返回加密后的视频密钥
             (O = P.key), // O 就是经过加密后的视频密钥
             // 调用 AES 模块的解密方法，对视频密钥进行解密
@@ -167,7 +167,7 @@ return a.default.wrap(
               },
             )),
             (j = L.toString(h.default.enc.Utf8)), // j 即为我们解密视频分片所需要的视频密钥
-            n(i(j));
+            n(i(j)));
         case 49:
         case "end":
           return e.stop();

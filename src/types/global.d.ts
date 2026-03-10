@@ -37,8 +37,11 @@ declare global {
       date?: string;
       /** 更新时间 */
       updated?: string;
-      /** 是否添加时效性警告 */
-      timeliness?: boolean;
+      /**
+       * 显示时效性警告的阈值天数
+       * @description 从博客最后一次更新开始计算，默认为 `365` 天。值为 `0` 时表示始终显示警告，值为负数时表示关闭警告
+       */
+      timeliness?: number;
     };
     id: string;
     internal: {

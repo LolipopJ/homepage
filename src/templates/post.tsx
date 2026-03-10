@@ -85,6 +85,9 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
   const today = dayjs();
   const diffDays = today.diff(updatedDate, "days");
+  const timelinessDays = typeof timeliness === "number" ? timeliness : 365;
+  const showTimelinessWarning =
+    timelinessDays >= 0 && diffDays >= timelinessDays;
 
   //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
@@ -135,14 +138,14 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
       <article ref={articleRef} className="heti post-entry">
         {isDraft && (
           <blockquote className="!border-red-400">
-            这是一篇<strong>未正式发布</strong>
-            的博客，内容可能尚未撰写完全或存在一些纰漏，建议您仔细评估信息的有效性。
+            这是一篇<strong>尚未正式发布</strong>
+            的博客，内容可能暂不完善或存在纰漏，建议您仔细评估文章的可靠性。
           </blockquote>
         )}
-        {timeliness !== false && diffDays > 365 && (
+        {showTimelinessWarning && (
           <blockquote className="!border-orange-400">
             这是一篇<strong>最后更新于 {diffDays} 天前</strong>
-            的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估信息的有效性。
+            的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估文章的有效性。
           </blockquote>
         )}
         <MDXProvider components={components}>{children}</MDXProvider>
