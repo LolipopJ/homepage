@@ -30,7 +30,7 @@ tags:
 
 在浏览器控制台的“网络”标签页中，过滤找到获取 m3u8 播放列表的请求，它通常以 `.m3u8` 结尾。可以在请求的“预览”标签页中看到类似如下的内容：
 
-```m3u8
+```m3u
 #EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-TARGETDURATION:12
@@ -50,7 +50,7 @@ video-00002.ts
 
 当然，笔者更推荐使用命令行的方式下载 m3u8 播放列表。使用 CMD 时，命令形如：
 
-```command
+```bash
 curl ^"https://path/to/playlist.m3u8^" ^
   -o ^"playlist.m3u8^" ^
   -H ^"accept: */*^" ^
@@ -190,13 +190,13 @@ return a.default.wrap(
 
 剩下的工作就非常简单了，将视频密钥保存为本地的文件 `key.bin`，对应修改 `playlist.m3u8` 里 `#EXT-X-KEY` 行的 `URI` 字段为本地文件路径：
 
-```m3u8
+```m3u
 #EXT-X-KEY:METHOD=AES-128,URI="key.bin",IV=0x00000000000000000000000000000000
 ```
 
 然后将 `playlist.m3u8` 里的所有视频分片文件 URL 修改为完整的 URL 地址：
 
-```m3u8
+```m3u
 #EXTINF:12.500000,
 https://path/to/video-00000.ts
 #EXTINF:12.500000,

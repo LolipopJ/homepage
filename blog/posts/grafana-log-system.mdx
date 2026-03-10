@@ -344,7 +344,7 @@ sudo systemctl enable alloy.service
 
 配置 Alloy 服务采集日志，编辑 `/etc/alloy/config.alloy` 文件如下：
 
-```alloy
+```ini
 // 添加本地的日志文件源
 local.file_match "local_files" {
   path_targets = [{"__path__" = "/path/to/*.log"}]

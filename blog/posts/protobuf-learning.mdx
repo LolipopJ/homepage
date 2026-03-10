@@ -39,7 +39,7 @@ Importantly, the protocol buffer format supports the idea of extending the forma
 
 为了创建基于 Protobuf 的应用程序，我们需要首先创建一个 `.proto` 文件并且给出定义：为需要序列化的每个结构数据添加一条 **message** ，然后为 message 的每个字段指定名称和类型。下面是一个来自官网的基于 C++ 语言的例子，可以让您对 `.proto` 文件有一个更加直观的了解：
 
-```proto
+```protobuf
 syntax = "proto2"; // 协议版本
 
 package tutorial; // 程序包声明
@@ -80,7 +80,7 @@ message AddressBook {
 
 下面是一个非常简单的 `.proto` 例子：
 
-```proto
+```protobuf
 syntax = "proto3";
 
 message SearchRequest {
@@ -103,7 +103,7 @@ message SearchRequest {
 - singular. 一则 message 只能拥有不超过一个该字段。是**默认**的字段规则，不需要特别指定；
 - `repeated`. 一则 message 可以拥有任意个该字段。重复值的顺序将被保留。
 
-```proto
+```protobuf
 message SearchRequest {
   string query = 1;
   int32 page_number = 2;
@@ -131,7 +131,7 @@ message SearchRequest {
 
 当更新 message 定义需要完全移除一个字段时，则将来的用户在自己对该类型进行更新时可以重用该字段号。为了保证在读取旧版本的 `.proto` 时不引发问题，需要将已删除字段的字段编号（或名称）指定为 `reserved`，这样将来任何用户在更新 message 时尝试使用这些字段号（或名称）时，编译器会报错。
 
-```proto
+```protobuf
 message Foo {
   reserved 2, 15, 9 to 11;
   reserved "foo", "bar";
@@ -142,7 +142,7 @@ message Foo {
 
 需要注意的是，不能在一条 `reserved` 语句中同时使用字段号和字段名。
 
-```proto
+```protobuf
 reserved 2, 15, "foo"; // wrong!
 ```
 
@@ -150,7 +150,7 @@ reserved 2, 15, "foo"; // wrong!
 
 当只希望某一个字段的取值为预定义值的某一个时，可以使用枚举。
 
-```proto
+```protobuf
 message SearchRequest {
   string query = 1;
   int32 page_number = 2;
@@ -172,7 +172,7 @@ message SearchRequest {
 
 为了定义枚举常量的别名，我们可以将相同的值分配给不同的枚举常量名。为此，首先需要将 `allow_alias` 选项设置为 `true`，否则将会报错。
 
-```proto
+```protobuf
 message MyMessage {
   enum EnumAllowingAlias {
     option allow_alias = true;
@@ -190,7 +190,7 @@ message MyMessage {
 
 为了使消息结构更加清晰，我们可以指定其他 message 类型作为字段类型，实现嵌套。
 
-```proto
+```protobuf
 message SearchResponse {
   repeated Result results = 1;
 }
@@ -208,7 +208,7 @@ message Result {
 
 也许您不需要复用一些 message 类型，我们也可以将 message 类型放在 message 当中。
 
-```proto
+```protobuf
 message SearchResponse {
   message Result {
     string url = 1;
@@ -223,7 +223,7 @@ message SearchResponse {
 
 嵌套类型不限定层数，可以根据需要进行深层嵌套。
 
-```proto
+```protobuf
 message Outer { // Level 0
   message MiddleAA { // Level 1
     message Inner { // Level 2
@@ -252,7 +252,7 @@ message Outer { // Level 0
 
 如果想要将 message 类型用于 RPC 系统，可以在 `.proto` 文件中定义 RPC 服务接口，编译器将根据使用的语言生成 RPC 服务接口并打桩。
 
-```proto
+```protobuf
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
 }
@@ -268,7 +268,7 @@ service SearchService {
 
 参考官网给出的例子，我分别编写了 Go 和 C++ 版本的 `.proto` 文件：
 
-```proto
+```protobuf
 // addressbook-go.proto
 syntax = "proto3";
 package tutorial;

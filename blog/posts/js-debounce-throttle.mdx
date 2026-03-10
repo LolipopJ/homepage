@@ -240,7 +240,7 @@ export default {
 
 基于 Vuetify UI 组件库编写 Vue 代码如下：
 
-```vue
+```html
 <template>
   <v-fab-transition>
     <!-- 当窗口滚动值大于 300 时显示按钮 -->
@@ -262,32 +262,32 @@ export default {
 </template>
 
 <script>
-export default {
-  data: () => ({
-    // 当前的窗口滚动值
-    scrollVal: 0,
-  }),
-  mounted() {
-    // 每 500 毫秒获取当前的 scrollVal 值
-    const throttleOnScroll = this.$Main.throttle(this.onScroll, 500);
-    // 为 window 添加滚动事件
-    window.addEventListener("scroll", throttleOnScroll);
-  },
-  methods: {
-    // 获取 window.pageYOffset 值并赋值给 scrollVal
-    onScroll() {
-      this.scrollVal = window.pageYOffset;
+  export default {
+    data: () => ({
+      // 当前的窗口滚动值
+      scrollVal: 0,
+    }),
+    mounted() {
+      // 每 500 毫秒获取当前的 scrollVal 值
+      const throttleOnScroll = this.$Main.throttle(this.onScroll, 500);
+      // 为 window 添加滚动事件
+      window.addEventListener("scroll", throttleOnScroll);
     },
-    // 回到顶端
-    backToTop() {
-      window.scroll({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
+    methods: {
+      // 获取 window.pageYOffset 值并赋值给 scrollVal
+      onScroll() {
+        this.scrollVal = window.pageYOffset;
+      },
+      // 回到顶端
+      backToTop() {
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: "smooth",
+        });
+      },
     },
-  },
-};
+  };
 </script>
 ```
 

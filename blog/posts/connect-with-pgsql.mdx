@@ -16,7 +16,7 @@ tags:
 
 编辑数据库配置文件 `C:\Program Files\PostgreSQL\14\data\postgresql.conf`，设置监听的远程连接地址。将 `listen_addresses` 项的值设置为 `*`，如下所示：
 
-```conf
+```ini
 # - Connection Settings -
 
 listen_addresses = '*'  # what IP address(es) to listen on
@@ -42,7 +42,7 @@ listen_addresses = '*'  # what IP address(es) to listen on
 
 那么，如果我们的客户端的 IP 地址为 `210.41.112.112`，可以添加条目如下：
 
-```conf
+```ini
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 host    db_name         db_user         210.41.112.112/32       scram-sha-256
 # host    db_name         db_user         210.41.112.0/24         scram-sha-256
@@ -67,7 +67,7 @@ host    db_name         db_user         210.41.112.112/32       scram-sha-256
 
 配置 `pg_hba.conf`，允许相同路由器下其它主机的连接请求。例如，允许 IP 地址为 `192.168.0.0` 至 `192.168.255.255` 的连接请求：
 
-```conf
+```ini
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 host    db_name         db_user         192.168.0.0/16          scram-sha-256
 ```
@@ -89,7 +89,7 @@ host    db_name         db_user         192.168.0.0/16          scram-sha-256
 
 最后，修改 `pg_hba.conf`，根据客户端的公网 IP 地址进行配置。如果客户端的网络环境经常变化，尽管不安全，但也可以考虑设置允许所有 IP 地址进行连接。
 
-```conf
+```ini
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 host    db_name         db_user         0.0.0.0/0               scram-sha-256
 host    db_name         db_user         ::/0                    scram-sha-256
