@@ -45,7 +45,6 @@ const Navbar: React.FC<NavbarProps> = ({
 
                 return React.cloneElement(
                   isExternal ? (
-                    // eslint-disable-next-line jsx-a11y/anchor-has-content
                     <a href={route.url} target="_blank" rel="noreferrer" />
                   ) : (
                     <Link to={route.url} />

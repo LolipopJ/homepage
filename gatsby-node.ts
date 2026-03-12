@@ -1,10 +1,27 @@
-import { type CreateNodeArgs, type CreatePagesArgs } from "gatsby";
+import {
+  type CreateNodeArgs,
+  type CreatePagesArgs,
+  type CreateWebpackConfigArgs,
+} from "gatsby";
 import path from "path";
 
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
-const postTemplate = path.resolve("./src/templates/post.tsx");
-const postListTemplate = path.resolve("./src/templates/post-list.tsx");
+export const onCreateWebpackConfig = ({
+  actions,
+  getConfig,
+}: CreateWebpackConfigArgs) => {
+  const config = getConfig();
+  if (!config?.plugins) return;
+
+  // Remove ESLintWebpackPlugin injected by Gatsby or other plugins
+  // to avoid conflict with ESLint flat configuration
+  config.plugins = config.plugins.filter(
+    (p: object) => p?.constructor?.name !== "ESLintWebpackPlugin",
+  );
+
+  actions.replaceWebpackConfig(config);
+};
 
 export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
   const { createNodeField } = actions;
@@ -27,6 +44,9 @@ export const createPages = async function ({
   actions,
   graphql,
 }: CreatePagesArgs) {
+  const postTemplate = path.resolve("./src/templates/post.tsx");
+  const postListTemplate = path.resolve("./src/templates/post-list.tsx");
+
   const { data } = await graphql<{
     allMdx: {
       nodes: (Pick<MdxNode, "fields" | "id"> & {

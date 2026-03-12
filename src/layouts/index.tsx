@@ -200,7 +200,7 @@ const Layout: React.FC<PageProps> = (props) => {
   //#region 更新页面标题
   React.useEffect(() => {
     const pageDom = pageRef.current;
-    let match: RegExpMatchArray | null = null;
+    let match: RegExpMatchArray | null;
 
     if (path === "/") {
       setPageTitle(

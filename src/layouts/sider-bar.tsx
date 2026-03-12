@@ -1,11 +1,10 @@
 import { animated, useSpringRef, useTransition } from "@react-spring/web";
 import * as React from "react";
 
-export interface SiderBarProps<T = string>
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLElement>,
-    HTMLElement
-  > {
+export interface SiderBarProps<T = string> extends React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLElement>,
+  HTMLElement
+> {
   items?: SiderBarItem<T>[];
   activeKey?: SiderBarItem<T>["key"];
   onActiveKeyChange?: (key: SiderBarItem<T>["key"]) => void;

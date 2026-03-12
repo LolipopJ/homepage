@@ -56,7 +56,10 @@ const useDiscordActivity = () => {
           parseJsonError: any
         ) {
           throw new Error(
-            `Failed to parse Discord activities response as JSON: ${parseJsonError?.message ?? String(parseJsonError)}`,
+            `Failed to parse Discord activities response as a JSON`,
+            {
+              cause: parseJsonError,
+            },
           );
         }
         if (!mounted) return;

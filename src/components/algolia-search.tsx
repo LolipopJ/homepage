@@ -18,8 +18,10 @@ import {
 } from "../constants/algolia";
 import Post from "./post";
 
-export interface AlgoliaSearchProps
-  extends Omit<InstantSearchProps, "searchClient" | "indexName"> {
+export interface AlgoliaSearchProps extends Omit<
+  InstantSearchProps,
+  "searchClient" | "indexName"
+> {
   onClose: () => void;
   className?: string;
   style?: React.CSSProperties;

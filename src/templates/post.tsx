@@ -2,13 +2,14 @@ import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
 import { graphql, HeadProps, Link, PageProps } from "gatsby";
-import { type MDXProps } from "mdx/types";
 import * as React from "react";
 
 import Card from "../components/card";
 import Category from "../components/category";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
+
+type MDXProviderProps = React.ComponentProps<typeof MDXProvider>;
 
 const FancyBoxImage = (props: { alt?: string; src?: string }) => {
   const {
@@ -46,7 +47,7 @@ const ALink = ({
   );
 };
 
-const components: MDXProps["components"] = {
+const components: MDXProviderProps["components"] = {
   a: ALink,
   img: FancyBoxImage,
   Card,

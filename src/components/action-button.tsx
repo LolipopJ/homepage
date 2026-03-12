@@ -3,8 +3,7 @@ import * as React from "react";
 
 import Icon from "./icon";
 
-export interface ActionButtonProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface ActionButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   icon: IconDefinition;
   onClick: () => void;
 }
