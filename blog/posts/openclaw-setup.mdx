@@ -2,7 +2,7 @@
 title: 最近 OpenClaw 也太火爆了，让我看看怎么个事儿
 date: 2026-03-06
 updated: 2026-03-10
-banner: ./join-the-openclaw/banner.png
+banner: ./openclaw-setup/banner.png
 timeliness: 90
 categories:
   - 技术琐事
@@ -51,7 +51,7 @@ openclaw onboard --install-daemon
 
 安装完毕，执行 `openclaw dashboard` 命令打开 Web UI 页面。或直接使用包含访问令牌的 URL 访问，形如：`http://127.0.0.1:18789/#token=<GATEWAY_ACCESS_TOKEN>`。
 
-![OpenClaw 网页端](./join-the-openclaw/openclaw-webui.png)
+![OpenClaw 网页端](./openclaw-setup/openclaw-webui.png)
 
 查看 OpenClaw 的运行状态：
 
@@ -73,7 +73,7 @@ openclaw gateway start
 
 笔者选择对接飞书作为 OpenClaw 助理的消息接收渠道。按照官方文档的[指引](https://docs.openclaw.ai/zh-CN/channels/feishu)，创建好机器人后，发送任意消息即可进入配对流程：
 
-![与 OpenClaw 配对](./join-the-openclaw/feishu-pairing.png)
+![与 OpenClaw 配对](./openclaw-setup/feishu-pairing.png)
 
 复制配对码，在终端执行配对命令：
 
@@ -83,7 +83,7 @@ openclaw pairing approve feishu <PAIRING_CODE>
 
 一切就绪，现在可以通过飞书机器人发送指令，与 OpenClaw 助理进行对话了：
 
-![与 OpenClaw 对话](./join-the-openclaw/feishu-first-chat.png)
+![与 OpenClaw 对话](./openclaw-setup/feishu-first-chat.png)
 
 值得一提的是，旧版本 OpenClaw 接入飞书消息渠道时依赖于社区维护的插件 [`@openclaw/feishu`](https://github.com/AlexAnys/openclaw-feishu)，而今官方版本的插件 [`Feishu`](https://www.feishu.cn/content/article/7613711414611463386) 已经发布。按照官方文档接入插件后会自动禁用社区版本插件，确保没有问题后就可以手动卸载它了：
 
@@ -99,7 +99,7 @@ openclaw plugins update --all # 更新所有插件
 ```
 
 > 2026 年 3 月 7 日，[QQ 开放平台](https://q.qq.com/qqbot/openclaw/)竟然开放了对接 OpenClaw 的能力，对于一直高压管理 QQ 机器人的腾讯来说，简直是太阳打西边出来的转变。无论如何，我第一时间申请了一个 QQ 机器人，完成了 OpenClaw 的接入，流程顺滑无比，给产品经理点赞。
-> ![搭建 AI 私人 QQ 助理](./join-the-openclaw/qq-bot-connection.png)
+> ![搭建 AI 私人 QQ 助理](./openclaw-setup/qq-bot-connection.png)
 
 ## 模型选择
 
@@ -182,7 +182,7 @@ clawhub login # 登录 ClawHub 账号，避免配额限制
 
 但是，OpenClaw 助理背后使用的大语言模型还不知道要如何启动一个定时任务：
 
-![启动定时任务失败](./join-the-openclaw/schedule-task-failed.png)
+![启动定时任务失败](./openclaw-setup/schedule-task-failed.png)
 
 因此，需要我们添加一个技能，告诉助理可以去调用宿主机为它提供的工具，设置定时提醒。我找到了社区分享的技能 [Cron Mastery](https://clawhub.ai/i-mw/cron-mastery)，仅依赖了 `cron`，符合我的需要。使用 `clawhub install cron-mastery` 命令安装此技能：
 
@@ -233,11 +233,11 @@ Ok to proceed? (y) y
 
 在测试时，助理似乎并没有在 `/new` 一个新的会话时自动读取自己的技能列表，让它帮我设置提醒没能成功设置定时任务。所以我特地询问它了一下都学会了哪些技能：
 
-![你学会了哪些技能](./join-the-openclaw/learned-skills.png)
+![你学会了哪些技能](./openclaw-setup/learned-skills.png)
 
 现在，助理吸收了 Cron Mastery 技能的知识，并成功运用 `cron` 命令来设置定时任务。但对于飞书消息渠道，它并不能正确地设置 `delivery.to` 收件人为聊天的 ID，导致定时提醒无法正确地投递到与我的飞书聊天中。为此，我指出了问题，让助理修正自己的指令，最终才成功收到了提醒（虽然从一分钟后变成了两分钟后……）：
 
-![一分钟（？）后提醒我喝水](./join-the-openclaw/schedule-task-successfully.png)
+![一分钟（？）后提醒我喝水](./openclaw-setup/schedule-task-successfully.png)
 
 进一步研究发现，Cron Mastery 技能的描述文件只兼容了 Telegram 消息渠道，意味着当用户的消息来自飞书或其他渠道时，就可能会出现刚才投递失败的问题。当然，这也有可能与选用的模型相关，推理的举一反三能力还不到位。为了解决这个问题，我让它帮我优化了 Cron Mastery 技能的提示词，加入了 CLI 调用的方式，同时提供飞书消息渠道的投递示例：
 
@@ -269,7 +269,7 @@ OpenClaw 内置了 `browser` 工具，能够让助理直接在宿主机上启动
 
 确认授予权限后，我向助理发出指令：「打开浏览器，访问通义千问，问问它“2026 年这本轻小说真厉害”榜单上有哪些小说，把结果告诉我」，嗬嗬嗬，这何尝不是一种多代理模式。我录制了它运行的全过程：
 
-<video src="/videos/join-the-openclaw_use-qwen-to-search.mp4" controls></video>
+<video src="/videos/openclaw-setup_use-qwen-to-search.mp4" controls></video>
 
 这次 OpenClaw 助理的表现超 Nice：它打开了 Chrome 浏览器，访问了通义千问的官网，进入到对话界面，随后在聊天框里输入并提交了问题，得到回复后，将答案总结发回给了我。正如我构想的那样！如果不考虑运行一次这样的流程差不多要花费 4 毛钱令牌费用的话，从体验来说已经足够可用了。
 
@@ -277,13 +277,13 @@ OpenClaw 内置了 `browser` 工具，能够让助理直接在宿主机上启动
 
 现在，我希望助理能否访问 Pixiv，看看系统都给我推送了哪些插画作品。于是我发出指令：「使用浏览器访问 Pixiv，看看今天都给我推荐了哪些插画作品？」。看看助理的表现：
 
-![账号未登录，获取 Pixiv 排行榜推荐作品](./join-the-openclaw/pixiv-recommendation-nonlogin.png)
+![账号未登录，获取 Pixiv 排行榜推荐作品](./openclaw-setup/pixiv-recommendation-nonlogin.png)
 
 助理打开了浏览器，先访问了 Pixiv 官网链接 `https://www.pixiv.net`，由于没有登录，只能获取到登录页面的背景图片。但它没有泄气，随后它直接访问了每日排行榜页面 `https://www.pixiv.net/ranking.php`，这里它获取到了一些排行榜上的插画作品，整理好并发回给了我。
 
 接下来，我在助理打开的专用浏览器里登录了我的 Pixiv 账号，又发出新的指令：「我登录了我的账号，看看给我推荐了哪些插画作品？」。看看它的表现：
 
-![账号已登录，获取 Pixiv 个性化推荐作品](./join-the-openclaw/pixiv-recommendation.png)
+![账号已登录，获取 Pixiv 个性化推荐作品](./openclaw-setup/pixiv-recommendation.png)
 
 助理访问了 Pixiv 的发现页面 `https://www.pixiv.net/discovery`，在这里，它成功获取了推送给我账号的个性化插画作品，并且将整理后的结果发回给了我。
 
