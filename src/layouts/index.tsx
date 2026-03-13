@@ -20,6 +20,7 @@ import {
 import dayjs from "dayjs";
 import { Link, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
+import nProgress from "nprogress";
 import * as React from "react";
 import RichPresence from "rich-presence-react";
 
@@ -86,6 +87,16 @@ const Layout: React.FC<PageProps> = (props) => {
     return isImmersive && isPostPage && breakpoint["lg"];
   }, [breakpoint, isImmersive, isPostPage]);
 
+  //#region 布局初始化时显示进度条
+  React.useEffect(() => {
+    if (!layoutInitialized) {
+      nProgress.start();
+      return () => nProgress.done();
+    }
+    return () => {};
+  }, [layoutInitialized]);
+  //#endregion
+
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
     setPageTitle("");
@@ -115,6 +126,7 @@ const Layout: React.FC<PageProps> = (props) => {
       }
     }
   }, [breakpoint, isPostPage]);
+  //#endregion
 
   //#region 更新博客中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
   React.useEffect(() => {
