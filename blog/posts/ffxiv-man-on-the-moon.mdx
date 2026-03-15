@@ -1,7 +1,7 @@
 ---
 title: 月球上的最终幻想 14 玩家，用插件改善劳动生活
 date: 2026-03-12
-updated: 2026-03-13
+updated: 2026-03-15
 banner: ./ffxiv-man-on-the-moon/banner.jpg
 categories:
   - 生活闲暇
@@ -157,6 +157,14 @@ tags:
 于是，想要实现自动化理符任务提交的我，盯上了 [Something Need Doing](https://github.com/daemitus/SomethingNeedDoing) 这个插件。在认真学习后，将实现的全流程整理为了这篇 Bilibili 专栏：[《【FF14 卫月插件】使用 SND + Yes Already 自动提交理符任务》](https://www.bilibili.com/read/cv42532896)。
 
 像这样的实现其实并不优雅，比如在执行 SND 宏的过程中，鼠标放置在了某些可交互按钮上，宏执行到“点击确认键”时，可能会意外地进入交互状态，导致流程被打断。更优雅的方案肯定是像 Artisan 那样，只调用游戏内部 API 来完成工作，更加高效可靠，就我所知也存在类似的插件，就留待想要更上层楼的你来研究啦\~
+
+## 外传 Ice's Cosmic Exploration
+
+一款能自动帮你接受、完成和提交宇宙探索任务的插件，其名为 [Ice's Cosmic Exploration（ICE）](https://github.com/LeontopodiumNivale14/Ices-Cosmic-Exploration)，在内部依赖了别的常青插件，如前面介绍过的 Artisan 和 Auto Hook。
+
+在我已积攒了 1/3 的生产职业技巧点，终于忍受不了切窗口接取和完成宇宙探索任务这一重复流程，想要彻底解放双手并提升效率时，阴差阳错下找到了这款插件。
+
+ICE 的功能和配置很丰富，但意外地好上手。我使用它来帮助达成“群星的启明者”称号（全生产职业均获取 50 万技巧点），在配置好 Artisan 的情况下，勾选想要完成的任务，再点击开始按钮即可。
 
 ## 尾声
 
