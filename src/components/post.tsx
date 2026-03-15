@@ -3,6 +3,8 @@ import { Link } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import * as React from "react";
 
+import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
+
 export type PostType = Pick<MdxNode, "excerpt" | "fields" | "frontmatter">;
 
 export interface PostProps {
@@ -24,14 +26,6 @@ export interface PostProps {
   excerptClassName?: string;
   footerClassName?: string;
 }
-
-const CATEGORY_GRADIENT_CLASSNAME: Record<string, string> = {
-  前端开发: "from-purple-300 via-fuchsia-400 to-pink-500",
-  后端开发: "from-sky-300 via-blue-300 to-indigo-400",
-  全栈开发: "from-amber-300 via-yellow-400 to-orange-500",
-  技术琐事: "from-green-300 via-emerald-300 to-teal-500",
-  生活闲暇: "from-zinc-300 via-pink-400 to-rose-500",
-};
 
 /** 博客列表栏的博客简介 */
 const Post: React.FC<PostProps> = (props) => {

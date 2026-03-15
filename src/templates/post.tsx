@@ -5,9 +5,9 @@ import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import * as React from "react";
 
 import Card from "../components/card";
-import Category from "../components/category";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
+import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
 
 type MDXProviderProps = React.ComponentProps<typeof MDXProvider>;
 
@@ -111,7 +111,16 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
     <div className="mx-auto flex max-w-xl flex-col gap-y-12">
       <div className="flex flex-col gap-4">
         {categories?.length && (
-          <Category name={categories[0]} className="item-selectable" />
+          <Link
+            to={`/categories/${encodeURIComponent(categories[0])}`}
+            className="w-fit rounded bg-neutral-800 px-3 py-2 leading-none transition-opacity hover:opacity-75"
+          >
+            <span
+              className={`cursor-pointer bg-gradient-to-tr from-0% via-40% to-90% bg-clip-text text-lg font-bold leading-none text-transparent ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""}`}
+            >
+              {categories[0]}
+            </span>
+          </Link>
         )}
         <h1 className="text-3xl font-bold">{title}</h1>
         <div className="item-secondary flex flex-col gap-2 lg:flex-row">
