@@ -1,7 +1,7 @@
 ---
 title: 不再是小画家了……自动化 Wplace 绘画清日常
 date: 2026-03-19
-updated: 2026-03-19
+updated: 2026-03-27
 banner: ./wplace-painter-automatic/banner.png
 categories:
   - 技术琐事
@@ -300,7 +300,9 @@ export default class WindowFilter extends Overlay {
 }
 ```
 
-您可能也注意到了，排序时我没有使用 `tile` 相关的数值去计算两个像素点的绝对距离，而是仅使用 `pixel` 计算了他们在区块的投影距离。这样做的结果是：像素点处于相同区块时，一切正常，按照绝对距离排序；像素点处于不同区块时，即使绝对距离很近，但可能会排列到相距甚远的位置。也算从一定程度上提升了反检测能力吧。
+之所以是“简单模拟”，是因为这样的排序后，将会从起始点呈圆形绘制像素点。对于未启用颜色抖动的绘画模板，绘制的结果将会是一个个圆形区域，还是能看得出机器感的。如果想要更加拟真的话，考虑的一个可能算法是：先把相邻像素分组，再在组内横向或纵向排序，最后合并成一个列表。
+
+另外您可能也注意到了，排序时我没有使用 `tile` 相关的数值去计算两个像素点的绝对距离，而是仅使用 `pixel` 计算了他们在区块的投影距离。这样做的结果是：像素点处于相同区块时，一切正常，按照绝对距离排序；像素点处于不同区块时，即使绝对距离很近，但可能会排列到相距甚远的位置。虽然模板位于不同区块的概率很小，但也算从一定程度上提升了反检测能力吧。
 
 完整的代码请见仓库 [LolipopJ/Wplace-BlueMarble](https://github.com/LolipopJ/Wplace-BlueMarble)，编译后直接可用的油猴脚本请见文件 [`BlueMarble-For-GreasyFork.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble-For-GreasyFork.user.js)。
 
