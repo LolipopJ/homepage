@@ -21,7 +21,7 @@ const PostListTemplate: React.FC<
     allMdx: { nodes: posts = [] },
   } = data;
   return (
-    <ol className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+    <ol className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[2400px]:grid-cols-3 min-[3000px]:grid-cols-4 min-[3600px]:grid-cols-5 min-[4200px]:grid-cols-6">
       {posts.map((post) => (
         <li key={post.fields.slug}>
           <Post post={post} size="large" showBanner />

@@ -37,7 +37,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 {posts.length} 篇
               </span>
             </div>
-            <ol className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <ol className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 min-[2400px]:grid-cols-3 min-[3000px]:grid-cols-4 min-[3600px]:grid-cols-5 min-[4200px]:grid-cols-6">
               {posts.map((post) => {
                 return (
                   <li key={post.fields.slug}>
