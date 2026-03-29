@@ -92,6 +92,12 @@
 
   /* #region 博客主体 */
   .post-entry {
+    &.heti {
+      summary {
+        @apply ps-0;
+      }
+    }
+
     blockquote,
     img,
     video,
