@@ -1,9 +1,9 @@
 ---
 title: 配置启动 OpenClaw 多代理模式，把工作交给最合适的龙虾
 date: 2026-03-09
-updated: 2026-03-09
+updated: 2026-03-29
 banner: ./openclaw-multiple-agents/banner.png
-timeliness: 90
+timeliness: 45
 categories:
   - 人工智能
 tags:
@@ -36,15 +36,6 @@ bailian/qwen3-coder-next                   text       256k     no    yes   confi
 ```
 
 通过百炼接入的 AI 模型是付费 API 的形式，当新人赠送额度用完后，就需要储值使用了。
-
-另外，OpenClaw 官方提供了 `qwen-portal-auth` 插件用于接入 Qwen Coder 和 Qwen Vision 模型，目前这两款模型有每天免费的使用额度，可以当羊毛薅来用一用：
-
-```bash
-# 启用插件
-openclaw plugins enable qwen-portal-auth
-# 认证登录
-openclaw models auth login --provider qwen-portal
-```
 
 ### Kimi
 
@@ -113,19 +104,17 @@ moonshot/kimi-k2-thinking-turbo            text       250k     no    yes   confi
 ```bash
 $ openclaw models list --provider github-copilot
 
-🦞 OpenClaw 2026.3.7 (42a1394) — If it works, it's automation; if it breaks, it's a "learning opportunity."
+🦞 OpenClaw 2026.3.28 (f9b1079)
 
 Model                                      Input      Ctx      Local Auth  Tags
-github-copilot/gpt-5-mini                  text+image 125k     no    yes   configured,alias:Copilot GPT 5 Mini
-github-copilot/claude-opus-4.6             text+image 125k     no    yes   configured,alias:Copilot Claude Opus 4.6
-github-copilot/claude-sonnet-4.6           text+image 125k     no    yes   configured,alias:Copilot Claude Sonnet 4.6
+github-copilot/claude-opus-4.6             text+image 977k     no    yes   configured,alias:Copilot Claude Opus 4.6
+github-copilot/claude-sonnet-4.6           text+image 977k     no    yes   configured,alias:Copilot Claude Sonnet 4.6
 github-copilot/gemini-3.1-pro-preview      text+image 125k     no    yes   configured,alias:Copilot Gemini 3.1 Pro (Preview)
-github-copilot/gpt-5.4                     -          -        -     -     configured,missing
-github-copilot/gpt-5.3-codex               text+image 266k     no    yes   configured,alias:Copilot GPT 5.3 Codex
-github-copilot/gpt-4.1                     text+image 63k      no    yes   configured,alias:Copilot GPT 4.1
+github-copilot/gpt-5.4                     text+image 391k     no    yes   configured,alias:Copilot GPT 5.4
+github-copilot/gpt-5.3-codex               text+image 391k     no    yes   configured,alias:Copilot GPT 5.3 Codex
+github-copilot/gpt-5-mini                  text+image 258k     no    yes   configured,alias:Copilot GPT 5 Mini
+github-copilot/gpt-4.1                     text+image 125k     no    yes   configured,alias:Copilot GPT 4.1
 ```
-
-现在，除了 GPT 5.4 模型暂时无法使用外（在之前的 OpenClaw 2026.3.2 版本，Claude Opus 4.6 和 GPT 5.3 Codex 等新模型都不可用，撰写此文时插件已更新支持了），其它配置好的模型都能正常调用了。
 
 超出每月限额后，再调用高级模型会按 0.04 美元每个请求的价格收费，请确保自己的[预算配置](https://github.com/settings/billing/budgets)合理，避免烧走不必要的资金。
 
@@ -133,7 +122,7 @@ github-copilot/gpt-4.1                     text+image 63k      no    yes   confi
 
 在前面的章节里，我根据自己的实际需要，为 OpenClaw 接入了三个大模型提供商，开放了若干款 AI 模型的调用权限。
 
-接下来，根据最新的 [LMSYS LLM 竞技场](https://huggingface.co/spaces/lmarena-ai/arena-leaderboard)排行榜，整理我引入模型的排名结果如下表：
+接下来，根据今天的 [LMSYS LLM 竞技场](https://huggingface.co/spaces/lmarena-ai/arena-leaderboard)排行榜，整理我引入模型的排名结果如下表：
 
 <div style={{ overflow: "auto" }}>
   <table style={{ width: "max-content", margin: 0 }}>
@@ -309,7 +298,7 @@ github-copilot/gpt-4.1                     text+image 63k      no    yes   confi
   </table>
 </div>
 
-综合考虑性价比（比如包含思考过程的 `*-thinking` 模型会消耗更多的令牌），我大手一挥，作出了如下部署：
+综合考虑性价比（比如包含思考过程的 `*-thinking` 模型会消耗更多的令牌；又如虽然 gpt-4.1 排名高于 gpt-5-mini，但 gpt-5-mini 在本人实际使用中表现更优），我大手一挥，作出了如下部署：
 
 <div style={{ overflow: "auto" }}>
   <table style={{ width: "max-content", margin: 0 }}>
@@ -338,7 +327,7 @@ github-copilot/gpt-4.1                     text+image 63k      no    yes   confi
         </td>
         <td>常时日常会话</td>
         <td>
-          <code class="language-text">github-copilot/gpt-4.1</code>
+          <code class="language-text">github-copilot/gpt-5-mini</code>
         </td>
         <td>同时也作为默认模型使用</td>
       </tr>
@@ -402,7 +391,7 @@ github-copilot/gpt-4.1                     text+image 63k      no    yes   confi
 对应执行命令：
 
 ```bash
-openclaw agents add daily --workspace ~/.openclaw/workspace-daily --model github-copilot/gpt-4.1
+openclaw agents add daily --workspace ~/.openclaw/workspace-daily --model github-copilot/gpt-5-mini
 openclaw agents add daily-cn --workspace ~/.openclaw/workspace-daily-cn --model bailian/qwen3.5-plus
 openclaw agents add coder --workspace ~/.openclaw/workspace-coder --model bailian/qwen3-coder-next
 openclaw agents add coder-pro --workspace ~/.openclaw/workspace-coder-pro --model github-copilot/gpt-5.3-codex
