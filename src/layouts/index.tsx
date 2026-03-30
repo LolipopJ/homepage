@@ -20,7 +20,6 @@ import {
 import dayjs from "dayjs";
 import { Link, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
-import nProgress from "nprogress";
 import * as React from "react";
 import RichPresence from "rich-presence-react";
 
@@ -30,6 +29,7 @@ import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
 import Planets from "../components/planets";
 import Post from "../components/post";
+import Waves from "../components/waves";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
 import useAllMdx from "../hooks/useAllMdx";
@@ -86,16 +86,6 @@ const Layout: React.FC<PageProps> = (props) => {
   const isImmersiveActivated = React.useMemo(() => {
     return isImmersive && isPostPage && breakpoint["lg"];
   }, [breakpoint, isImmersive, isPostPage]);
-
-  //#region 布局初始化时显示进度条
-  React.useEffect(() => {
-    if (!layoutInitialized) {
-      nProgress.start();
-      return () => nProgress.done();
-    }
-    return () => {};
-  }, [layoutInitialized]);
-  //#endregion
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
@@ -415,8 +405,13 @@ const Layout: React.FC<PageProps> = (props) => {
     <div className="flex h-screen print:h-auto">
       {/* 初始化完成前的蒙版层 */}
       <div
-        className={`absolute inset-0 z-50 bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none bg-neutral-900/0" : ""}`}
-      ></div>
+        className={`absolute inset-0 z-50 overflow-hidden bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none bg-neutral-900/0" : ""}`}
+      >
+        <Waves
+          className={`pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden ${layoutInitialized ? "opacity-0" : ""}`}
+          svgClassName="h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96"
+        />
+      </div>
 
       {/* 侧边栏 */}
       <SiderBar
