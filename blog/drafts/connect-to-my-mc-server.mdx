@@ -2,6 +2,7 @@
 title: 连接到我的 Minecraft 服务器
 date: 2026-04-06
 updated: 2026-04-06
+banner: ./connect-to-my-mc-server/banner.png
 categories:
   - 生活闲暇
 tags:
@@ -17,6 +18,8 @@ tags:
 </a>
 
 ## 服务器版本
+
+![Tiny Takeover / 小鬼当家](./connect-to-my-mc-server/banner.png)
 
 Fabric 模组服务器，版本信息如下：
 
@@ -34,7 +37,7 @@ Fabric 模组服务器，版本信息如下：
 
 https://mc.towind.fun/map
 
-如果无法正常访问地图，请等待服务端模组更新。
+如果无法正常访问地图，请等待服务器模组更新。
 
 ## 派大星都能看懂的加入服务器步骤
 
@@ -109,24 +112,26 @@ https://mc.towind.fun/map
 
 ## 自定义皮肤
 
-由于服务器没有开启正版验证，因此将无法正常显示您上传的正版皮肤。
-
-服务器通过 [Fabric Tailor](https://modrinth.com/mod/fabrictailor) 模组实现离线服务器的皮肤自定义功能，在游戏中可以通过 `/skin` 命令设置自己的皮肤，例如：
+服务器通过模组 [Fabric Tailor](https://modrinth.com/mod/fabrictailor) 实现离线服务器的皮肤自定义功能，在游戏中可以通过 `/skin` 命令设置自己的皮肤，例如：
 
 ```bash
 # 设置为指定 URL 链接对应的皮肤
 /skin set URL classic https://s.namemc.com/i/b80558ff4b834410.png # 经典身材
 /skin set URL slim https://s.namemc.com/i/b80558ff4b834410.png # 纤细身材
+```
 
+由于服务器没有开启正版验证，因此默认情况下不会读取您的用户信息，也无法自动下载您在官网上传的皮肤。为了显示您的皮肤，请在游戏中输入如下命令：
+
+```bash
 # 设置为指定正版用户上传的皮肤
-/skin set player Lolipop0703
+/skin set player <YOUR_MINECRAFT_USERNAME>
 ```
 
 自定义皮肤效果展示：
 
 ![mc-with-shader](./connect-to-my-mc-server/set-skin.png)
 
-## 完整的服务端配置
+## 完整的服务器配置
 
 如果您也想搭建一个类似的我的世界服务器，或是想要了解此服务器的详细配置信息，请参考此章节。
 
@@ -159,7 +164,7 @@ services:
     restart: unless-stopped
 ```
 
-服务端模组列表文件 `@/extras/modrinth-mods.txt` 内容如下：
+服务器模组列表文件 `@/extras/modrinth-mods.txt` 内容如下：
 
 ```plaintext
 # Base library
@@ -202,7 +207,7 @@ fabrictailor
 # dynmap
 ```
 
-服务端配置文件 `server.properties` 内容如下：
+服务器配置文件 `server.properties` 内容如下：
 
 ```properties
 accepts-transfers=false
