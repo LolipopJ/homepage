@@ -138,9 +138,16 @@
     a {
       @apply item-link;
 
-      /* 覆盖 Heti 的相关样式，避免鼠标悬浮在图片上时引起间距变化 */
+      /**
+       * 覆盖 Fancybox 的相关样式，适配图片默认的圆角大小
+       * 覆盖 Heti 的相关样式，避免鼠标悬浮在图片上时引起间距变化
+       */
       &.gatsby-resp-image-link {
-        @apply hover:pb-0;
+        @apply rounded-lg hover:pb-0;
+
+        .gatsby-resp-image-background-image {
+          @apply rounded-lg;
+        }
       }
 
       /* 覆盖 prism 的相关样式，继承链接的颜色 */
