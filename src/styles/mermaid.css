@@ -2,3 +2,19 @@
   /* 避免影响 body 高度产生滚动条 */
   top: 0;
 }
+
+/* Mermaid 拖拽 & 缩放 */
+pre:has(> .mermaid) {
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+pre:has(> .mermaid):active {
+  cursor: grabbing;
+}
+
+pre:has(> .mermaid) > .mermaid > svg {
+  transform-origin: 0 0;
+}
