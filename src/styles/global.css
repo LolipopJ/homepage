@@ -3,6 +3,7 @@
 @import "heti/umd/heti.min.css";
 @import "rich-presence-react/style.css";
 @import "./alert.css";
+@import "./mermaid.css";
 @import "./nprogress.css";
 
 @tailwind base;

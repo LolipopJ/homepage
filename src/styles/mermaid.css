@@ -1,0 +1,4 @@
+.mermaidTooltip {
+  /* 避免影响 body 高度产生滚动条 */
+  top: 0;
+}

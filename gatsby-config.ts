@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
 
+import { remarkSkipCodeBlock } from "./plugins/remark-skip-code-block";
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
 
@@ -67,6 +68,9 @@ const config: GatsbyConfig = {
       resolve: "gatsby-plugin-mdx",
       options: {
         extensions: [".mdx", ".md"],
+        mdxOptions: {
+          remarkPlugins: [remarkGfm, remarkSkipCodeBlock],
+        },
         gatsbyRemarkPlugins: [
           // 压缩使用到的图片文件，放置到 /public/static 目录下
           {
@@ -84,7 +88,9 @@ const config: GatsbyConfig = {
               },
             },
           },
+          // 响应式嵌入内容（如 YouTube 视频）
           "gatsby-remark-responsive-iframe",
+          // 添加代码高亮
           {
             resolve: "gatsby-remark-prismjs",
             options: {
@@ -103,9 +109,6 @@ const config: GatsbyConfig = {
             },
           },
         ],
-        mdxOptions: {
-          remarkPlugins: [remarkGfm],
-        },
       },
     },
     {

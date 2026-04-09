@@ -8,6 +8,7 @@ import Card from "../components/card";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
+import useMermaid from "../hooks/useMermaid";
 
 type MDXProviderProps = React.ComponentProps<typeof MDXProvider>;
 
@@ -106,6 +107,10 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
     return () => Fancybox.unbind("[data-fancybox]");
   }, []);
   //#endregion
+
+  //#region 按需加载三方库
+  useMermaid(articleRef);
+  ////#endregion
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-y-12">

@@ -1,6 +1,12 @@
 import type { ImageDataLike } from "gatsby-plugin-image";
+import type { Mermaid } from "mermaid";
 
 declare global {
+  interface Window {
+    /** Mermaid 图表渲染库 */
+    mermaid?: Mermaid;
+  }
+
   interface SiteMetadata {
     /** 站点标题 */
     title: string;
