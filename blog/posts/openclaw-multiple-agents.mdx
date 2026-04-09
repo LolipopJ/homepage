@@ -1,9 +1,9 @@
 ---
-title: 配置启动 OpenClaw 多代理模式，把工作交给最合适的龙虾
+title: 初窥 OpenClaw 多代理模式，把工作交给最合适的龙虾
 date: 2026-03-09
-updated: 2026-03-29
+updated: 2026-04-09
 banner: ./openclaw-multiple-agents/banner.png
-timeliness: 45
+timeliness: 30
 categories:
   - 人工智能
 tags:
@@ -304,7 +304,7 @@ github-copilot/gpt-4.1                     text+image 125k     no    yes   confi
   <table style={{ width: "max-content", margin: 0 }}>
     <thead>
       <tr>
-        <th>助理编号</th>
+        <th>代理编号</th>
         <th>职责</th>
         <th>主力模型</th>
         <th>备注</th>
@@ -462,7 +462,74 @@ openclaw agents add expert --workspace ~/.openclaw/workspace-expert --model gith
 }
 ```
 
-上面的配置表示，代理默认使用 `messaging` 工具权限，`main` 代理拥有 `full` 全部工具权限，`coder` 和 `coder-pro` 代理拥有 `coding` 工具权限，`creativity` 和 `expert` 代理额外允许指定工具的权限。特别的，这里为 `main` 代理设置了 `subagents.allowAgents = ["*"]`，使得其能发现并调用别的代理为它工作。
+上面的配置表示，代理默认使用 `messaging` 工具权限，`main` 代理拥有 `full` 全部工具权限，`coder` 和 `coder-pro` 代理拥有 `coding` 工具权限，`creativity` 和 `expert` 代理额外允许指定工具的权限。
+
+特别的，这里为 `main` 代理设置了 `subagents.allowAgents = ["*"]`，使得它能发现并调用别的代理为它工作。如果需要代理们都能互相发现，那么相应添加此配置项即可。
+
+这样，整体架构形如：
+
+```mermaid
+graph TB
+    subgraph Users["👤 用户"]
+        User["用户请求"]
+    end
+
+    subgraph Agents["🦞 OpenClaw 代理层"]
+        Main["🧠 main<br/>任务规划/决策首脑"]
+        Daily["💬 daily<br/>日常会话"]
+        DailyCN["💬 daily-cn<br/>中文会话"]
+        Coder["💻 coder<br/>代码编程"]
+        CoderPro["💻 coder-pro<br/>高级编程"]
+        Creativity["✨ creativity<br/>创意点子"]
+        Expert["🎓 expert<br/>专业领域"]
+    end
+
+    subgraph Providers["🔌 模型提供商"]
+        Moonshot["🌙 Moonshot<br/>月之暗面"]
+        Bailian["☁️  Bailian<br/>阿里云"]
+        Copilot["🤖 Copilot<br/>GitHub"]
+    end
+
+    subgraph Models["🧠 LLM 模型"]
+        Kimi["Kimi K2.5"]
+        Qwen["Qwen 3.5 Plus"]
+        CoderNext["Qwen 3 Coder Next"]
+        GPT5Mini["GPT 5 Mini"]
+        GPT53["GPT 5.3 Codex"]
+        Gemini["Gemini 3.1 Pro"]
+        Opus["Claude Opus 4.6"]
+    end
+
+    User -->|派发任务| Main
+    Main -->|协调| Daily
+    Main -->|协调| DailyCN
+    Main -->|协调| Coder
+    Main -->|协调| CoderPro
+    Main -->|协调| Creativity
+    Main -->|协调| Expert
+
+    Daily -->|调用| Copilot
+    DailyCN -->|调用| Bailian
+    Coder -->|调用| Bailian
+    CoderPro -->|调用| Copilot
+    Creativity -->|调用| Copilot
+    Expert -->|调用| Copilot
+    Main -->|调用| Moonshot
+
+    Moonshot -->|提供| Kimi
+    Bailian -->|提供| Qwen
+    Bailian -->|提供| CoderNext
+    Copilot -->|提供| GPT5Mini
+    Copilot -->|提供| GPT53
+    Copilot -->|提供| Gemini
+    Copilot -->|提供| Opus
+
+    style Main fill:#ff9e64,stroke:#333,stroke-width:3px,color:#000
+    style Moonshot fill:#7aa2f7,stroke:#333,stroke-width:2px
+    style Bailian fill:#7aa2f7,stroke:#333,stroke-width:2px
+    style Copilot fill:#7aa2f7,stroke:#333,stroke-width:2px
+    style Users fill:#f7a500,stroke:#333,stroke-width:2px
+```
 
 ## 开始工作
 
@@ -709,6 +776,17 @@ Lolipop老师觉得呢？💙
 
 ## 结束语
 
-气笑了，在生成封面图的时候，发现负责指挥的龙虾连钳子手都进化成人手了，负责干活的龙虾为何拿着奇怪的东西在研磨纸张，背后的电脑起了什么作用？！
+嘛，说实话本文用于测试的两个案例都太简单了，只是单纯的信息传递任务，而且全程只有 main 代理能发现其它代理并进行交互，不足以展现出 AI 协作能力的上限。实际上开源社区已经有不少复杂甚至让人会心一笑的案例了，如[三省六部 · Edict](https://github.com/cft0808/edict)：
 
-折腾爽了，下次见。
+<blockquote>
+  <small>
+    12 个 AI Agent（11 个业务角色 + 1
+    个兼容角色）组成三省六部：太子分拣、中书省规划、门下省审核封驳、尚书省派发、六部+吏部并行执行。
+  </small>
+</blockquote>
+
+另外，据我观察编程社区的讨论来看，至少在编程方面，多代理协作已经不是空穴来风的玩具，而是实打实的生产力了。只要肯为好的大模型烧词元，AI 就能建造出令人惊叹的长城。而如果只是像我这样找廉价模型跑来玩，至少在现今阶段，最好还是别抱有太大的期望。
+
+题外话，在生成封面图的时候把自己气笑了，发现负责指挥的龙虾连钳子手都进化成人手了，负责干活的龙虾为何拿着奇怪的东西在研磨纸张，背后的电脑起了什么作用？！
+
+哼嗯哼嗯，折腾爽了，下次见。
