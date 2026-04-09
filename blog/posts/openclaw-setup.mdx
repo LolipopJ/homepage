@@ -1,7 +1,7 @@
 ---
 title: 最近 OpenClaw 也太火爆了，让我看看怎么个事儿
 date: 2026-03-06
-updated: 2026-04-09
+updated: 2026-04-10
 banner: ./openclaw-setup/banner.png
 timeliness: 45
 categories:
@@ -37,8 +37,6 @@ OpenClaw 原生对 MacOS 系统支持最为完善，如果你恰好拥有像 Mac
 npm install -g openclaw@latest
 ```
 
-OpenClaw 发展迅速，每隔几天都会有新的版本发布，如果想更新版本，执行上面的同款命令即可。
-
 安装服务到系统：
 
 ```bash
@@ -69,6 +67,13 @@ openclaw doctor
 
 ```bash
 openclaw gateway start
+```
+
+OpenClaw 发展迅速，开发阶段每隔几天都会有新的版本发布，如果想更新版本，可以执行命令：
+
+```bash
+# 更新 CLI 与 Gateway 守护进程等核心组件
+openclaw update
 ```
 
 我选择对接飞书作为 OpenClaw 助理的消息接收渠道。按照官方文档的[指引](https://docs.openclaw.ai/zh-CN/channels/feishu)，创建好机器人后，发送任意消息即可进入配对流程：
@@ -349,16 +354,30 @@ OpenClaw 内置了 `browser` 工具，能够让助理直接在宿主机上启动
 
 定期备份 OpenClaw 的数据是一个好习惯，假设哪天它自己玩坏了自己，至少还可以拿过去的资料修修补补。
 
-默认情况下 OpenClaw 会在 `~/.openclaw/workspace` 目录下自动初始化 Git 仓库，但是我不满足于此，懒狗精神发作，希望把整个仓库的重要内容都备份上传到自己的 Github 私有仓库里。
+默认情况下 OpenClaw 会在 `~/.openclaw/workspace` 目录下自动初始化 Git 仓库，但是我不满足于此，懒狗精神发作，希望把整个仓库的重要内容都备份上传到自己的 Github 私有仓库里。尽管这里面包括了**我的密钥等敏感信息**，但上传到私有仓库应该还好吧……还好吧？不会被拿去训练 Copilot 然后某天被闲得没事儿干的用户套出来了吧……
 
-所以我在 `~/.openclaw` 目录下直接初始化了新的 Git 仓库：
+确保能通过 SSH 访问到自己的 Github 账号，顺手把这些老生常谈的命令写在这里：
+
+```bash
+# 生成 SSH 密钥对，添加到 SSH 代理中
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -C "<YOUR_EMAIL>@example.com"
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519 # 如果报错请先执行 eval "$(ssh-agent -s)" 命令启动 SSH Agent
+# 复制公钥到剪贴板，添加到 Github 账号的 SSH Keys 中
+pbcopy < ~/.ssh/id_ed25519.pub
+# 测试 SSH 连接是否成功
+ssh -T git@github.com
+# 如果成功会看到类似这样的消息：
+# Hi <USERNAME>! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+在 `~/.openclaw` 目录下初始化新的 Git 仓库：
 
 ```bash
 cd ~/.openclaw
 git init
-git remote add origin <GITHUB_REPO_URL>
+git remote add origin git@github.com:<USERNAME>/<REPO>.git
 
-rm -rf ~/.openclaw/workspace/.git # 删除 OpenClaw 自动初始化的 Git 仓库，避免冲突
+rm -rf ~/.openclaw/workspace/.git # 删除 OpenClaw 自动为工作区初始化的 Git 仓库，避免冲突
 ```
 
 添加 `.gitignore` 文件，忽略掉不需要备份的内容，下面是我的配置供你参考：
@@ -403,12 +422,16 @@ __pycache__/
 
 在实际应用过程中，可能还会有新的路径需要添加到 `.gitignore` 里，可以在与 AI 交互的过程中慢慢发现并更新。
 
-手动操作自然不赖，但是把备份能力自动化更保安心。于是让 AI 帮我编写了一款小脚本 `~/.openclaw/scripts/backup-workspace.sh`：
+手动操作固然不赖，自动化备份的能力更保安心。于是我让 AI 帮忙编写了一个小脚本 `~/.openclaw/scripts/backup-workspace.sh`：
 
 ```bash
 #!/bin/bash
 
 # OpenClaw Git 备份脚本
+
+# 由于 LaunchAgent 服务运行在独立环境中，在这里指定了 SSH 命令使用的秘钥，
+# 确保服务总能使用正确的密钥进行身份验证，完成 Git 操作
+export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes'
 
 # 进入项目目录
 cd ~/.openclaw || exit 1
@@ -428,14 +451,14 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backup completed" >> ~/.openclaw/logs/backu
 exit 0
 ```
 
-测试脚本，看看是否正常运行：
+测试脚本，看看是否能正常运行：
 
 ```bash
 chmod +x ~/.openclaw/scripts/backup-workspace.sh
 ~/.openclaw/scripts/backup-workspace.sh
 ```
 
-对于 MacOS 系统，可以把这个脚本设置为自启服务，每天定时执行。编写系统服务文件 `~/Library/LaunchAgents/ai.openclaw.backup.plist`：
+新建 LaunchAgent 服务，遂电脑启动，每天定时执行脚本。可编写系统服务文件 `~/Library/LaunchAgents/ai.openclaw.backup.plist` 内容如下：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -448,44 +471,47 @@ chmod +x ~/.openclaw/scripts/backup-workspace.sh
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/<YOUR_USERNAME>/.openclaw/scripts/backup-workspace.sh</string>
+        <string>/Users/$YOUR_USERNAME/.openclaw/scripts/backup-workspace.sh</string>
     </array>
 
-    <!-- 每天北京时间 24:00 执行 -->
-    <!-- macOS 使用 UTC，北京时间 24:00 = UTC 16:00 -->
+    <!-- 每天 00:00 执行脚本 -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>16</integer>
+        <integer>0</integer>
         <key>Minute</key>
         <integer>0</integer>
     </dict>
 
     <!-- 标准输出和错误日志 -->
     <key>StandardOutPath</key>
-    <string>/Users/<YOUR_USERNAME>/.openclaw/logs/backup-workspace.stdout.log</string>
+    <string>/Users/$YOUR_USERNAME/.openclaw/logs/backup-workspace.stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/<YOUR_USERNAME>/.openclaw/logs/backup-workspace.stderr.log</string>
-
-    <!-- 运行周期为每天 -->
-    <key>RunAtLoad</key>
-    <true/>
-
-    <!-- 如果任务失败，自动重试 -->
-    <key>ThrottleInterval</key>
-    <integer>300</integer>
+    <string>/Users/$YOUR_USERNAME/.openclaw/logs/backup-workspace.stderr.log</string>
 </dict>
 </plist>
+```
+
+如果想要启动服务时立即执行一次备份，以便测试脚本能否在 LaunchAgent 自身的独立环境下正常运行，可以添加 `RunAtLoad` 的配置项：
+
+```xml
+<dict>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
 ```
 
 加载 LaunchAgent，验证加载状态：
 
 ```bash
-launchctl load ~/Library/LaunchAgents/ai.openclaw.backup.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.backup.plist
 launchctl list | grep openclaw
+
+# 如果需要卸载服务，可以执行命令
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/ai.openclaw.backup.plist
 ```
 
-现在系统就会自动在每天北京时间晚上十二点，备份 OpenClaw 工作区中我需要的数据与配置文件啦。
+现在系统就会自动在每天晚上十二点，备份 OpenClaw 工作区中我需要的数据与配置文件啦。
 
 ## 尾声
 
