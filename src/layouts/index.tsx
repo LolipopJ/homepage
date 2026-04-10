@@ -18,7 +18,7 @@ import {
   faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
-import { Link, PageProps } from "gatsby";
+import { Link, navigate, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
 import RichPresence from "rich-presence-react";
@@ -43,14 +43,17 @@ type SubNavbarActiveKey = "nav" | "posts" | "toc";
 
 const Layout: React.FC<PageProps> = (props) => {
   const { children, path = "/", location } = props;
-  const { hash, href } = location;
+  const { href, pathname, search, hash } = location;
+  const searchParams = new URLSearchParams(search);
 
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<SubNavbarActiveKey>();
   /** 小屏幕开启导航栏抽屉状态 */
   const [openSubNavbarDrawer, setOpenSubNavbarDrawer] =
     React.useState<boolean>(false);
-  const [isImmersive, setIsImmersive] = React.useState<boolean>(false);
+  const [isImmersive, setIsImmersive] = React.useState<boolean>(
+    searchParams.has("immersive"),
+  );
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -82,10 +85,23 @@ const Layout: React.FC<PageProps> = (props) => {
     return [result !== null, result?.[1]];
   }, [path]);
 
+  //#region 沉浸模式能力
   /** 是否激活了沉浸模式 */
   const isImmersiveActivated = React.useMemo(() => {
     return isImmersive && isPostPage && breakpoint["lg"];
   }, [breakpoint, isImmersive, isPostPage]);
+
+  /** 监听沉浸模式 URL Search Params */
+  React.useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (isImmersiveActivated) params.set("immersive", "true");
+    else params.delete("immersive");
+    const newSearch = params.toString() ? `?${params.toString()}` : "";
+    navigate(`${pathname}${newSearch}${hash || ""}`, {
+      replace: true,
+    });
+  }, [isImmersiveActivated, pathname, search, hash]);
+  //#endregion
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
@@ -303,67 +319,13 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [isPostPage, path, postSlug]);
   //#endregion
 
-  const subNavbarItems: SiderBarProps<SubNavbarActiveKey>["items"] = [
-    {
-      key: "posts",
-      label: "博客列表",
-      children: (
-        <ol>
-          {posts.map((post) => {
-            const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(
-              path,
-            );
+  //#region 侧边栏
+  /** 可切换侧边栏组件列表 */
+  const subSiderBarItems: NonNullable<
+    SiderBarProps<SubNavbarActiveKey>["items"]
+  > = [];
 
-            return (
-              <li key={post.fields.slug}>
-                <Post
-                  post={post}
-                  className={`mb-2 ${isActive ? "item-selected" : ""}`}
-                  excerptClassName="hidden"
-                />
-              </li>
-            );
-          })}
-        </ol>
-      ),
-    },
-  ];
-
-  if (isPostPage) {
-    subNavbarItems.push({
-      key: "toc",
-      label: "目录",
-      children: (
-        <ol className={`px-3`}>
-          {pageHeadings.map((heading, index) => {
-            const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-
-            return (
-              <li
-                key={heading.innerText}
-                ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
-                style={{ marginLeft }}
-                className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
-              >
-                <a
-                  href={`#${heading.id}`}
-                  className="block px-3 py-2 transition"
-                >
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: heading.innerHTML,
-                    }}
-                    className="pointer-events-none"
-                  />
-                </a>
-              </li>
-            );
-          })}
-        </ol>
-      ),
-    });
-  }
-
+  /** 星球图标大小 */
   const planetSize = breakpoint["2xl"]
     ? 260
     : breakpoint["lg"]
@@ -371,7 +333,9 @@ const Layout: React.FC<PageProps> = (props) => {
       : breakpoint["sm"]
         ? 292
         : 0;
-  const siderBarItemNav = (
+
+  /** 侧边栏导航组件 */
+  const siderBarNavItem = (
     <>
       <Navbar items={NAVBAR_ITEMS} activeKey={path} />
       <div className={`relative z-10 flex flex-col gap-3`}>
@@ -394,12 +358,71 @@ const Layout: React.FC<PageProps> = (props) => {
     </>
   );
   if (!breakpoint["2xl"]) {
-    subNavbarItems.unshift({
+    subSiderBarItems.push({
       key: "nav",
       label: "导航",
-      children: siderBarItemNav,
+      children: siderBarNavItem,
     });
   }
+
+  /** 侧边栏博客列表组件 */
+  const siderBarPostItem = (
+    <ol>
+      {posts.map((post) => {
+        const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(path);
+
+        return (
+          <li key={post.fields.slug}>
+            <Post
+              post={post}
+              className={`mb-2 ${isActive ? "item-selected" : ""}`}
+              excerptClassName="hidden"
+            />
+          </li>
+        );
+      })}
+    </ol>
+  );
+  subSiderBarItems.push({
+    key: "posts",
+    label: "博客列表",
+    children: siderBarPostItem,
+  });
+
+  if (isPostPage) {
+    /** 侧边栏博客目录组件 */
+    const siderBarTocItem = (
+      <ol className={`px-3`}>
+        {pageHeadings.map((heading, index) => {
+          const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+
+          return (
+            <li
+              key={heading.innerText}
+              ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
+              style={{ marginLeft }}
+              className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
+            >
+              <a href={`#${heading.id}`} className="block px-3 py-2 transition">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: heading.innerHTML,
+                  }}
+                  className="pointer-events-none"
+                />
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+    );
+    subSiderBarItems.push({
+      key: "toc",
+      label: "目录",
+      children: siderBarTocItem,
+    });
+  }
+  //#endregion
 
   return (
     <div className="flex h-screen print:h-auto">
@@ -428,10 +451,10 @@ const Layout: React.FC<PageProps> = (props) => {
         }
         bodyClassName="px-4 relative"
       >
-        {siderBarItemNav}
+        {siderBarNavItem}
       </SiderBar>
       <SiderBar<SubNavbarActiveKey>
-        items={subNavbarItems}
+        items={subSiderBarItems}
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={setSubNavbarActiveKey}
         headerClassName="px-4 mx-3"
