@@ -118,7 +118,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
         {categories?.length && (
           <Link
             to={`/categories/${encodeURIComponent(categories[0])}`}
-            className="w-fit rounded bg-neutral-800 px-3 py-2 leading-none transition-opacity hover:opacity-75"
+            className="w-fit rounded bg-background-lighter px-3 py-2 leading-normal transition-opacity hover:opacity-75"
           >
             <span
               className={`cursor-pointer bg-gradient-to-tr from-0% via-40% to-90% bg-clip-text text-lg font-bold leading-none text-transparent ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""}`}

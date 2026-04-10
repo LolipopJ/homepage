@@ -76,7 +76,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
     >
       <div className={`flex h-header items-center ${headerClassName}`}>
         {header || (
-          <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-neutral-800 p-0.5">
+          <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-background-lighter p-0.5">
             {items.map((item) => (
               <li
                 key={item.key}
