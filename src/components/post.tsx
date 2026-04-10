@@ -89,7 +89,7 @@ const Post: React.FC<PostProps> = (props) => {
         <div className="relative -mx-4">
           <GatsbyImage
             image={bannerImage}
-            alt="Banner"
+            alt={title ?? slug}
             className="h-52 w-full rounded-md object-cover object-center md:h-56 xl:h-60"
             loading="lazy"
           />

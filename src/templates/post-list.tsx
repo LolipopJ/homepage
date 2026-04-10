@@ -44,7 +44,9 @@ export const query = graphql`
         }
         frontmatter {
           banner {
-            publicURL
+            childImageSharp {
+              gatsbyImageData
+            }
           }
           categories
           tags
