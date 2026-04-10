@@ -1,5 +1,5 @@
 ---
-title: 基于原生 Node 备份软路由上的 Minecraft 服务器存档，并通过 Alist 上传到云端
+title: 基于原生 Node 备份软路由上的 Minecraft 服务器存档，并通过 AList 上传到云端
 date: 2024-05-11
 updated: 2024-05-23
 timeliness: -1
@@ -11,7 +11,7 @@ tags:
   - Minecraft
   - Node
   - JavaScript
-  - Alist
+  - AList
 ---
 
 笔者最近在 OpenWRT 软路由上部署了一个 Minecraft 服务器，出于对数据安全的焦虑，于是折腾了一下存档备份的相关事宜，记录为此文。
@@ -167,7 +167,7 @@ Wed, 15 May 2024 15:00:00 +0800
 
 这样，在北京时间凌晨 4 点，系统将自动调用备份脚本。如果彼时仍有用户在游玩，脚本可能会运行失败，可以在执行脚本之前关闭 Minecraft 服务器，完成后重新启动。
 
-## （可选）通过 Alist 上传到云端
+## （可选）通过 AList 上传到云端
 
 > 为了这盘醋，包了这顿饺子。
 
@@ -175,9 +175,9 @@ Wed, 15 May 2024 15:00:00 +0800
 
 笔者已经在软路由上安装并配置好了 Alist，连接到了自己的 OneDrive。下面将进一步实现上传备份文件到 OneDrive 或任何其他的云盘。
 
-### 获取 Alist token
+### 获取 AList token
 
-调用 Alist 接口时需要传入 token，因此首先需要获取 token：
+调用 AList 接口时需要传入 token，因此首先需要获取 token：
 
 ```js
 const ALIST_ADDRESS = "YOUR_ALIST_ADDRESS";
@@ -208,7 +208,7 @@ const alistToken = resObj.data.token;
 
 ### 上传备份文件到云盘
 
-现在，编写 Alist 上传文件的方法：
+现在，编写 AList 上传文件的方法：
 
 ```js
 const ALIST_BACKUP_DIR = "/path/to/mc-backups";
@@ -235,7 +235,7 @@ const requestOptions = {
 await fetch(`${ALIST_ADDRESS}/api/fs/put`, requestOptions);
 ```
 
-通过 `headers.append("As-Task", "true");` 将文件上传设为任务，避免阻塞其它命令的执行。在 Alist 管理后台可以看到上传的进度：
+通过 `headers.append("As-Task", "true");` 将文件上传设为任务，避免阻塞其它命令的执行。在 AList 管理后台可以看到上传的进度：
 
 ![upload-to-alist](./backup-mc-server/upload-to-alist.png)
 
