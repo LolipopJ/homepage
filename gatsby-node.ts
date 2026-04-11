@@ -7,6 +7,8 @@ import path from "path";
 
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
+const isProd = process.env.NODE_ENV === "production";
+
 export const onCreateWebpackConfig = ({
   actions,
   getConfig,
@@ -30,6 +32,12 @@ export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
       node,
       name: "slug",
       value: parseFilePathToPostSlug(String(node.internal.contentFilePath)),
+    });
+
+    createNodeField({
+      node,
+      name: "isPublic",
+      value: /\/blog\/posts\//.test(String(node.internal.contentFilePath)),
     });
 
     createNodeField({
@@ -72,7 +80,7 @@ export const createPages = async function ({
         nodes {
           fields {
             slug
-            isDraft
+            isPublic
           }
           frontmatter {
             banner {
@@ -106,23 +114,30 @@ export const createPages = async function ({
       },
     });
 
+    // Skip drafts when adding to category/tag lists in production
+    const shouldIncludeInLists = !isProd || node.fields.isPublic;
+
     // Filter posts by category
-    (node.frontmatter.categories ?? []).forEach((category) => {
-      if (Array.isArray(postsFilteredByCategory[category])) {
-        postsFilteredByCategory[category].push(node.id);
-      } else {
-        postsFilteredByCategory[category] = [node.id];
-      }
-    });
+    if (shouldIncludeInLists) {
+      (node.frontmatter.categories ?? []).forEach((category) => {
+        if (Array.isArray(postsFilteredByCategory[category])) {
+          postsFilteredByCategory[category].push(node.id);
+        } else {
+          postsFilteredByCategory[category] = [node.id];
+        }
+      });
+    }
 
     // Filter posts by tag
-    (node.frontmatter.tags ?? []).forEach((tag) => {
-      if (Array.isArray(postsFilteredByTag[tag])) {
-        postsFilteredByTag[tag].push(node.id);
-      } else {
-        postsFilteredByTag[tag] = [node.id];
-      }
-    });
+    if (shouldIncludeInLists) {
+      (node.frontmatter.tags ?? []).forEach((tag) => {
+        if (Array.isArray(postsFilteredByTag[tag])) {
+          postsFilteredByTag[tag].push(node.id);
+        } else {
+          postsFilteredByTag[tag] = [node.id];
+        }
+      });
+    }
   });
 
   // Create category pages through filtered posts

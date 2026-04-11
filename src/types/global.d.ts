@@ -27,6 +27,8 @@ declare global {
     fields: {
       /** 博客地址 */
       slug: string;
+      /** 是否为已公开的博客文章 */
+      isPublic: boolean;
       /** 是否为草稿 */
       isDraft: boolean;
     };

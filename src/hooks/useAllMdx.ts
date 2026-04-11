@@ -9,12 +9,13 @@ export const useAllMdx = () => {
     query {
       allMdx(
         sort: { frontmatter: { date: DESC } }
-        filter: { internal: { contentFilePath: { regex: "//blog/posts//" } } }
+        filter: { fields: { isPublic: { eq: true } } }
       ) {
         nodes {
           excerpt(pruneLength: 200)
           fields {
             slug
+            isPublic
             isDraft
           }
           frontmatter {
