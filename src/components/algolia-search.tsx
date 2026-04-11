@@ -61,7 +61,7 @@ const Hit: React.FC<
 
 const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
   onClose,
-  className,
+  className = "",
   style,
   ...restProps
 }) => {

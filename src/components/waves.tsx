@@ -7,8 +7,8 @@ export interface WavesProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Waves: React.FC<WavesProps> = (props) => {
   const {
-    className,
-    svgClassName,
+    className = "",
+    svgClassName = "",
     animationDuration = 4,
     ...restProps
   } = props;

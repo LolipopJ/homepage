@@ -22,7 +22,7 @@ export interface Route {
 const Navbar: React.FC<NavbarProps> = ({
   items,
   activeKey,
-  className,
+  className = "",
   children,
 }) => {
   return (
