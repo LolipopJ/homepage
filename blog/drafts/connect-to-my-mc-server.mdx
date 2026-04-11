@@ -1,7 +1,7 @@
 ---
 title: 连接到我的 Minecraft 服务器
 date: 2026-04-06
-updated: 2026-04-09
+updated: 2026-04-12
 banner: ./connect-to-my-mc-server/banner.png
 categories:
   - 生活闲暇
@@ -39,7 +39,7 @@ Fabric 模组服务器，版本信息如下：
 
 https://mc.towind.fun/map
 
-如果无法正常访问地图，请等待服务器模组更新。
+由 [BlueMap](https://modrinth.com/mod/bluemap) 强力驱动。
 
 ## 派大星都能看懂的加入服务器步骤
 
@@ -175,7 +175,7 @@ services:
       - ./extras:/extras
     ports:
       - 25565:25565
-      - 8123:8123
+      - 8100:8100
     stdin_open: true
     tty: true
     environment:
@@ -192,18 +192,26 @@ services:
     restart: unless-stopped
 ```
 
+其中，`8100` 端口是 BlueMap 模组 Web 服务器的默认端口。
+
 服务器模组列表文件 `@/extras/modrinth-mods.txt` 内容如下：
 
 ```plaintext
+# Mod Sync
+automodpack
+
 # Base library
 fabric-api
 cloth-config
-badpackets
+modmenu
 yacl
-lithostitched
 balm
+lithostitched
+badpackets
 
 # Performance optimization
+sodium
+entityculling
 ferrite-core
 lithium
 
@@ -212,28 +220,35 @@ terralith
 tectonic
 towns-and-towers
 
-# Util
-automodpack
-jade
-jei
-clumps
-double-doors
-# kleeslabs
+# Utils
 appleskin
-# netherportalfix
+jei
+jade
+mouse-tweaks
+clumps
+netherportalfix
 better-stats
 journeymap
+double-doors
+kleeslabs
 
 # Community
-villager-names-serilum
 chat-heads
+villager-names-serilum
+bl4cks-sit
 fabrictailor
+
+# Graphics & Animation
+iris
+entitytexturefeatures
+entity-model-features
+lambdynamiclights
 
 # Sound
 sound-physics-remastered
 
-# Open service
-# dynmap
+# Open services
+bluemap
 ```
 
 服务器配置文件 `server.properties` 内容如下：
