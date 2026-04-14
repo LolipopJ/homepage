@@ -55,7 +55,7 @@ https://mc.towind.fun/map
 
 服务器使用伟大的 [AutoModpack](https://modrinth.com/mod/automodpack) 模组来实现与客户端模组同步的功能，致力于让每位进入服务器的玩家拥有相同且优雅的游戏体验！
 
-**⚠️如果没有安装该模组，服务器将拒绝您的连接。**
+> **⚠️如果没有安装该模组，服务器将拒绝您的连接。**
 
 因此，在正式启动游戏之前，需要您手动下载该模组到本地。
 
@@ -97,7 +97,7 @@ https://mc.towind.fun/map
 
 ![同步服务器上的模组](./connect-to-my-mc-server/sync-mods.png)
 
-开始你的世界之旅吧！
+开始您的世界之旅吧！
 
 ---
 
@@ -181,7 +181,9 @@ services:
     environment:
       - EULA=TRUE
       - VERSION=26.1.1
-      - MEMORY=2G
+      - INIT_MEMORY=1G
+      - MAX_MEMORY=4G
+      - TZ=Asia/Shanghai
       - TYPE=FABRIC
       - FABRIC_LOADER_VERSION=0.18.6
       - FABRIC_LAUNCHER_VERSION=1.1.1
@@ -250,6 +252,8 @@ sound-physics-remastered
 # Open services
 bluemap
 ```
+
+您可以通过访问 `https://modrinth.com/mod/${slug}` 来查看每个模组的详细信息，例如 https://modrinth.com/mod/automodpack 。
 
 服务器配置文件 `server.properties` 内容如下：
 
@@ -323,4 +327,4 @@ view-distance=10
 white-list=false
 ```
 
-祝你游戏愉快！
+祝您游戏愉快！
