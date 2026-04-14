@@ -1,7 +1,7 @@
 ---
 title: 月球上的最终幻想 14 玩家，用插件改善劳动生活
 date: 2026-03-12
-updated: 2026-04-11
+updated: 2026-04-14
 banner: ./ffxiv-man-on-the-moon/banner.jpg
 categories:
   - 生活闲暇
@@ -20,11 +20,13 @@ tags:
 
 为了使用 Dalamud 插件，首先必须安装 Dalamud 框架。最简单的方式是下载 [FFXIVQuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)，使用它启动游戏，将自动下载、更新和安装 Dalamud 框架。
 
-本文涉及到的生产插件 Artisan 和钓鱼插件 Auto Hook 确实**违反了游戏的使用条款**，存在自动化操作的不当行为，请了解并承担相应的使用风险。譬如笔者自己就遇到了被抓住封号的情况：
+> ⚠️如果你要使用插件，就请**不要公开传播使用插件的截图或视频**，更**不要在游戏内交流频道提到任何跟插件有关的词语**，即使是密语频道也不行！
+
+本文涉及到的生产插件 Artisan 和钓鱼插件 Auto Hook 确实**违反了游戏的使用条款**，存在自动化操作的不当行为，请了解并承担相应的使用风险。譬如笔者自己就因为在好久没见的朋友的通讯贝里提到插件相关的词汇，第二天就被抓住并封号了：
 
 ![噔噔噔……](./ffxiv-man-on-the-moon/man-in-the-jail.png)
 
-也因此，插件 Artisan 和 Auto Hook 并未注册到 Dalamud 官方插件库中，需要手动添加插件源：进入游戏后，打开“卫月设置”，找到“测试版” - “自定义插件仓库”，填写插件源地址 `https://love.puni.sh/ment.json`，点击右侧的加号按钮，最后点击右下角的保存按钮就可以了。现在，打开 Dalamud 的“插件中心”，就能找到并安装这两款插件了。
+作为自动化生产采集的插件代表，Artisan 和 Auto Hook 自然也并未注册到 Dalamud 官方插件库中，需要手动添加它们的插件源：进入游戏后，打开“卫月设置”，找到“测试版” - “自定义插件仓库”，填写插件源地址 `https://love.puni.sh/ment.json`，点击右侧的加号按钮，最后点击右下角的保存按钮就可以了。现在，打开 Dalamud 的“插件中心”，就能找到并安装这两款插件了。
 
 ## 生产插件 Artisan
 
@@ -161,8 +163,6 @@ tags:
 像这样的实现其实并不优雅，比如在执行 SND 宏的过程中，鼠标放置在了某些可交互按钮上，宏执行到“点击确认键”时，可能会意外地进入交互状态，导致流程被打断。更优雅的方案肯定是像 Artisan 那样，只调用游戏内部 API 来完成工作，更加高效可靠，就我所知也存在类似的插件，就留待想要更上层楼的你来研究啦\~
 
 ## 外传 Ice's Cosmic Exploration
-
-> ⚠️ 笔者使用此插件完成了宇宙探索的全职业 50w 技巧点数，也因此被封了号……请珍惜自己的账号……
 
 一款能自动帮你接受、完成和提交宇宙探索任务的插件，其名为 [Ice's Cosmic Exploration（ICE）](https://github.com/LeontopodiumNivale14/Ices-Cosmic-Exploration)，在内部依赖了别的常青插件，如前面介绍过的 Artisan 和 Auto Hook。
 
