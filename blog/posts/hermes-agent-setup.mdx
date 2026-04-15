@@ -1,7 +1,7 @@
 ---
 title: 最近 Hermes Agent 也太火爆了，让我看看怎么个事儿
 date: 2026-04-13
-updated: 2026-04-14
+updated: 2026-04-15
 banner: ./hermes-agent-setup/banner.png
 timeliness: 45
 categories:
@@ -421,189 +421,194 @@ CAMOFOX_URL=http://localhost:9377
 
 安全性从此刻开始显得尤为重要，如果你还在使用各类打着低价模型的 API 中转站，建议从现在起全部换掉，在不知觉使用了多少次注水模型暂且不论，至少能保障自己的隐私数据、密钥信息等不被轻易偷走。
 
-第一步，修改 Hermes Agent 的配置文件 `~/.hermes/config.yaml`，启用持久 Camofox Browser 会话的能力：
+1. 第一步，修改 Hermes Agent 的配置文件 `~/.hermes/config.yaml`，启用持久 Camofox Browser 会话的能力：
 
-```yaml
-browser:
-  camofox:
-    managed_persistence: true
-```
+   ```yaml
+   browser:
+     camofox:
+       managed_persistence: true
+   ```
 
-启动后，对于相同的 Hermes Agent 档案，在调用 Camofox Browser 时，总会使用形如 `hermes_xxxxxxxxxx` 的稳定 `userId`，这样，当之后为该 ID 导入 Cookies 数据后，助理就能以我的身份进行各种操作了。从上一小节最后的日志里也可以看到，我电脑上的 Hermes Agent 的 `userId` 是 `hermes_deef0197d7`。
+   启动后，对于相同的 Hermes Agent 档案，在调用 Camofox Browser 时，总会使用形如 `hermes_xxxxxxxxxx` 的稳定 `userId`。这是因为在目前的实现里，其生成逻辑只与当前使用的 Hermes Agent 根目录路径有关：
 
-第二步，生成一个专用于调用 Camofox Browser 服务接口的密钥：
+   ```py
+   user_digest = uuid.uuid5(
+     uuid.NAMESPACE_URL,
+     f"camofox-user:path/to/.hermes/browser_auth/camofox",
+   ).hex[:10]
+   ```
 
-```bash
-# macOS / Linux
-openssl rand -hex 32
-```
+   这样，当之后为该 `userId` 导入 Cookies 数据后，助理就能以我的身份进行各种操作了。从上一小节最后的日志里也可以看到，我电脑上的 Hermes Agent 的 `userId` 是 `hermes_deef0197d7`，之后会在请求接口时用它来构造 URL。
 
-第三步，将刚刚生成的密钥添加到 Camofox Browser 服务的环境变量中：
+2. 第二步，生成一个专用于调用 Camofox Browser 服务接口的密钥：
 
-```yaml
-services:
-  camofox:
-    environment:
-      - CAMOFOX_API_KEY=your-generated-key
-```
+   ```bash
+   # macOS / Linux
+   openssl rand -hex 32
+   ```
 
-在默认情况下，Camofox Browser 服务会拒绝导入 Cookies 的请求，除非设置了该环境变量。设置以后，服务在接收到导入 Cookies 的请求时，会检查请求头是否包含合法的 `Authorization: Bearer CAMOFOX_API_KEY`。
+3. 第三步，将刚刚生成的密钥添加到 Camofox Browser 服务的环境变量中：
 
-第四步，将密钥也添加到 Hermes Agent 的环境变量中：
+   ```yaml
+   services:
+     camofox:
+       environment:
+         - CAMOFOX_API_KEY=your-generated-key
+   ```
 
-```bash
-CAMOFOX_API_KEY="your-generated-key"
-```
+   在默认情况下，Camofox Browser 服务会拒绝导入 Cookies 的请求，除非设置了该环境变量。设置以后，服务在接收到导入 Cookies 的请求时，会检查请求头是否包含合法的 `Authorization: Bearer CAMOFOX_API_KEY`。
 
-未来如果要让助理代劳导入 Cookies 数据，它就可以在请求头里添加这个密钥了。
+4. 第四步，在工作电脑的浏览器上安装可以导出站点 Cookies 为 Netscape 格式文件的拓展程序，如 Chrome 浏览器的拓展程序 [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)。
 
-第五步，在工作电脑的浏览器上安装可以导出站点 Cookies 为 Netscape 格式文件的拓展程序，如 Chrome 浏览器的拓展程序 [Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)。
+   ![导出 Cookies 文件](./hermes-agent-setup/export-cookies.png)
 
-![导出 Cookies 文件](./hermes-agent-setup/export-cookies.png)
+   是的，既可以点击“Export”按钮导出当前域名下的 Cookies 到文件中，也可以点击“Export All Cookies”按钮来一键导出你的所有 Cookies 信息到文件 `cookies.txt` 中。但是 Camofox Browser 服务接口限制一次最多上传 500 条 Cookies 数据，加上对待 AI 这类黑箱服务应遵循的“最小授权”准则，建议每次只导出需要使用的站点的 Cookies 提供给 Camofox Browser 使用。
 
-是的，既可以点击“Export”按钮导出当前域名下的 Cookies 到文件中，也可以点击“Export All Cookies”按钮来一键导出你的所有 Cookies 信息到文件 `cookies.txt` 中。但是 Camofox Browser 服务接口限制一次最多上传 500 条 Cookies 数据，加上对待 AI 这类黑箱服务应遵循的“最小授权”准则，建议每次只导出需要使用的站点的 Cookies 提供给 Camofox Browser 使用。
+   这里，我导出了 V2EX 站的 Cookies 数据，将得到的文件传输给服务器。
 
-这里，我导出了 V2EX 站的 Cookies 数据，将得到的文件传输给服务器。
+5. 最后一步，让 Hermes Agent 帮我把 Cookies 数据导入到 Camofox Browser 服务中。
 
-第六步，让 Hermes Agent 帮我把 Cookies 数据导入到 Camofox Browser 服务中。
+   不过且慢，Camofox Browser 最初设计是给 OpenClaw 使用的插件，目前在 Hermes Agent 的技能市场中还没有谁提供导入 Cookies 到 Camofox Browser 的技能，没法像文档里写的那样直接告诉助手“Import my LinkedIn cookies from cookies.txt”让它代劳。
 
-不过且慢，Camofox Browser 最初设计是给 OpenClaw 使用的插件，目前在 Hermes Agent 的技能市场中还没有谁提供导入 Cookies 到 Camofox Browser 的技能，没法像文档里写的那样直接告诉助手“Import my LinkedIn cookies from cookies.txt”让它代劳。
+   那么答案只有只有一个了 —— 我自己来！
 
-那么答案只有只有一个了 —— 我自己来！
+   把 Camofox Browser 项目里解析 Cookies 的代码 `~/.hermes/camofox-browser/lib/cookies.js` 搬过来，让 AI 封装为 CLI 调用的形式，得到脚本文件 `~/.hermes/scripts/get-cookies.js`：
 
-把 Camofox Browser 项目里解析 Cookies 的代码 `~/.hermes/camofox-browser/lib/cookies.js` 搬过来，让 AI 封装为 CLI 调用的形式，得到脚本文件 `~/.hermes/scripts/get-cookies.js`：
+   ```js
+   import fs from "fs/promises";
+   import path from "path";
+   import { fileURLToPath } from "url";
 
-```js
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+   function parseNetscapeCookieFile(text) {
+     const cookies = [];
+     const cleaned = text.replace(/^\uFEFF/, "");
 
-function parseNetscapeCookieFile(text) {
-  const cookies = [];
-  const cleaned = text.replace(/^\uFEFF/, "");
+     for (const rawLine of cleaned.split(/\r?\n/)) {
+       const line = rawLine.trim();
+       if (!line) continue;
+       if (line.startsWith("#") && !line.startsWith("#HttpOnly_")) continue;
 
-  for (const rawLine of cleaned.split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line) continue;
-    if (line.startsWith("#") && !line.startsWith("#HttpOnly_")) continue;
+       let httpOnly = false;
+       let working = line;
+       if (working.startsWith("#HttpOnly_")) {
+         httpOnly = true;
+         working = working.replace(/^#HttpOnly_/, "");
+       }
 
-    let httpOnly = false;
-    let working = line;
-    if (working.startsWith("#HttpOnly_")) {
-      httpOnly = true;
-      working = working.replace(/^#HttpOnly_/, "");
-    }
+       const parts = working.split("\t");
+       if (parts.length < 7) continue;
 
-    const parts = working.split("\t");
-    if (parts.length < 7) continue;
+       const domain = parts[0];
+       const cookiePath = parts[2];
+       const secure = parts[3].toUpperCase() === "TRUE";
+       const expires = Number(parts[4]);
+       const name = parts[5];
+       const value = parts.slice(6).join("\t");
 
-    const domain = parts[0];
-    const cookiePath = parts[2];
-    const secure = parts[3].toUpperCase() === "TRUE";
-    const expires = Number(parts[4]);
-    const name = parts[5];
-    const value = parts.slice(6).join("\t");
+       cookies.push({
+         name,
+         value,
+         domain,
+         path: cookiePath,
+         expires,
+         httpOnly,
+         secure,
+       });
+     }
 
-    cookies.push({
-      name,
-      value,
-      domain,
-      path: cookiePath,
-      expires,
-      httpOnly,
-      secure,
-    });
-  }
+     return cookies;
+   }
 
-  return cookies;
-}
+   async function readCookieFile({
+     cookiesDir,
+     cookiesPath,
+     domainSuffix,
+     maxBytes = 5 * 1024 * 1024,
+   }) {
+     const resolved = path.resolve(cookiesDir, cookiesPath);
+     if (!resolved.startsWith(cookiesDir + path.sep)) {
+       throw new Error(
+         "cookiesPath must be a relative path within the cookies directory",
+       );
+     }
 
-async function readCookieFile({
-  cookiesDir,
-  cookiesPath,
-  domainSuffix,
-  maxBytes = 5 * 1024 * 1024,
-}) {
-  const resolved = path.resolve(cookiesDir, cookiesPath);
-  if (!resolved.startsWith(cookiesDir + path.sep)) {
-    throw new Error(
-      "cookiesPath must be a relative path within the cookies directory",
-    );
-  }
+     const stat = await fs.stat(resolved);
+     if (stat.size > maxBytes) {
+       throw new Error("Cookie file too large (max 5MB)");
+     }
 
-  const stat = await fs.stat(resolved);
-  if (stat.size > maxBytes) {
-    throw new Error("Cookie file too large (max 5MB)");
-  }
+     const text = await fs.readFile(resolved, "utf8");
+     let cookies = parseNetscapeCookieFile(text);
+     if (domainSuffix) {
+       cookies = cookies.filter((c) => c.domain.endsWith(domainSuffix));
+     }
 
-  const text = await fs.readFile(resolved, "utf8");
-  let cookies = parseNetscapeCookieFile(text);
-  if (domainSuffix) {
-    cookies = cookies.filter((c) => c.domain.endsWith(domainSuffix));
-  }
+     return cookies.map((c) => ({
+       name: c.name,
+       value: c.value,
+       domain: c.domain,
+       path: c.path,
+       expires: c.expires,
+       httpOnly: !!c.httpOnly,
+       secure: !!c.secure,
+     }));
+   }
 
-  return cookies.map((c) => ({
-    name: c.name,
-    value: c.value,
-    domain: c.domain,
-    path: c.path,
-    expires: c.expires,
-    httpOnly: !!c.httpOnly,
-    secure: !!c.secure,
-  }));
-}
+   if (fileURLToPath(import.meta.url) === process.argv[1]) {
+     (async () => {
+       const args = process.argv.slice(2);
+       if (args.length === 0) {
+         console.error("Usage: node get-cookies.js /path/to/cookies.txt");
+         process.exit(2);
+       }
 
-if (fileURLToPath(import.meta.url) === process.argv[1]) {
-  (async () => {
-    const args = process.argv.slice(2);
-    if (args.length === 0) {
-      console.error("Usage: node get-cookies.js /path/to/cookies.txt");
-      process.exit(2);
-    }
+       const fileArg = args[0];
+       const resolved = path.resolve(fileArg);
+       try {
+         const cookies = await readCookieFile({
+           cookiesDir: path.dirname(resolved),
+           cookiesPath: path.basename(resolved),
+         });
+         console.log(JSON.stringify(cookies));
+       } catch (err) {
+         console.error("Error reading cookie file:", err.message);
+         process.exit(1);
+       }
+     })();
+   }
+   ```
 
-    const fileArg = args[0];
-    const resolved = path.resolve(fileArg);
-    try {
-      const cookies = await readCookieFile({
-        cookiesDir: path.dirname(resolved),
-        cookiesPath: path.basename(resolved),
-      });
-      console.log(JSON.stringify(cookies));
-    } catch (err) {
-      console.error("Error reading cookie file:", err.message);
-      process.exit(1);
-    }
-  })();
-}
-```
+   调用 CLI 工具，传入待解析的 Cookies 文件路径：
 
-调用 CLI 工具，传入待解析的 Cookies 文件路径：
+   ```bash
+   node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/www.v2ex.com_cookies.txt
+   ```
 
-```bash
-node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/www.v2ex.com_cookies.txt
-```
+   得到的数组就是一会儿要发送给 Camofox Browser 的 Cookies 数据了。
 
-得到的数组就是一会儿要发送给 Camofox Browser 的 Cookies 数据了。
+   参考官方提供的接口调用示例：
 
-参考官方提供的接口调用示例：
+   ```bash
+   curl -X POST http://localhost:9377/sessions/agent1/cookies \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer YOUR_CAMOFOX_API_KEY' \
+     -d '{"cookies":[{"name":"foo","value":"bar","domain":"example.com","path":"/","expires":-1,"httpOnly":false,"secure":false}]}'
+   ```
 
-```bash
-curl -X POST http://localhost:9377/sessions/agent1/cookies \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer YOUR_CAMOFOX_API_KEY' \
-  -d '{"cookies":[{"name":"foo","value":"bar","domain":"example.com","path":"/","expires":-1,"httpOnly":false,"secure":false}]}'
-```
+   构造适用于我的 Hermes Agent 的请求，Camofox Browser 容器内打印日志如下：
 
-构造适用于我的 Hermes Agent 的请求，Camofox Browser 容器内打印日志如下：
+   ```json
+   {"level":"info","msg":"req","reqId":"a1e3f3b6","method":"POST","path":"/sessions/hermes_deef0197d7/cookies","userId":"-"}
+   {"level":"info","msg":"session created","userId":"hermes_deef0197d7","proxyMode":null,"proxyServer":null,"proxySession":null}
+   {"level":"info","msg":"cookies imported","reqId":"a1e3f3b6","userId":"hermes_deef0197d7","count":10}
+   {"level":"info","msg":"res","reqId":"a1e3f3b6","status":200,"ms":12}
+   ```
 
-```json
-{"level":"info","msg":"req","reqId":"a1e3f3b6","method":"POST","path":"/sessions/hermes_deef0197d7/cookies","userId":"-"}
-{"level":"info","msg":"session created","userId":"hermes_deef0197d7","proxyMode":null,"proxyServer":null,"proxySession":null}
-{"level":"info","msg":"cookies imported","reqId":"a1e3f3b6","userId":"hermes_deef0197d7","count":10}
-{"level":"info","msg":"res","reqId":"a1e3f3b6","status":200,"ms":12}
-```
+   大功告成，顺利地导入了与 V2EX 站点相关的 10 条 Cookies 数据！
 
-大功告成！下面开始对 Camofox Browser 的反检测能力进行测试。
+这一节尽管看上去很复杂，但实际上一点也不轻松。由于 Hermes Agent 文档的谬误，加上本身 Camofox Agent 是设计给 OpenClaw 使用的插件，整个流程是我让 AI 多次研究源代码，才串起来的可行步骤。至于有没有我遗漏的精巧设计，有没有我错过的最佳实践，就搁置于此吧。还是那句话，早期采用者真是满满的福气呀……
+
+下面开始对 Camofox Browser 的反检测能力进行测试。
 
 ### 反检测能力测试
 
@@ -639,9 +644,9 @@ V2EX 的签到通常在登录后首页右侧会显示「领取今日的登录奖
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-喔对了，因为目前版本的 Camofox Browser 还不支持持久化 Cookies 等数据（官方文档里写的环境变量 `CAMOFOX_PROFILE_DIR` 还没有实现，可能是 AI 生成的幻觉；另外让 AI 分析 Camofox Browser 源码，也未发现相关实现），每次通过 `curl` 请求导入的数据有效期为当前会话，而会话过期的时间默认为 10 分钟。如果会话过期了，Cookies 数据也就清空了，就会出现上面未登录的提示信息。
+喔对了，因为目前版本的 Camofox Browser 还不支持持久化 Cookies 等数据（官方文档里写的环境变量 `CAMOFOX_PROFILE_DIR` 还没有实现，可能是 AI 生成的幻觉；另外让 AI 分析 Camofox Browser 源码，也未发现相关实现），每次通过 `curl` 请求导入的数据有效期为当前会话，而会话过期的时间默认为 10 分钟。如果会话过期了，Cookies 数据也就清空了，于是出现上面未登录的提示信息。
 
-那么，再执行一遍 `curl -X POST http://localhost:9377/sessions/agent1/cookies` 请求，接着让助理重新尝试吧：
+那么，再执行一遍 `curl -X POST http://localhost:9377/sessions/agent1/cookies` 请求生成一轮新的会话，再让助理重新尝试吧：
 
 ```plaintext
 ╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────╮
@@ -708,7 +713,7 @@ V2EX 的签到通常在登录后首页右侧会显示「领取今日的登录奖
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-它做到了！Camofox Browser 成功绕过了 V2EX 的自动化检测机制，让助理顺利完成了签到任务！太棒了！
+它做到了！Camofox Browser 成功绕过了 V2EX 的自动化检测机制，让助理完成了签到任务！太棒了！
 
 不过每次要在流程前手动导入 Cookies 数据实在不够优雅，于是我让 AI 把流程总结为了一个 SKILL：
 
@@ -784,13 +789,13 @@ steps:
     - Run: node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/${DOMAIN}_cookies.txt
     - This script outputs JSON format cookies data array
     - Example output:
-        [{ "name": "session_id", "value": "xxx", "domain": ".v2ex.com", ... }]
+        [{ "name": "key", "value": "value", "domain": ".v2ex.com", ... }]
 
   3. Inject Cookies into browser session:
     - Construct curl command with headers:
         Content-Type: application/json
         Authorization: Bearer $CAMOFOX_API_KEY
-    - POST to: http://localhost:9377/sessions/${SESSION_ID}/cookies
+    - POST to: http://localhost:9377/sessions/${CAMOFOX_HERMES_SESSION_ID}/cookies
     - Body: Cookies JSON array from step 2
 
   4. Verify login status:
@@ -805,7 +810,7 @@ examples:
       COOKIES=$(node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/${DOMAIN}_cookies.txt)
 
       # 2. Inject into current session
-      curl -X POST http://localhost:9377/sessions/${SESSION_ID}/cookies \
+      curl -X POST http://localhost:9377/sessions/${CAMOFOX_HERMES_SESSION_ID}/cookies \
         -H 'Content-Type: application/json' \
         -H "Authorization: Bearer ${CAMOFOX_API_KEY}" \
         -d "$COOKIES"
@@ -816,14 +821,14 @@ examples:
   - description: GitHub operations requiring authentication
     code: |
       COOKIES=$(node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/github.com_cookies.txt)
-      curl -X POST http://localhost:9377/sessions/${SESSION_ID}/cookies \
+      curl -X POST http://localhost:9377/sessions/${CAMOFOX_HERMES_SESSION_ID}/cookies \
         -H 'Content-Type: application/json' \
         -H "Authorization: Bearer ${CAMOFOX_API_KEY}" \
         -d "$COOKIES"
 
 environment_variables:
   - CAMOFOX_API_KEY: Camofox service API authentication key
-  - SESSION_ID: Current Hermes browser session identifier
+  - CAMOFOX_HERMES_SESSION_ID: Current Hermes browser session identifier
 
 notes: |
   - Cookie files are typically located in ~/.camofox/cookies/ directory
@@ -853,8 +858,8 @@ node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/${DOMAIN}_cookies.txt
 ```json
 [
   {
-    "name": "session_id",
-    "value": "abc123",
+    "name": "key",
+    "value": "value",
     "domain": ".v2ex.com",
     "path": "/"
   },
@@ -872,7 +877,7 @@ node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/${DOMAIN}_cookies.txt
 使用 curl 将 cookies 数据发送到 Camofox 的会话 API：
 
 ```bash
-curl -X POST http://localhost:9377/sessions/${SESSION_ID}/cookies \
+curl -X POST http://localhost:9377/sessions/${CAMOFOX_HERMES_SESSION_ID}/cookies \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${CAMOFOX_API_KEY}" \
   -d '${COOKIES_JSON}'
@@ -901,7 +906,18 @@ browser_navigate("https://www.v2ex.com/mission/daily")
 3. 某些网站可能需要额外的 CSRF token 处理
 ````
 
-接下来，只要不会遇到 Cloudflare 之类的拦截，想必什么事情都能让 Hermes Agent 代劳了吧！
+在 Hermes Agent 的环境变量里设置好 `CAMOFOX_HERMES_SESSION_ID` 与 `CAMOFOX_API_KEY`，SKILL 就能正常运转了：
+
+```bash
+CAMOFOX_HERMES_SESSION_ID=hermes_xxxxxxxxxx
+CAMOFOX_API_KEY=your-generated-key
+```
+
+当然，也可以让助理每次都跑一遍生成 `userId` 的逻辑，但是考虑到会占用不必要的上下文，所以更推荐第一次拿到 `userId` 后就直接像上面那样设置为环境变量，方便后续使用。
+
+接下来？也许你会考虑把这个流程设置为定时任务，每天触发。但我自己有用浏览器拓展程序 [V2EX Polish](https://github.com/coolpace/V2EX_Polish)，只要还每天会打开 Chrome，它就会帮我自动签到了。
+
+再之后，桀桀桀，只要不会遇到 Cloudflare 之类的拦截，想必什么需要浏览器上干的事情都能让 Hermes Agent 代劳了吧！
 
 ## 数据备份
 
