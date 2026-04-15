@@ -122,6 +122,9 @@ importers:
       remark-gfm:
         specifier: ^3.0.1
         version: 3.0.1
+      remark-github-alerts:
+        specifier: ^0.1.1
+        version: 0.1.1(@types/mdast@4.0.4)(unified@11.0.5)
       rich-presence-react:
         specifier: ^1.0.0-beta.2
         version: 1.0.0-beta.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -189,6 +192,9 @@ importers:
       postcss:
         specifier: ^8.5.9
         version: 8.5.9
+      postcss-import:
+        specifier: ^16.1.1
+        version: 16.1.1(postcss@8.5.9)
       postcss-nesting:
         specifier: ^14.0.0
         version: 14.0.0(postcss@8.5.9)
@@ -6341,6 +6347,12 @@ packages:
     peerDependencies:
       postcss: ^8.0.0
 
+  postcss-import@16.1.1:
+    resolution: {integrity: sha512-2xVS1NCZAfjtVdvXiyegxzJ447GyqCeEI5V7ApgQVOWnros1p5lGNovJNapwPpMombyFBfqDwt7AD3n2l0KOfQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      postcss: ^8.0.0
+
   postcss-js@4.1.0:
     resolution: {integrity: sha512-oIAOTqgIo7q2EOwbhb8UalYePMvYoIeRY2YKntdpFQXNosSu3vLrniGgmH9OKs/qAkfoj5oB3le/7mINW1LCfw==}
     engines: {node: ^12 || ^14 || >= 16}
@@ -6893,6 +6905,12 @@ packages:
 
   remark-gfm@3.0.1:
     resolution: {integrity: sha512-lEFDoi2PICJyNrACFOfDD3JlLkuSbOa5Wd8EPt06HUdptv8Gn0bxYTdbU/XXQ3swAPkEaGxxPN9cbnMHvVu1Ig==}
+
+  remark-github-alerts@0.1.1:
+    resolution: {integrity: sha512-A0NLfeAuu76ymiGIoEoBcHmqlPcdLFq+FoCGiWlzu8vkyhscyDv+pAkMA9paGr+OHpzpFflZKnsqOCvMESG/Uw==}
+    peerDependencies:
+      '@types/mdast': ^4.0.0
+      unified: ^11.0.0
 
   remark-mdx@2.3.0:
     resolution: {integrity: sha512-g53hMkpM0I98MU266IzDFMrTD980gNF3BJnkyFcmN+dD873mQeD5rdMO3Y2X+x8umQfbSE0PcoEDl7ledSA+2g==}
@@ -16224,6 +16242,13 @@ snapshots:
       read-cache: 1.0.0
       resolve: 1.22.11
 
+  postcss-import@16.1.1(postcss@8.5.9):
+    dependencies:
+      postcss: 8.5.9
+      postcss-value-parser: 4.2.0
+      read-cache: 1.0.0
+      resolve: 1.22.11
+
   postcss-js@4.1.0(postcss@8.5.9):
     dependencies:
       camelcase-css: 2.0.1
@@ -16789,6 +16814,12 @@ snapshots:
       unified: 10.1.2
     transitivePeerDependencies:
       - supports-color
+
+  remark-github-alerts@0.1.1(@types/mdast@4.0.4)(unified@11.0.5):
+    dependencies:
+      '@types/mdast': 4.0.4
+      unified: 11.0.5
+      unist-util-visit: 5.1.0
 
   remark-mdx@2.3.0:
     dependencies:

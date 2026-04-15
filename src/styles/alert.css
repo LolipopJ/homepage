@@ -1,12 +1,15 @@
 /**
  * Github Markdown CSS - Alert styles
  * https://github.com/sindresorhus/github-markdown-css/blob/e49401776c9d581ad42367fc4ea3d677d13e2e39/github-markdown-dark.css#L1055-L1115
+ * https://github.com/hyoban/remark-github-alerts/blob/43ff491ba4052b149e9a48093a750c7a88d72551/styles/github-base.css#L23-L37
  */
 .markdown-alert {
   padding: 0.5rem 1rem;
   margin-bottom: 1rem;
   color: inherit;
-  border-left: 0.25em solid #3d444d;
+  border-left: 0.25rem solid #3d444d;
+
+  @apply rounded-l rounded-r-lg bg-background-light;
 }
 
 .markdown-alert > :first-child {
@@ -22,6 +25,25 @@
   font-weight: 500;
   align-items: center;
   line-height: 1;
+
+  @apply mb-4;
+}
+
+.markdown-alert p {
+  @apply mb-4 mt-0 whitespace-pre-wrap;
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  overflow: visible !important;
+  mask: var(--oct-icon) no-repeat;
+  mask-size: 100% 100%;
+  background-color: currentColor;
+  color: inherit;
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 1em;
+  height: 1em;
 }
 
 .markdown-alert.markdown-alert-note {

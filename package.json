@@ -80,6 +80,7 @@
     "react-dom": "^18.3.1",
     "react-instantsearch": "^7.29.0",
     "remark-gfm": "^3.0.1",
+    "remark-github-alerts": "^0.1.1",
     "rich-presence-react": "^1.0.0-beta.2"
   },
   "devDependencies": {
@@ -104,6 +105,7 @@
     "lint-staged": "^16.4.0",
     "mermaid": "^11.14.0",
     "postcss": "^8.5.9",
+    "postcss-import": "^16.1.1",
     "postcss-nesting": "^14.0.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.7.2",

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
+import remarkGithubAlerts from "remark-github-alerts";
 
 import { remarkSkipCodeBlock } from "./plugins/remark-skip-code-block";
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
@@ -69,7 +70,7 @@ const config: GatsbyConfig = {
       options: {
         extensions: [".mdx", ".md"],
         mdxOptions: {
-          remarkPlugins: [remarkGfm, remarkSkipCodeBlock],
+          remarkPlugins: [remarkGithubAlerts, remarkGfm, remarkSkipCodeBlock],
         },
         gatsbyRemarkPlugins: [
           // 压缩使用到的图片文件，放置到 /public/static 目录下
