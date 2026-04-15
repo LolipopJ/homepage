@@ -51,6 +51,7 @@ apt-get install -y build-essential
 
 ## 安装 CMake
 
+> [!NOTE]
 > `make` 是 gRPC 以前使用的构建命令，但是官方文档不再建议使用它。应使用 `bazel` 或 `cmake` 代替。此处我们选择使用 `cmake` 执行编译。
 
 执行下述命令，如果没有找到命令则需要安装 CMake。目前编译 gRPC 需要的 CMake 最低版本为 `3.5.1`，建议使用的 CMake 版本为 `3.13` 及以上。

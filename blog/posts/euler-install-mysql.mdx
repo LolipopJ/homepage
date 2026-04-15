@@ -134,6 +134,7 @@ mysql>
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '${新的密码}';
 ```
 
+> [!TIP]
 > 注意，新的密码默认情况下需要符合长度，且必须包括数字，小写或大写字母，以及特殊字符。
 > 尽管不推荐，您也可以设置密码复杂度属性，这样密码只需要满足长度要求即可使用：`SET GLOBAL validate_password_policy=0;`
 

@@ -110,6 +110,7 @@ cd .build
 cmake .. -DgRPC_INSTALL=ON -G "Visual Studio 15 2017"
 ```
 
+> [!TIP]
 > 尽管[不推荐](https://github.com/grpc/grpc/blob/master/BUILDING.md#windows-a-note-on-building-shared-libs-dlls)，在上面执行 `cmake` 命令时，您可以指定 `-DBUILD_SHARED_LIBS=ON` 以编译生成 gRPC C++ 的 DLL 文件。
 
 接下来对 gRPC 进行编译安装操作，包括两种方式，这里更建议使用 VS。

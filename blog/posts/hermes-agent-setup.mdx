@@ -55,13 +55,16 @@ OpenAI 在二月发布的[《工程技术：在智能体优先的世界中利用
 
 下面是我在 MacOS 系统上从零开始部署 Hermes Agent 的过程，供你参考，虽则直接阅读官方文档总是最好最快的啦。
 
+> [!NOTE]
+> 撰写此章节时，我使用的 Hermes Agent 版本号为 v0.8.0。
+
 执行官方提供的一键脚本：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
 ```
 
-撰写此文时，Hermes Agent 的版本号为 v0.8.0，翻看终端日志可知，一键脚本在 MacOS 系统上依次安装了：
+翻看终端日志可知，一键脚本在 MacOS 系统上依次安装了：
 
 1. `uv`，用于管理全局使用的 Python 版本；
 2. `python`，用于运行 Hermes Agent；
@@ -261,7 +264,8 @@ You optimize for truth, clarity, and usefulness over politeness theater.
 
 Hermes Agent 最初是一个终端工具，对于有使用命令行经验的人来说是一个很好的 BUFF：不仅输入输出清晰，`/` 会自动联想指令，没有 GUI 的学习负担；而且能够清楚看到命令执行的流程，就像在 VSCode 中与 AI 助理的聊天一样，掌控感满满。
 
-从 v0.9.0 版本开始，Hermes Agent 添加了对 Web UI 的支持，不过考虑到终端体验已经非常棒了，就先不去体验玩了。
+> [!TIP]
+> 从 v0.9.0 版本开始，Hermes Agent 添加了对 Web UI 的支持，不过考虑到终端体验已经非常棒了，就先不去体验玩了。
 
 在撰写此小节时，本来打算就让 Hermes Agent 自己给自己写 `SOUL.md` 文件，但调用 Github Copilot 提供的模型老是在一次会话中，助理完成一个任务准备发起第二次请求时，出现 `HTTP 400: The requested model is not supported.` 的报错。
 
@@ -295,7 +299,10 @@ Hermes Agent 本应该通过查询 Github Copilot 模型目录，发现 `claude-
 
 ### 部署服务容器
 
-接下来，基于 Docker 部署 Camofox Browser 服务。撰写此章节时 Camofox Browser 的版本号为 v1.5.2，由于官方并没有提供上传到 Docker Hub 的镜像，所以需要我们克隆原仓库并手动构建镜像：
+> [!NOTE]
+> 撰写此章节时，我使用的 Camofox Browser 版本号为 v1.5.2。
+
+接下来，基于 Docker 部署 Camofox Browser 服务。由于官方并没有提供上传到 Docker Hub 的镜像，所以需要我们克隆原仓库并手动构建镜像：
 
 ```bash
 cd ~/.hermes
@@ -419,7 +426,8 @@ CAMOFOX_URL=http://localhost:9377
 
 没有登陆态的浏览器终归是可悲的空壳，今回我将一改往常的小心谨慎，直接将自己主力电脑上存储的 Cookies 数据交给它来使用。唯有跨过这道界线，才算真正落入 AI 自动化的捕蝇草吧……
 
-安全性从此刻开始显得尤为重要，如果你还在使用各类打着低价模型的 API 中转站，建议从现在起全部换掉，在不知觉使用了多少次注水模型暂且不论，至少能保障自己的隐私数据、密钥信息等不被轻易偷走。
+> [!CAUTION]
+> 安全性从此刻开始显得尤为重要，如果你还在使用各类打着低价模型的 API 中转站，建议从现在起全部换掉，在不知觉使用了多少次注水模型暂且不论，至少能保障自己的隐私数据、密钥信息等不被轻易偷走。
 
 1. 第一步，修改 Hermes Agent 的配置文件 `~/.hermes/config.yaml`，启用持久 Camofox Browser 会话的能力：
 

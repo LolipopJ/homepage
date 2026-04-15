@@ -22,6 +22,7 @@ tags:
 
 [Grafana](https://grafana.org.cn/docs/grafana/latest/) 的定位是整合数据查询和展示的客户端，在它背后实际负责日志收集和存储的是 [Loki](https://grafana.org.cn/docs/loki/latest/)。因此，首先我们需要部署 Grafana 和 Loki 这两个容器。
 
+> [!NOTE]
 > 笔者在撰写本文时，使用的 Grafana 的版本为 `12.0`，Loki 的版本为 `3.5.x`。
 
 参考 Loki 官方快速开始文档，精简示例里的 [`docker-compose.yaml` 文件](https://github.com/grafana/loki/blob/main/examples/getting-started/docker-compose.yaml)，只保留用于启动 Grafana 和 Loki 这两个服务和其他一些必要服务的容器的配置。简化后的 `docker-compose.yaml` 配置文件如下：
@@ -321,6 +322,7 @@ compactor:
 
 现在，我们拥有了 Loki 来收集日志，那么该拿什么负责在客户端转发日志呢？Loki 的官方文档里推荐使用 [Alloy](https://grafana.org.cn/docs/alloy/latest/)，这里笔者也就沿用官方文档提供的方案了。
 
+> [!NOTE]
 > 笔者在撰写本文时，使用的 Alloy 的版本为 `1.8`。
 
 对于笔者的 CentOS 服务器，依次执行下面的命令来安装 Alloy：
@@ -477,6 +479,7 @@ services:
     restart: unless-stopped
 ```
 
+> [!TIP]
 > 更进一步，您还可以选用 [Dockge](https://github.com/louislam/dockge) 等服务来统一管理系统上的所有 `docker-compose.yaml` 文件，不再在此博客里赘述。
 
 重定向 AList 容器的日志信息到 Loki，完整的 `docker-compose.yaml` 配置文件如下：
