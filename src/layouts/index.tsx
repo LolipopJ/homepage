@@ -183,8 +183,8 @@ const Layout: React.FC<PageProps> = (props) => {
     const mainDom = mainRef.current;
     const pageDom = pageRef.current;
     if (isPostPage && pageHeadings && mainDom && pageDom) {
+      const articleDom = pageDom.querySelector<HTMLElement>("article");
       const onScrolled = () => {
-        const pageHeight = pageDom.clientHeight;
         const scrollTop = mainDom.scrollTop;
         for (let index = pageHeadings.length - 1; index >= 0; index -= 1) {
           const { offsetTop } = pageHeadings[index];
@@ -199,10 +199,21 @@ const Layout: React.FC<PageProps> = (props) => {
           }
         }
 
-        const progress = Math.ceil(
-          ((scrollTop + mainDom.clientHeight) / pageHeight) * 100,
-        );
-        setReadProgress(progress);
+        if (articleDom) {
+          const mainRect = mainDom.getBoundingClientRect();
+          const articleRect = articleDom.getBoundingClientRect();
+          const articleTopInScroll = articleRect.top - mainRect.top + scrollTop;
+          const articleHeight = articleDom.clientHeight;
+          const headerEl = mainDom.querySelector("header");
+          const headerHeight = headerEl?.clientHeight ?? 0;
+          const visibleBottom = scrollTop + mainDom.clientHeight;
+          const readStart = articleTopInScroll + headerHeight;
+          const readEnd = articleTopInScroll + articleHeight;
+          const progress = Math.floor(
+            ((visibleBottom - readStart) / (readEnd - readStart)) * 100,
+          );
+          setReadProgress(progress);
+        }
       };
       onScrolled();
       const throttleOnScrolled = throttle(onScrolled, 50);
