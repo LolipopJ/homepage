@@ -523,8 +523,9 @@ const Layout: React.FC<PageProps> = (props) => {
           {/* 博客页的评论系统 */}
           {isPostPage && !!postSlug && (
             <GitalkComponent
+              key={postSlug}
               gitalkId={postSlug}
-              className="gitalk mx-auto mt-24 max-w-xl print:hidden"
+              className="mx-auto mt-24 max-w-xl print:hidden"
             />
           )}
 
