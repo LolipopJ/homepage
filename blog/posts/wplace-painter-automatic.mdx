@@ -20,7 +20,7 @@ tags:
 >
 > ……换句话说：怂别用，用别怂！
 
-全流程用到了一些前端调试的知识，对非技术的小白用户并不友好，请见谅。如果对实现的细节不敢兴趣，可以直接跳到最后的[使用方法](#使用方法)部分，按照步骤操作即可。
+全流程用到了一些前端调试的知识，对非技术的小白用户并不友好，请见谅。如果对实现的细节不感兴趣，可以直接跳到最后的[使用方法](#使用方法)部分，按照步骤操作即可。
 
 ## 方案探索与实现
 
@@ -371,17 +371,19 @@ export default class WindowFilter extends Overlay {
 
 在 Tampermonkey 中添加脚本，任选其一：
 
-- 生产环境脚本 [`BlueMarble.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble.user.js)，一般使用此版本即可。
+- 生产环境脚本 [`BlueMarble.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble.user.js)，一般使用此版本就好。
 - 开发环境脚本 [`BlueMarble-For-GreasyFork.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble-For-GreasyFork.user.js)，与前者的区别在于未混淆压缩，控制台会打印调试信息。
 
 打开开发者控制台，切换到“源代码”标签页，找到 Wplace 的前端资源中的 `paint()` 方法，在方法入口打上断点。可以通过在开发者工具里搜索接口 `/paint` 来快速定位此方法：
 
 ![为 paint() 方法打上断点](./wplace-painter-automatic/add-breakpoint.png)
 
+在 Blue Marble 插件里过滤掉不需要的颜色，只保留想要绘制的颜色，等待地图上**待绘制像素点刷新后**，点击插件里的 Refresh&Copy 按钮复制请求载荷。
+
 > [!TIP]
 > 因为 Blue Marble 劫持了 Wplace 刷新地图的请求以计算待绘制像素点列表，所以在过滤颜色后，需要等待**下一次地图刷新**才能正确获取到待绘制像素点列表。简单可以理解为“所见即所得”，当你看到地图上的待绘制像素点刷新后，就可以点击 Refresh&Copy 按钮了。
 
-在 Blue Marble 插件里过滤掉不需要的颜色，只保留想要绘制的颜色，等待地图上**待绘制像素点刷新后**，点击插件里的 Refresh&Copy 按钮复制请求载荷：
+如果成功的话，浏览器将弹出对话框提示，可以看到本次复制的像素点数量：
 
 ![复制请求载荷](./wplace-painter-automatic/copy-missing-pixels.png)
 
