@@ -51,6 +51,7 @@
       "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN",
       "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC",
       "WenQuanYi Micro Hei", SimSun, sans-serif;
+    text-autospace: normal;
   }
 
   body {
@@ -128,7 +129,7 @@
     > a > video,
     > table,
     > iframe {
-      @apply !-mx-6 mb-6 mt-3 w-[calc(100%+3rem)] !max-w-none;
+      @apply !-mx-6 mb-6 mt-6 w-[calc(100%+3rem)] !max-w-none;
     }
 
     /* 加载中和加载失败的图片显示深色占位背景 */
