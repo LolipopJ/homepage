@@ -1,7 +1,7 @@
 ---
 title: 最近 Hermes Agent 也太火爆了，让我看看怎么个事儿
 date: 2026-04-13
-updated: 2026-04-15
+updated: 2026-04-19
 banner: ./hermes-agent-setup/banner.png
 timeliness: 45
 categories:
@@ -476,6 +476,9 @@ CAMOFOX_URL=http://localhost:9377
 
 5. 最后一步，让 Hermes Agent 帮我把 Cookies 数据导入到 Camofox Browser 服务中。
 
+   > [!TIP]
+   > Camofox Browser 自 v1.6.0 版本开始内置了对启动时注入会话 Cookies 的支持，根据官方文档启用对应插件即可。
+
    不过且慢，Camofox Browser 最初设计是给 OpenClaw 使用的插件，目前在 Hermes Agent 的技能市场中还没有谁提供导入 Cookies 到 Camofox Browser 的技能，没法像文档里写的那样直接告诉助手“Import my LinkedIn cookies from cookies.txt”让它代劳。
 
    那么答案只有只有一个了 —— 我自己来！
@@ -722,6 +725,9 @@ V2EX 的签到通常在登录后首页右侧会显示「领取今日的登录奖
 ```
 
 它做到了！Camofox Browser 成功绕过了 V2EX 的自动化检测机制，让助理完成了签到任务！太棒了！
+
+> [!TIP]
+> Camofox Browser 自 v1.6.0 版本开始内置了对启动时注入会话 Cookies 的支持，不用再像我这样手动导入 Cookies 数据了。
 
 不过每次要在流程前手动导入 Cookies 数据实在不够优雅，于是我让 AI 把流程总结为了一个 SKILL：
 
