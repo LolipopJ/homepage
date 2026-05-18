@@ -29,6 +29,7 @@ import GitalkComponent from "../components/gitalk";
 import Icon from "../components/icon";
 import Planets from "../components/planets";
 import Post from "../components/post";
+import RotatingText from "../components/rotating-text";
 import Waves from "../components/waves";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
@@ -105,8 +106,10 @@ const Layout: React.FC<PageProps> = (props) => {
 
   //#region 切换路由时初始化页面状态
   React.useEffect(() => {
-    setPageTitle("");
-    setOpenSubNavbarDrawer(false);
+    React.startTransition(() => {
+      setPageTitle("");
+      setOpenSubNavbarDrawer(false);
+    });
     mainRef.current?.scrollTo({
       top: savedScrollTopRef.current?.[path] ?? 0,
       behavior: "instant",
@@ -121,16 +124,18 @@ const Layout: React.FC<PageProps> = (props) => {
 
   //#region 自动设置侧边栏激活的页面
   React.useEffect(() => {
-    if (isPostPage) {
-      // 访问博客页面时，侧边栏切换到目录页
-      setSubNavbarActiveKey("toc");
-    } else {
-      if (breakpoint["2xl"]) {
-        setSubNavbarActiveKey("posts");
+    React.startTransition(() => {
+      if (isPostPage) {
+        // 访问博客页面时，侧边栏切换到目录页
+        setSubNavbarActiveKey("toc");
       } else {
-        setSubNavbarActiveKey("nav");
+        if (breakpoint["2xl"]) {
+          setSubNavbarActiveKey("posts");
+        } else {
+          setSubNavbarActiveKey("nav");
+        }
       }
-    }
+    });
   }, [breakpoint, isPostPage]);
   //#endregion
 
@@ -215,13 +220,15 @@ const Layout: React.FC<PageProps> = (props) => {
           setReadProgress(progress);
         }
       };
-      onScrolled();
+      React.startTransition(() => onScrolled());
       const throttleOnScrolled = throttle(onScrolled, 50);
       mainDom.addEventListener("scroll", throttleOnScrolled);
       return () => mainDom.removeEventListener("scroll", throttleOnScrolled);
     } else {
-      setCurrentHeading(-1);
-      setReadProgress(0);
+      React.startTransition(() => {
+        setCurrentHeading(-1);
+        setReadProgress(0);
+      });
     }
   }, [path, isPostPage, pageHeadings]);
   //#endregion
@@ -231,14 +238,7 @@ const Layout: React.FC<PageProps> = (props) => {
     const pageDom = pageRef.current;
     let match: RegExpMatchArray | null;
 
-    if (path === "/") {
-      setPageTitle(
-        <>
-          <Icon icon={faPenNib} className="p-2" />
-          <span>所有博客</span>
-        </>,
-      );
-    } else if (isPostPage) {
+    if (isPostPage) {
       if (pageDom) {
         const postTitle = pageDom.querySelector("h1");
         if (postTitle) {
@@ -274,59 +274,71 @@ const Layout: React.FC<PageProps> = (props) => {
             observer.unobserve(postTitle);
           };
         } else {
-          setShowBackTop(true);
+          React.startTransition(() => setShowBackTop(true));
         }
       }
-    } else if (/^\/works\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faLaptopCode} className="p-2" />
-          <span>作品集</span>
-        </>,
-      );
-    } else if (/^\/friends\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faHeart} className="p-2" />
-          <span>朋友们</span>
-        </>,
-      );
-    } else if (/^\/tags\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faTags} className="p-2" />
-          <span>所有标签</span>
-        </>,
-      );
-    } else if ((match = path.match(/^\/tags\/(.+?)\/?$/))) {
-      setPageTitle(
-        <>
-          <Icon icon={faTag} className="p-2" />
-          <span>{decodeURIComponent(match[1])}</span>
-        </>,
-      );
-    } else if (/^\/categories\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faFolder} className="p-2" />
-          <span>所有分类</span>
-        </>,
-      );
-    } else if ((match = path.match(/^\/categories\/(.+?)\/?$/))) {
-      setPageTitle(
-        <>
-          <Icon icon={faFolderOpen} className="p-2" />
-          <span>{decodeURIComponent(match[1])}</span>
-        </>,
-      );
-    } else if (/^\/404\/?$/.test(path)) {
-      setPageTitle(
-        <>
-          <Icon icon={faWarning} className="p-2" />
-          <span>未开放区域</span>
-        </>,
-      );
+      return;
     }
+
+    React.startTransition(() => {
+      if (path === "/") {
+        setPageTitle(
+          <>
+            <Icon icon={faPenNib} className="p-2" />
+            <span>所有博客</span>
+          </>,
+        );
+      } else if (/^\/works\/?$/.test(path)) {
+        setPageTitle(
+          <>
+            <Icon icon={faLaptopCode} className="p-2" />
+            <span>作品集</span>
+          </>,
+        );
+      } else if (/^\/friends\/?$/.test(path)) {
+        setPageTitle(
+          <>
+            <Icon icon={faHeart} className="p-2" />
+            <span>朋友们</span>
+          </>,
+        );
+      } else if (/^\/tags\/?$/.test(path)) {
+        setPageTitle(
+          <>
+            <Icon icon={faTags} className="p-2" />
+            <span>所有标签</span>
+          </>,
+        );
+      } else if ((match = path.match(/^\/tags\/(.+?)\/?$/))) {
+        setPageTitle(
+          <>
+            <Icon icon={faTag} className="p-2" />
+            <span>{decodeURIComponent(match[1])}</span>
+          </>,
+        );
+      } else if (/^\/categories\/?$/.test(path)) {
+        setPageTitle(
+          <>
+            <Icon icon={faFolder} className="p-2" />
+            <span>所有分类</span>
+          </>,
+        );
+      } else if ((match = path.match(/^\/categories\/(.+?)\/?$/))) {
+        setPageTitle(
+          <>
+            <Icon icon={faFolderOpen} className="p-2" />
+            <span>{decodeURIComponent(match[1])}</span>
+          </>,
+        );
+      } else if (/^\/404\/?$/.test(path)) {
+        setPageTitle(
+          <>
+            <Icon icon={faWarning} className="p-2" />
+            <span>未开放区域</span>
+          </>,
+        );
+      }
+    });
   }, [isPostPage, path, postSlug]);
   //#endregion
 
@@ -451,12 +463,27 @@ const Layout: React.FC<PageProps> = (props) => {
       <SiderBar
         className={`hidden w-72 2xl:block print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
         header={
-          <div className="mx-5 flex h-header items-center px-4">
+          <div className="mx-5 px-4">
             <Link
               to="/"
-              className="text-lg font-bold transition-colors hover:text-primary"
+              className="flex items-center text-lg font-bold transition-colors hover:text-primary"
             >
-              {siteTitle}
+              Lolipop's
+              <RotatingText
+                texts={["Studio", "Space", "Homepage", "Blog"]}
+                mainClassName="ml-1.5 overflow-hidden justify-center"
+                staggerFrom="last"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "-120%" }}
+                staggerDuration={0.025}
+                splitLevelClassName="overflow-hidden"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                rotationInterval={10000}
+                splitBy="characters"
+                auto
+                loop
+              />
             </Link>
           </div>
         }
