@@ -104,7 +104,9 @@ Auth=root/8e6845e089457af25303abc6f53356eb60bdb5f8
 
 ![在 Fluent Reader 里阅读推送](./openclaw-with-rss/fluent-reader-with-posts.png)
 
-最妙的是，Fluent Reader 的星标等功能与 FreshRSS 是打通的，当你在 Fluent Reader 阅读器里为文章添加星标时，FreshRSS 在数据库里也会为关联用户的对应文章打上星标，真正实现阅读状态的同步。嘛，毕竟二者都实现了 Google Reader API。不过分组功能并没有打通，后续在 FreshRSS 修改分组的时候，需要手动更新一下 Fluent Reader 里的分组状态。
+最妙的是，Fluent Reader 的星标等功能与 FreshRSS 是打通的，当你在 Fluent Reader 阅读器里为文章添加星标时，FreshRSS 在数据库里也会为关联用户的对应文章打上星标，真正实现阅读状态的同步。嘛，毕竟二者都实现了 Google Reader API。
+
+不过更新时 Fluent Reader 并不会自动同步分组信息，后续如果你在 FreshRSS 修改了分组，则需要手动在 Fluent Reader 里操作“分组与排序 - 导入分组”。
 
 ## 接入 OpenClaw 筛选高价值内容
 
