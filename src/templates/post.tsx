@@ -85,11 +85,15 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
 
   const date = dayjs(dateString);
   const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
-  const today = dayjs();
-  const diffDays = today.diff(updatedDate, "days");
+  const [today, setToday] = React.useState<dayjs.Dayjs | null>(null);
+  const diffDays = today !== null ? today.diff(updatedDate, "days") : null;
   const timelinessDays = typeof timeliness === "number" ? timeliness : 365;
   const showTimelinessWarning =
-    timelinessDays >= 0 && diffDays >= timelinessDays;
+    diffDays !== null && timelinessDays >= 0 && diffDays >= timelinessDays;
+
+  React.useEffect(() => {
+    React.startTransition(() => setToday(dayjs()));
+  }, []);
 
   //#region 初始化博客页面的图片预览功能
   React.useEffect(() => {
@@ -157,7 +161,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
             的博客，内容可能暂不完善或存在纰漏，建议您仔细评估文章的可靠性。
           </blockquote>
         )}
-        {showTimelinessWarning && (
+        {showTimelinessWarning && diffDays !== null && (
           <blockquote className="!border-orange-400">
             这是一篇<strong>最后更新于 {diffDays} 天前</strong>
             的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估文章的有效性。

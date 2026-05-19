@@ -62,11 +62,21 @@ const getCurrentPlanet = () => {
 
 const Planets: React.FC<PlanetsProps> = ({
   size,
-  type = getCurrentPlanet(),
+  type,
   className = "",
   style,
   ...restProps
 }) => {
+  const [resolvedType, setResolvedType] = React.useState<PlanetsType>(
+    type ?? PlanetsType.NOON,
+  );
+
+  React.useEffect(() => {
+    React.startTransition(() => {
+      setResolvedType(type ?? getCurrentPlanet());
+    });
+  }, [type]);
+
   const scaledSize = size * (ORIGINAL_SIZE / SOURCE_SIZE);
   const svgScale = scaledSize / ORIGINAL_SIZE;
 
@@ -78,7 +88,7 @@ const Planets: React.FC<PlanetsProps> = ({
         height: size,
         width: size,
         backgroundImage: 'url("/svgs/planets.svg")',
-        backgroundPosition: `calc(-${SOURCE_LOCATIONS[type][0]}px * ${svgScale}) calc(-${SOURCE_LOCATIONS[type][1]}px * ${svgScale})`,
+        backgroundPosition: `calc(-${SOURCE_LOCATIONS[resolvedType][0]}px * ${svgScale}) calc(-${SOURCE_LOCATIONS[resolvedType][1]}px * ${svgScale})`,
         backgroundSize: scaledSize,
       }}
       {...restProps}

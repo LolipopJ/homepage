@@ -64,6 +64,9 @@ const Layout: React.FC<PageProps> = (props) => {
   const [currentHeading, setCurrentHeading] = React.useState<number>(-1);
   const [showBackTop, setShowBackTop] = React.useState<boolean>(false);
   const [readProgress, setReadProgress] = React.useState<number>(0); // %
+  const [printDate, setPrintDate] = React.useState<string>("");
+  const [currentYear, setCurrentYear] = React.useState<number | null>(null);
+  const [printHref, setPrintHref] = React.useState<string>("");
 
   const hashRef = React.useRef<string>("");
   const mainRef = React.useRef<HTMLElement>(null);
@@ -342,6 +345,21 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [isPostPage, path, postSlug]);
   //#endregion
 
+  //#region 挂载后更新时间相关的客户端状态
+  React.useEffect(() => {
+    React.startTransition(() => {
+      setPrintDate(dayjs().toISOString());
+      setCurrentYear(dayjs().year());
+    });
+  }, []);
+
+  React.useEffect(() => {
+    React.startTransition(() => {
+      setPrintHref(href ?? "");
+    });
+  }, [href]);
+  //#endregion
+
   //#region 侧边栏
   /** 可切换侧边栏组件列表 */
   const subSiderBarItems: NonNullable<
@@ -545,16 +563,16 @@ const Layout: React.FC<PageProps> = (props) => {
           {/* 站点信息（打印时显示） */}
           <div className="mb-12 hidden print:block">
             <div>Site: {siteTitle}</div>
-            <div>Print Date: {dayjs().toISOString()}</div>
+            <div>Print Date: {printDate}</div>
             <div>
               Link:{" "}
               <a
-                href={href}
+                href={printHref}
                 target="_blank"
                 rel="noreferrer"
                 className="item-link"
               >
-                {href}
+                {printHref}
               </a>
             </div>
           </div>
@@ -654,7 +672,7 @@ const Layout: React.FC<PageProps> = (props) => {
           <div className="my-3 w-full border border-foreground-tertiary" />
           <div className="flex h-6 items-center justify-between">
             <span className="text-foreground-secondary">
-              © {dayjs().year()} {siteOwner}
+              © {currentYear ?? ""} {siteOwner}
             </span>
             <div className="-mr-2 flex gap-2 text-xl">
               {FOOTER_SOCIAL_ITEMS.map((item) => (
