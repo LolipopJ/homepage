@@ -132,8 +132,8 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1(@types/mdast@4.0.4)(unified@11.0.5)
       rich-presence-react:
-        specifier: ^1.0.0-beta.2
-        version: 1.0.0-beta.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.0.0-beta.3
+        version: 1.0.0-beta.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@babel/plugin-transform-private-property-in-object':
         specifier: ^7.28.6
@@ -7027,8 +7027,8 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rich-presence-react@1.0.0-beta.2:
-    resolution: {integrity: sha512-sQCanNP9X3fIQoLbYBbIbZpAU4TCjIEi0nbRFtCGQUhisS1XPfHDLVp7IRYcalPNrv8QInCeMDohqjA5gTfzYw==}
+  rich-presence-react@1.0.0-beta.3:
+    resolution: {integrity: sha512-Rl61elM8TVpucmbloThCTgNfYWLXqKfDhpjKHMS6qdHmeqSGbldjwwE7BRaiTxGpSQWp6FDG2RCY98D4jkoGzQ==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -16931,7 +16931,7 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rich-presence-react@1.0.0-beta.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  rich-presence-react@1.0.0-beta.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)

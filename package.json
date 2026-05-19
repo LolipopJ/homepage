@@ -83,7 +83,7 @@
     "react-instantsearch": "^7.32.3",
     "remark-gfm": "^3.0.1",
     "remark-github-alerts": "^0.1.1",
-    "rich-presence-react": "^1.0.0-beta.2"
+    "rich-presence-react": "^1.0.0-beta.3"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.28.6",
