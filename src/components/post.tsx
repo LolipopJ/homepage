@@ -1,9 +1,14 @@
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { Link } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import * as React from "react";
 
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export type PostType = Pick<MdxNode, "excerpt" | "fields" | "frontmatter">;
 
@@ -59,10 +64,12 @@ const Post: React.FC<PostProps> = (props) => {
   const bannerImage = getImage(banner);
   const showBanner = propsShowBanner && bannerImage;
   const { date, updatedDate } = React.useMemo(() => {
-    const date = dayjs(dateString);
+    const date = dayjs.utc(dateString).tz("Asia/Shanghai");
     return {
       date,
-      updatedDate: updatedDateString ? dayjs(updatedDateString) : date,
+      updatedDate: updatedDateString
+        ? dayjs.utc(updatedDateString).tz("Asia/Shanghai")
+        : date,
     };
   }, [dateString, updatedDateString]);
 
@@ -114,7 +121,7 @@ const Post: React.FC<PostProps> = (props) => {
         className={`flex text-foreground-secondary ${size === "large" ? "text-base" : "text-sm"} ${footerClassName}`}
       >
         <div
-          title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
+          title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
           className="line-clamp-1"
         >
           {date.format(

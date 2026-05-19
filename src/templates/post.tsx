@@ -1,6 +1,8 @@
 import { Fancybox } from "@fancyapps/ui";
 import { MDXProvider } from "@mdx-js/react";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import * as React from "react";
 
@@ -9,6 +11,9 @@ import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
 import useMermaid from "../hooks/useMermaid";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type MDXProviderProps = React.ComponentProps<typeof MDXProvider>;
 
@@ -83,8 +88,10 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
 
   const articleRef = React.useRef<HTMLElement>(null);
 
-  const date = dayjs(dateString);
-  const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
+  const date = dayjs.utc(dateString).tz("Asia/Shanghai");
+  const updatedDate = updatedDateString
+    ? dayjs.utc(updatedDateString).tz("Asia/Shanghai")
+    : date;
   const [today, setToday] = React.useState<dayjs.Dayjs | null>(null);
   const diffDays = today !== null ? today.diff(updatedDate, "days") : null;
   const timelinessDays = typeof timeliness === "number" ? timeliness : 365;
@@ -92,7 +99,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
     diffDays !== null && timelinessDays >= 0 && diffDays >= timelinessDays;
 
   React.useEffect(() => {
-    React.startTransition(() => setToday(dayjs()));
+    React.startTransition(() => setToday(dayjs().tz("Asia/Shanghai")));
   }, []);
 
   //#region 初始化博客页面的图片预览功能
@@ -135,7 +142,7 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
         <div className="item-secondary flex flex-col gap-2 lg:flex-row">
           {dateString && (
             <span
-              title={`首次发布于：${date.toString()}\n最后更新于：${updatedDate.toString()}`}
+              title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
             >
               {date.format("MM 月 DD 日 YYYY 年")}
             </span>
