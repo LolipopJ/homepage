@@ -48,7 +48,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
   });
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       containerRef.current?.scrollTo({
         top: savedScrollTopRef.current?.[String(activeKey)] ?? 0,
         behavior: "instant",
@@ -56,6 +56,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
     }, TRANSITION_DURATION);
 
     return () => {
+      clearTimeout(timeoutId);
       // eslint-disable-next-line react-hooks/exhaustive-deps
       savedScrollTopRef.current[String(activeKey)] =
         // eslint-disable-next-line react-hooks/exhaustive-deps

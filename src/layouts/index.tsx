@@ -114,6 +114,7 @@ const Layout: React.FC<PageProps> = (props) => {
       setPageTitle("");
       setOpenSubNavbarDrawer(false);
     });
+    tocRefs.current = [];
     mainRef.current?.scrollTo({
       top: savedScrollTopRef.current?.[path] ?? 0,
       behavior: "instant",
@@ -377,27 +378,30 @@ const Layout: React.FC<PageProps> = (props) => {
         : 0;
 
   /** 侧边栏导航组件 */
-  const siderBarNavItem = (
-    <>
-      <Navbar items={NAVBAR_ITEMS} activeKey={path} />
-      <div className={`relative z-10 flex flex-col gap-3`}>
-        {activities.map((activity, index) => (
-          <RichPresence
-            className="opacity-80 transition-opacity hover:opacity-100"
-            key={index}
-            activity={activity}
-            theme="dark"
-            size="normal"
-          />
-        ))}
-      </div>
-      <div
-        className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
-        style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
-      >
-        <Planets size={planetSize} />
-      </div>
-    </>
+  const siderBarNavItem = React.useMemo(
+    () => (
+      <>
+        <Navbar items={NAVBAR_ITEMS} activeKey={path} />
+        <div className={`relative z-10 flex flex-col gap-3`}>
+          {activities.map((activity, index) => (
+            <RichPresence
+              className="opacity-80 transition-opacity hover:opacity-100"
+              key={index}
+              activity={activity}
+              theme="dark"
+              size="normal"
+            />
+          ))}
+        </div>
+        <div
+          className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+          style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
+        >
+          <Planets size={planetSize} />
+        </div>
+      </>
+    ),
+    [path, activities, planetSize],
   );
   if (!breakpoint["2xl"]) {
     subSiderBarItems.push({
@@ -408,22 +412,25 @@ const Layout: React.FC<PageProps> = (props) => {
   }
 
   /** 侧边栏博客列表组件 */
-  const siderBarPostItem = (
-    <ol>
-      {posts.map((post) => {
-        const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(path);
+  const siderBarPostItem = React.useMemo(
+    () => (
+      <ol>
+        {posts.map((post) => {
+          const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(path);
 
-        return (
-          <li key={post.fields.slug}>
-            <Post
-              post={post}
-              className={`mb-2 ${isActive ? "item-selected" : ""}`}
-              excerptClassName="hidden"
-            />
-          </li>
-        );
-      })}
-    </ol>
+          return (
+            <li key={post.fields.slug}>
+              <Post
+                post={post}
+                className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                excerptClassName="hidden"
+              />
+            </li>
+          );
+        })}
+      </ol>
+    ),
+    [posts, path],
   );
   subSiderBarItems.push({
     key: "posts",
@@ -431,9 +438,9 @@ const Layout: React.FC<PageProps> = (props) => {
     children: siderBarPostItem,
   });
 
-  if (isPostPage) {
-    /** 侧边栏博客目录组件 */
-    const siderBarTocItem = (
+  /** 侧边栏博客目录组件 */
+  const siderBarTocItem = React.useMemo(
+    () => (
       <ol className={`px-3`}>
         {pageHeadings.map((heading, index) => {
           const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
@@ -457,7 +464,11 @@ const Layout: React.FC<PageProps> = (props) => {
           );
         })}
       </ol>
-    );
+    ),
+    [pageHeadings, currentHeading],
+  );
+
+  if (isPostPage) {
     subSiderBarItems.push({
       key: "toc",
       label: "目录",
@@ -706,15 +717,17 @@ const Layout: React.FC<PageProps> = (props) => {
       </main>
 
       {/* Algolia 搜索窗口 */}
-      <div
-        onClick={() => setOpenAlgoliaSearch(false)}
-        className={`absolute inset-0 z-30 bg-neutral-900/60 backdrop-blur-sm print:hidden ${openAlgoliaSearch ? "block" : "hidden"}`}
-      >
-        <AlgoliaSearch
-          onClose={() => setOpenAlgoliaSearch(false)}
-          className="max-h-[calc(100vh-4rem)]] mx-auto mt-16 border border-foreground-tertiary bg-neutral-900/90"
-        />
-      </div>
+      {openAlgoliaSearch && (
+        <div
+          onClick={() => setOpenAlgoliaSearch(false)}
+          className="absolute inset-0 z-30 bg-neutral-900/60 backdrop-blur-sm print:hidden"
+        >
+          <AlgoliaSearch
+            onClose={() => setOpenAlgoliaSearch(false)}
+            className="max-h-[calc(100vh-4rem)]] mx-auto mt-16 border border-foreground-tertiary bg-neutral-900/90"
+          />
+        </div>
+      )}
     </div>
   );
 };

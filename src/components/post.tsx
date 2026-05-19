@@ -58,8 +58,13 @@ const Post: React.FC<PostProps> = (props) => {
 
   const bannerImage = getImage(banner);
   const showBanner = propsShowBanner && bannerImage;
-  const date = dayjs(dateString);
-  const updatedDate = updatedDateString ? dayjs(updatedDateString) : date;
+  const { date, updatedDate } = React.useMemo(() => {
+    const date = dayjs(dateString);
+    return {
+      date,
+      updatedDate: updatedDateString ? dayjs(updatedDateString) : date,
+    };
+  }, [dateString, updatedDateString]);
 
   const titleDom = (
     <>

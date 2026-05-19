@@ -1,3 +1,4 @@
+import { throttle } from "lodash-es";
 import * as React from "react";
 
 import { SCREEN_BREAKPOINT } from "../constants/utils";
@@ -31,11 +32,15 @@ const useScreenBreakpoint = () => {
     };
 
     checkBreakpoint();
-    setInitialized(true);
+    React.startTransition(() => {
+      setInitialized(true);
+    });
 
-    window.addEventListener("resize", checkBreakpoint);
+    const throttledCheck = throttle(checkBreakpoint, 100);
+    window.addEventListener("resize", throttledCheck);
     return () => {
-      window.removeEventListener("resize", checkBreakpoint);
+      window.removeEventListener("resize", throttledCheck);
+      throttledCheck.cancel();
     };
   }, []);
 

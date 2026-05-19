@@ -42,7 +42,14 @@ const CircularText: React.FC<CircularTextProps> = ({
   onHover = "speedUp",
   className = "",
 }) => {
-  const letters = Array.from(text);
+  const letterTransforms = React.useMemo(() => {
+    const chars = Array.from(text);
+    const factor = Math.PI / chars.length;
+    return chars.map((letter, i) => ({
+      letter,
+      transform: `rotateZ(${(360 / chars.length) * i}deg) translate3d(${factor * i}px, ${factor * i}px, 0)`,
+    }));
+  }, [text]);
   const controls = useAnimation();
   const rotation: MotionValue<number> = useMotionValue(0);
 
@@ -109,23 +116,15 @@ const CircularText: React.FC<CircularTextProps> = ({
       onMouseEnter={handleHoverStart}
       onMouseLeave={handleHoverEnd}
     >
-      {letters.map((letter, i) => {
-        const rotationDeg = (360 / letters.length) * i;
-        const factor = Math.PI / letters.length;
-        const x = factor * i;
-        const y = factor * i;
-        const transform = `rotateZ(${rotationDeg}deg) translate3d(${x}px, ${y}px, 0)`;
-
-        return (
-          <span
-            key={i}
-            className="absolute inset-0 inline-block text-2xl transition-all duration-500 ease-[cubic-bezier(0,0,0,1)]"
-            style={{ transform, WebkitTransform: transform }}
-          >
-            {letter}
-          </span>
-        );
-      })}
+      {letterTransforms.map(({ letter, transform }, i) => (
+        <span
+          key={i}
+          className="absolute inset-0 inline-block text-2xl transition-all duration-500 ease-[cubic-bezier(0,0,0,1)]"
+          style={{ transform, WebkitTransform: transform }}
+        >
+          {letter}
+        </span>
+      ))}
     </motion.div>
   );
 };
