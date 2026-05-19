@@ -47,6 +47,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const { href, pathname, search, hash } = location;
   const searchParams = new URLSearchParams(search);
 
+  const [maskRemoved, setMaskRemoved] = React.useState<boolean>(false);
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<SubNavbarActiveKey>();
   /** 小屏幕开启导航栏抽屉状态 */
@@ -468,17 +469,20 @@ const Layout: React.FC<PageProps> = (props) => {
   return (
     <div className="flex h-screen print:h-auto">
       {/* 初始化完成前的蒙版层 */}
-      <div
-        className={`absolute inset-0 z-50 overflow-hidden bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none opacity-0" : ""}`}
-      >
-        <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 xl:bottom-8 xl:right-8">
-          <CircularText
-            text="NOW*LOADING*NOW*LOADING*"
-            onHover="goBonkers"
-            spinDuration={20}
-          />
+      {!maskRemoved && (
+        <div
+          className={`absolute inset-0 z-50 overflow-hidden bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none opacity-0" : ""}`}
+          onTransitionEnd={() => layoutInitialized && setMaskRemoved(true)}
+        >
+          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 xl:bottom-8 xl:right-8">
+            <CircularText
+              text="NOW*LOADING*NOW*LOADING*"
+              onHover="goBonkers"
+              spinDuration={20}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 侧边栏 */}
       <SiderBar
