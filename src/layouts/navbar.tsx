@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({
     <div className={className}>
       {items.map((item) => {
         return (
-          <nav className="mb-6" key={item.title}>
+          <nav className="mb-6" key={item.title ?? item.routes[0]?.url}>
             {item.title && (
               <div className="relative mb-3 flex px-5 text-sm font-bold leading-5 text-foreground-secondary after:mb-2.5 after:ml-8 after:w-full after:border-b after:border-foreground-secondary after:opacity-40 after:content-['']">
                 <span className="min-w-fit">{item.title}</span>
@@ -78,4 +78,4 @@ const Navbar: React.FC<NavbarProps> = ({
   );
 };
 
-export default Navbar;
+export default React.memo(Navbar);

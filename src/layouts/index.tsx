@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { Link, navigate, PageProps } from "gatsby";
 import { throttle } from "lodash-es";
 import * as React from "react";
-import RichPresence from "rich-presence-react";
+import RichPresence, { type RichPresenceActivity } from "rich-presence-react";
 
 import ActionButton from "../components/action-button";
 import AlgoliaSearch from "../components/algolia-search";
@@ -41,6 +41,68 @@ import Navbar from "./navbar";
 import SiderBar, { SiderBarProps } from "./sider-bar";
 
 type SubNavbarActiveKey = "nav" | "posts" | "toc";
+
+type TocItemState = "past" | "active" | "none";
+
+interface TocItemProps {
+  heading: HTMLHeadingElement;
+  index: number;
+  state: TocItemState;
+  onRef: (el: HTMLLIElement | null, index: number) => void;
+}
+
+const TocItem = React.memo<TocItemProps>(({ heading, index, state, onRef }) => {
+  const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+  return (
+    <li
+      ref={(el) => onRef(el, index)}
+      style={{ marginLeft }}
+      className={`item-selectable mb-1 rounded-lg ${
+        state === "past"
+          ? "text-foreground-secondary"
+          : state === "active"
+            ? "item-selected"
+            : ""
+      }`}
+    >
+      <a href={`#${heading.id}`} className="block px-3 py-2 transition">
+        <span
+          dangerouslySetInnerHTML={{ __html: heading.innerHTML }}
+          className="pointer-events-none"
+        />
+      </a>
+    </li>
+  );
+});
+
+interface SidebarStaticContentProps {
+  activities: RichPresenceActivity[];
+  planetSize: number;
+}
+
+const SidebarStaticContent = React.memo<SidebarStaticContentProps>(
+  ({ activities, planetSize }) => (
+    <>
+      <div className={`relative z-10 flex flex-col gap-3`}>
+        {activities.map((activity, index) => (
+          <RichPresence
+            className="opacity-80 transition-opacity hover:opacity-100"
+            key={index}
+            activity={activity}
+            theme="dark"
+            size="normal"
+          />
+        ))}
+      </div>
+      <div
+        className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+        style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
+      >
+        <Planets size={planetSize} />
+      </div>
+    </>
+  ),
+);
 
 const Layout: React.FC<PageProps> = (props) => {
   const { children, path = "/", location } = props;
@@ -74,6 +136,13 @@ const Layout: React.FC<PageProps> = (props) => {
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
   const savedScrollTopRef = React.useRef<Record<string, number>>({});
+
+  const tocRefCallback = React.useCallback(
+    (el: HTMLLIElement | null, index: number) => {
+      tocRefs.current[index] = el as HTMLLIElement;
+    },
+    [],
+  );
 
   const { title: siteTitle, owner: siteOwner } = useSiteMetadata();
   const posts = useAllMdx();
@@ -344,7 +413,7 @@ const Layout: React.FC<PageProps> = (props) => {
         );
       }
     });
-  }, [isPostPage, path, postSlug]);
+  }, [isPostPage, path, postSlug, layoutInitialized]);
   //#endregion
 
   //#region 挂载后更新时间相关的客户端状态
@@ -382,23 +451,7 @@ const Layout: React.FC<PageProps> = (props) => {
     () => (
       <>
         <Navbar items={NAVBAR_ITEMS} activeKey={path} />
-        <div className={`relative z-10 flex flex-col gap-3`}>
-          {activities.map((activity, index) => (
-            <RichPresence
-              className="opacity-80 transition-opacity hover:opacity-100"
-              key={index}
-              activity={activity}
-              theme="dark"
-              size="normal"
-            />
-          ))}
-        </div>
-        <div
-          className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
-          style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
-        >
-          <Planets size={planetSize} />
-        </div>
+        <SidebarStaticContent activities={activities} planetSize={planetSize} />
       </>
     ),
     [path, activities, planetSize],
@@ -442,30 +495,24 @@ const Layout: React.FC<PageProps> = (props) => {
   const siderBarTocItem = React.useMemo(
     () => (
       <ol className={`px-3`}>
-        {pageHeadings.map((heading, index) => {
-          const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-
-          return (
-            <li
-              key={heading.innerText}
-              ref={(el) => (tocRefs.current[index] = el as HTMLLIElement)}
-              style={{ marginLeft }}
-              className={`item-selectable mb-1 rounded-lg ${currentHeading > index ? "text-foreground-secondary" : currentHeading === index ? "item-selected" : ""}`}
-            >
-              <a href={`#${heading.id}`} className="block px-3 py-2 transition">
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: heading.innerHTML,
-                  }}
-                  className="pointer-events-none"
-                />
-              </a>
-            </li>
-          );
-        })}
+        {pageHeadings.map((heading, index) => (
+          <TocItem
+            key={heading.innerText}
+            heading={heading}
+            index={index}
+            state={
+              currentHeading > index
+                ? "past"
+                : currentHeading === index
+                  ? "active"
+                  : "none"
+            }
+            onRef={tocRefCallback}
+          />
+        ))}
       </ol>
     ),
-    [pageHeadings, currentHeading],
+    [pageHeadings, currentHeading, tocRefCallback],
   );
 
   if (isPostPage) {

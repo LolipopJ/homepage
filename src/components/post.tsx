@@ -141,4 +141,4 @@ const Post: React.FC<PostProps> = (props) => {
   );
 };
 
-export default Post;
+export default React.memo(Post);
