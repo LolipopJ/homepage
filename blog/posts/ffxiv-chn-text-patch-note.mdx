@@ -1,7 +1,7 @@
 ---
 title: 最终幻想 14 国际服客户端汉化学习笔记
 date: 2026-06-05
-updated: 2026-06-05
+updated: 2026-07-28
 banner: ./ffxiv-chn-text-patch-note/banner.jpg
 categories:
   - 技术琐事
@@ -242,6 +242,16 @@ CSV 文件处理完成！
 ```
 
 最后，将处理得到的 CSV 文件按需拷贝到汉化器仓库的 `resource/rawexd` 目录下，替换掉原有的文件，就可以执行汉化操作了！
+
+## 汉化器功能优化
+
+已知“替换字体”和“替换文本”功能实际会将字体和文本资源追加到对应数据文件的末尾，游戏更新时通常不会覆写与字体相关的数据文件，所以考虑将两个功能解耦开，不再通过设置里的选项来决定汉化时是否执行替换字体资源的这一耗时操作。
+
+在 Souma 维护的基础上，我修改了相关的逻辑代码，让“替换字体”和“还原字体”作为主界面的功能呈现：
+
+![汉化器主界面](./ffxiv-chn-text-patch-note/汉化器主界面.png)
+
+可以在[此仓库](https://github.com/LolipopJ/FFXIVChnTextPatch-GP)下载编译好的 [`FFXIVChnTextPatchGP.exe`](https://github.com/LolipopJ/FFXIVChnTextPatch-GP/raw/refs/heads/master/FFXIVChnTextPatchGP.exe) 汉化器文件，拖入到 FFXIVChnTextPatch-Souma 根目录（即 `FFXIVChnTextPatch-SM.exe` 同级目录）下使用。
 
 ## 特别鸣谢
 
