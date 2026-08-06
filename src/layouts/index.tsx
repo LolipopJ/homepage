@@ -136,6 +136,8 @@ const Layout: React.FC<PageProps> = (props) => {
   const pageRef = React.useRef<HTMLDivElement>(null);
   const tocRefs = React.useRef<HTMLLIElement[]>([]);
   const savedScrollTopRef = React.useRef<Record<string, number>>({});
+  const pageHeadingsRef = React.useRef<HTMLHeadingElement[]>([]);
+  const onScrolledRef = React.useRef<() => void>(() => {});
 
   const tocRefCallback = React.useCallback(
     (el: HTMLLIElement | null, index: number) => {
@@ -197,27 +199,35 @@ const Layout: React.FC<PageProps> = (props) => {
   //#endregion
 
   //#region 自动设置侧边栏激活的页面
-  React.useEffect(() => {
-    React.startTransition(() => {
-      if (isPostPage) {
-        // 访问博客页面时，侧边栏切换到目录页
-        setSubNavbarActiveKey("toc");
-      } else {
-        if (breakpoint["2xl"]) {
-          setSubNavbarActiveKey("posts");
-        } else {
-          setSubNavbarActiveKey("nav");
-        }
-      }
-    });
-  }, [breakpoint, isPostPage]);
+  /** 依据路由与断点计算出的目标激活标签 */
+  const desiredSubNavbarActiveKey: SubNavbarActiveKey = isPostPage
+    ? "toc"
+    : breakpoint["2xl"]
+      ? "posts"
+      : "nav";
+
+  // 路由/断点变化时在渲染阶段同步纠正激活标签：subSiderBarItems 会在同一次渲染中
+  // 同步剔除/加入 toc 项，若改用 useEffect 异步纠正，会出现提交后
+  // "激活标签在可用列表中找不到" 的中间帧，导致内容区短暂空白
+  const [prevSubNavbarDeps, setPrevSubNavbarDeps] = React.useState<{
+    isPostPage: boolean;
+    is2xl: boolean;
+  } | null>(null);
+  if (
+    prevSubNavbarDeps === null ||
+    prevSubNavbarDeps.isPostPage !== isPostPage ||
+    prevSubNavbarDeps.is2xl !== breakpoint["2xl"]
+  ) {
+    setPrevSubNavbarDeps({ isPostPage, is2xl: breakpoint["2xl"] });
+    setSubNavbarActiveKey(desiredSubNavbarActiveKey);
+  }
   //#endregion
 
   //#region 更新博客中 Headings 距离顶端的距离，适配图片加载完成等导致距离变化的情况
   React.useEffect(() => {
     const pageDom = pageRef.current;
     if (isPostPage && pageDom) {
-      const observer = new ResizeObserver(() => {
+      const updateHeadings = () => {
         const headings: HTMLHeadingElement[] = Array.from(
           pageDom.querySelectorAll("h1, h2, h3, h4, h5, h6"),
         );
@@ -231,10 +241,22 @@ const Layout: React.FC<PageProps> = (props) => {
         } else {
           setPageHeadings([]);
         }
-      });
+      };
 
-      observer.observe(pageDom);
-      return () => observer.unobserve(pageDom);
+      // ResizeObserver 只在容器尺寸变化时触发，客户端路由切换时新页面内容
+      // 可能异步挂载且不改变（受 min-height 限制的）容器尺寸，因此需要额外用
+      // MutationObserver 监听内容本身的挂载/替换，避免目录停留在空状态
+      const resizeObserver = new ResizeObserver(updateHeadings);
+      const mutationObserver = new MutationObserver(updateHeadings);
+
+      resizeObserver.observe(pageDom);
+      mutationObserver.observe(pageDom, { childList: true, subtree: true });
+      updateHeadings();
+
+      return () => {
+        resizeObserver.unobserve(pageDom);
+        mutationObserver.disconnect();
+      };
     } else {
       setPageHeadings([]);
     }
@@ -257,16 +279,24 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [hash, pageHeadings]);
   //#endregion
 
+  //#region 同步 pageHeadings 到 ref，避免滚动监听因目录更新而重复挂载
+  React.useEffect(() => {
+    pageHeadingsRef.current = pageHeadings;
+    onScrolledRef.current();
+  }, [pageHeadings]);
+  //#endregion
+
   //#region 监听博客滚动，更新目录列表与阅读进度
   React.useEffect(() => {
     const mainDom = mainRef.current;
     const pageDom = pageRef.current;
-    if (isPostPage && pageHeadings && mainDom && pageDom) {
+    if (isPostPage && mainDom && pageDom) {
       const articleDom = pageDom.querySelector<HTMLElement>("article");
       const onScrolled = () => {
+        const headings = pageHeadingsRef.current;
         const scrollTop = mainDom.scrollTop;
-        for (let index = pageHeadings.length - 1; index >= 0; index -= 1) {
-          const { offsetTop } = pageHeadings[index];
+        for (let index = headings.length - 1; index >= 0; index -= 1) {
+          const { offsetTop } = headings[index];
           if (Math.ceil(scrollTop) >= offsetTop) {
             setCurrentHeading(index);
             tocRefs.current[index]?.scrollIntoView();
@@ -294,6 +324,7 @@ const Layout: React.FC<PageProps> = (props) => {
           setReadProgress(progress);
         }
       };
+      onScrolledRef.current = onScrolled;
       React.startTransition(() => onScrolled());
       const throttleOnScrolled = throttle(onScrolled, 50);
       mainDom.addEventListener("scroll", throttleOnScrolled);
@@ -304,115 +335,119 @@ const Layout: React.FC<PageProps> = (props) => {
         setReadProgress(0);
       });
     }
-  }, [path, isPostPage, pageHeadings]);
+  }, [path, isPostPage]);
   //#endregion
 
-  //#region 更新页面标题
-  React.useEffect(() => {
-    const pageDom = pageRef.current;
+  //#region 非博客页标题：派生自路由，无需等待副作用触发，避免路由切换时标题闪烁
+  const staticPageTitle = React.useMemo<React.ReactNode>(() => {
+    if (isPostPage) return null;
+
     let match: RegExpMatchArray | null;
+    if (path === "/") {
+      return (
+        <>
+          <Icon icon={faPenNib} className="p-2" />
+          <span>所有博客</span>
+        </>
+      );
+    } else if (/^\/works\/?$/.test(path)) {
+      return (
+        <>
+          <Icon icon={faLaptopCode} className="p-2" />
+          <span>作品集</span>
+        </>
+      );
+    } else if (/^\/friends\/?$/.test(path)) {
+      return (
+        <>
+          <Icon icon={faHeart} className="p-2" />
+          <span>朋友们</span>
+        </>
+      );
+    } else if (/^\/tags\/?$/.test(path)) {
+      return (
+        <>
+          <Icon icon={faTags} className="p-2" />
+          <span>所有标签</span>
+        </>
+      );
+    } else if ((match = path.match(/^\/tags\/(.+?)\/?$/))) {
+      return (
+        <>
+          <Icon icon={faTag} className="p-2" />
+          <span>{decodeURIComponent(match[1])}</span>
+        </>
+      );
+    } else if (/^\/categories\/?$/.test(path)) {
+      return (
+        <>
+          <Icon icon={faFolder} className="p-2" />
+          <span>所有分类</span>
+        </>
+      );
+    } else if ((match = path.match(/^\/categories\/(.+?)\/?$/))) {
+      return (
+        <>
+          <Icon icon={faFolderOpen} className="p-2" />
+          <span>{decodeURIComponent(match[1])}</span>
+        </>
+      );
+    } else if (/^\/404\/?$/.test(path)) {
+      return (
+        <>
+          <Icon icon={faWarning} className="p-2" />
+          <span>未开放区域</span>
+        </>
+      );
+    }
+    return null;
+  }, [isPostPage, path]);
+  //#endregion
 
-    if (isPostPage) {
-      if (pageDom) {
-        const postTitle = pageDom.querySelector("h1");
-        if (postTitle) {
-          // 监听博客页面滚动，更新页面标题为博客标题
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) {
-              setPageTitle(
-                postSlug === "about-me" ? (
-                  <>
-                    <Icon icon={faPersonRays} className="p-2" />
-                    <span>关于我</span>
-                  </>
-                ) : (
-                  <>
-                    <Icon icon={faBlog} className="p-2" />
-                    <span>博客</span>
-                  </>
-                ),
-              );
-              setShowBackTop(false);
-            } else {
-              setPageTitle(
-                <span className="line-clamp-1" title={postTitle.innerText}>
-                  {postTitle.innerText}
-                </span>,
-              );
-              setShowBackTop(true);
-            }
-          });
+  //#region 博客页标题
+  React.useEffect(() => {
+    if (!isPostPage) return;
 
-          observer.observe(postTitle);
-          return () => {
-            observer.unobserve(postTitle);
-          };
-        } else {
-          React.startTransition(() => setShowBackTop(true));
-        }
-      }
+    const pageDom = pageRef.current;
+    if (!pageDom) return;
+
+    const postTitle = pageDom.querySelector("h1");
+    if (!postTitle) {
+      React.startTransition(() => setShowBackTop(true));
       return;
     }
 
-    React.startTransition(() => {
-      if (path === "/") {
+    // 监听博客页面滚动，更新页面标题为博客标题
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
         setPageTitle(
-          <>
-            <Icon icon={faPenNib} className="p-2" />
-            <span>所有博客</span>
-          </>,
+          postSlug === "about-me" ? (
+            <>
+              <Icon icon={faPersonRays} className="p-2" />
+              <span>关于我</span>
+            </>
+          ) : (
+            <>
+              <Icon icon={faBlog} className="p-2" />
+              <span>博客</span>
+            </>
+          ),
         );
-      } else if (/^\/works\/?$/.test(path)) {
+        setShowBackTop(false);
+      } else {
         setPageTitle(
-          <>
-            <Icon icon={faLaptopCode} className="p-2" />
-            <span>作品集</span>
-          </>,
+          <span className="line-clamp-1" title={postTitle.innerText}>
+            {postTitle.innerText}
+          </span>,
         );
-      } else if (/^\/friends\/?$/.test(path)) {
-        setPageTitle(
-          <>
-            <Icon icon={faHeart} className="p-2" />
-            <span>朋友们</span>
-          </>,
-        );
-      } else if (/^\/tags\/?$/.test(path)) {
-        setPageTitle(
-          <>
-            <Icon icon={faTags} className="p-2" />
-            <span>所有标签</span>
-          </>,
-        );
-      } else if ((match = path.match(/^\/tags\/(.+?)\/?$/))) {
-        setPageTitle(
-          <>
-            <Icon icon={faTag} className="p-2" />
-            <span>{decodeURIComponent(match[1])}</span>
-          </>,
-        );
-      } else if (/^\/categories\/?$/.test(path)) {
-        setPageTitle(
-          <>
-            <Icon icon={faFolder} className="p-2" />
-            <span>所有分类</span>
-          </>,
-        );
-      } else if ((match = path.match(/^\/categories\/(.+?)\/?$/))) {
-        setPageTitle(
-          <>
-            <Icon icon={faFolderOpen} className="p-2" />
-            <span>{decodeURIComponent(match[1])}</span>
-          </>,
-        );
-      } else if (/^\/404\/?$/.test(path)) {
-        setPageTitle(
-          <>
-            <Icon icon={faWarning} className="p-2" />
-            <span>未开放区域</span>
-          </>,
-        );
+        setShowBackTop(true);
       }
     });
+
+    observer.observe(postTitle);
+    return () => {
+      observer.unobserve(postTitle);
+    };
   }, [isPostPage, path, postSlug, layoutInitialized]);
   //#endregion
 
@@ -607,7 +642,7 @@ const Layout: React.FC<PageProps> = (props) => {
             />
           </div>
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
-            {pageTitle}
+            {isPostPage ? pageTitle : staticPageTitle}
           </div>
           <div className="ml-auto justify-end pl-16">
             <Icon

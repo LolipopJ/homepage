@@ -98,7 +98,8 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
       >
         {children ||
           transitions((style, key) => {
-            const item = items.find((item) => item.key === key);
+            // 兜底：激活标签暂未出现在可用列表时回退到第一项，避免内容区空白
+            const item = items.find((item) => item.key === key) ?? items[0];
             return (
               <animated.div key={item?.key} className="h-full" style={style}>
                 {item?.children}
