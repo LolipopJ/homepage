@@ -80,8 +80,8 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
       },
       {
         icon: faEnvelope,
-        label: "mail@towind.fun",
-        url: "mailto:mail@towind.fun",
+        label: "mail@towind.cn",
+        url: "mailto:mail@towind.cn",
       },
       {
         icon: faGithub,
