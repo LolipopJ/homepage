@@ -66,7 +66,13 @@ const useDiscordActivity = () => {
 
         setActivities(() => {
           const _activities = response.data;
-          return _activities.sort((a, b) => (a.type ?? 0) - (b.type ?? 0));
+          return _activities.sort((a, b) => {
+            const aType = a.type ?? 0;
+            const bType = b.type ?? 0;
+            // 自定义状态始终置顶，其余按类型升序排列
+            if (aType === 4 || bType === 4) return aType === 4 ? -1 : 1;
+            return aType - bType;
+          });
         });
         setError(null);
         isInitial.current = false;
