@@ -1,12 +1,6 @@
 /** https://reactbits.dev/text-animations/circular-text */
-import {
-  motion,
-  MotionValue,
-  Transition,
-  useAnimation,
-  useMotionValue,
-} from "motion/react";
-import React, { useEffect } from "react";
+import React from "react";
+
 interface CircularTextProps {
   text: string;
   spinDuration?: number;
@@ -14,27 +8,16 @@ interface CircularTextProps {
   className?: string;
 }
 
-const getRotationTransition = (
-  duration: number,
-  from: number,
-  loop: boolean = true,
-) => ({
-  from,
-  to: from + 360,
-  ease: "linear" as const,
-  duration,
-  type: "tween" as const,
-  repeat: loop ? Infinity : 0,
-});
-
-const getTransition = (duration: number, from: number) => ({
-  rotate: getRotationTransition(duration, from),
-  scale: {
-    type: "spring" as const,
-    damping: 20,
-    stiffness: 300,
-  },
-});
+/** 悬浮时相对 spinDuration 的时长倍数，pause 单独处理为暂停动画 */
+const HOVER_DURATION_FACTOR: Record<
+  NonNullable<CircularTextProps["onHover"]>,
+  number
+> = {
+  slowDown: 2,
+  speedUp: 1 / 4,
+  pause: 1,
+  goBonkers: 1 / 20,
+};
 
 const CircularText: React.FC<CircularTextProps> = ({
   text,
@@ -42,6 +25,8 @@ const CircularText: React.FC<CircularTextProps> = ({
   onHover = "speedUp",
   className = "",
 }) => {
+  const [hovering, setHovering] = React.useState(false);
+
   const letterTransforms = React.useMemo(() => {
     const chars = Array.from(text);
     const factor = Math.PI / chars.length;
@@ -50,71 +35,23 @@ const CircularText: React.FC<CircularTextProps> = ({
       transform: `rotateZ(${(360 / chars.length) * i}deg) translate3d(${factor * i}px, ${factor * i}px, 0)`,
     }));
   }, [text]);
-  const controls = useAnimation();
-  const rotation: MotionValue<number> = useMotionValue(0);
 
-  useEffect(() => {
-    const start = rotation.get();
-    controls.start({
-      rotate: start + 360,
-      scale: 1,
-      transition: getTransition(spinDuration, start),
-    });
-  }, [spinDuration, text, onHover, controls, rotation]);
-
-  const handleHoverStart = () => {
-    const start = rotation.get();
-
-    if (!onHover) return;
-
-    let transitionConfig: ReturnType<typeof getTransition> | Transition;
-    let scaleVal = 1;
-
-    switch (onHover) {
-      case "slowDown":
-        transitionConfig = getTransition(spinDuration * 2, start);
-        break;
-      case "speedUp":
-        transitionConfig = getTransition(spinDuration / 4, start);
-        break;
-      case "pause":
-        transitionConfig = {
-          rotate: { type: "spring", damping: 20, stiffness: 300 },
-          scale: { type: "spring", damping: 20, stiffness: 300 },
-        };
-        break;
-      case "goBonkers":
-        transitionConfig = getTransition(spinDuration / 20, start);
-        scaleVal = 0.8;
-        break;
-      default:
-        transitionConfig = getTransition(spinDuration, start);
-    }
-
-    controls.start({
-      rotate: start + 360,
-      scale: scaleVal,
-      transition: transitionConfig,
-    });
-  };
-
-  const handleHoverEnd = () => {
-    const start = rotation.get();
-    controls.start({
-      rotate: start + 360,
-      scale: 1,
-      transition: getTransition(spinDuration, start),
-    });
-  };
+  const isPaused = hovering && onHover === "pause";
+  const duration = hovering
+    ? spinDuration * HOVER_DURATION_FACTOR[onHover]
+    : spinDuration;
+  const scale = hovering && onHover === "goBonkers" ? 0.8 : 1;
 
   return (
-    <motion.div
-      className={`relative m-0 mx-auto h-[200px] w-[200px] origin-center rounded-full text-center font-black text-white ${className}`}
-      style={{ rotate: rotation }}
-      initial={{ rotate: 0 }}
-      animate={controls}
-      onMouseEnter={handleHoverStart}
-      onMouseLeave={handleHoverEnd}
+    <div
+      className={`relative m-0 mx-auto h-[200px] w-[200px] origin-center rounded-full text-center font-black text-white transition-[scale] duration-300 ${className}`}
+      style={{
+        animation: `circular-spin ${duration}s linear infinite`,
+        animationPlayState: isPaused ? "paused" : "running",
+        scale,
+      }}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
     >
       {letterTransforms.map(({ letter, transform }, i) => (
         <span
@@ -125,7 +62,7 @@ const CircularText: React.FC<CircularTextProps> = ({
           {letter}
         </span>
       ))}
-    </motion.div>
+    </div>
   );
 };
 

@@ -4,6 +4,7 @@
 @import "rich-presence-react/dist/rich-presence-react.css";
 
 @import "./alert.css";
+@import "./animation.css";
 @import "./mermaid.css";
 @import "./nprogress.css";
 
