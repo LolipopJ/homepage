@@ -49,7 +49,7 @@ docker run --name webdav \
 
 上面的配置表明，WebDAV 服务暴露在宿主机的 3180 端口，数据持久化存储在 `$HOME/WebDAV/data` 目录下。访问 `127.0.0.1:3180`，输入用户名和密码，即可看见当前 WebDAV 中包含的文件列表（当然此时为空）。
 
-通过 frp 将内网的服务暴露给公网服务器上，再通过配置公网服务器的 Nginx 配置，现在 WebDAV 就可以通过域名 `https://webdav.towind.fun` 访问了！
+通过 frp 将内网的服务暴露给公网服务器上，再通过配置公网服务器的 Nginx 配置，现在 WebDAV 就可以通过域名 `https://webdav.towind.cn` 访问了！
 
 ## 图形界面管理 WebDAV
 
@@ -99,11 +99,11 @@ docker run --name webdav \
 
 Next Chat 设计为 Web 端使用，部署时需要配置环境变量 `WHITE_WEBDAV_ENDPOINTS` 以添加 WebDAV 终端白名单。官方构建版本仅对一些常见 WebDAV 服务域名开了白名单，但像笔者这样的自建 WebDAV 服务自然是不可能在名单内。因此需要手动部署一个属于自己的 Next Chat 的 Web 版本，在环境变量中为 WebDAV 开放白名单。这样，在同步数据时，使用自建站点的域名作为代理服务器就可以了。
 
-参考部署 Next Chat 到 Vercel 的[官方文档](https://github.com/ChatGPTNextWeb/NextChat/blob/48469bd8ca4b29d40db0ade61b57f9be6f601e01/docs/vercel-cn.md)，部署自己的 Next Chat 站点，将 `WHITE_WEBDAV_ENDPOINTS=https://webdav.towind.fun` 作为构建环境变量：
+参考部署 Next Chat 到 Vercel 的[官方文档](https://github.com/ChatGPTNextWeb/NextChat/blob/48469bd8ca4b29d40db0ade61b57f9be6f601e01/docs/vercel-cn.md)，部署自己的 Next Chat 站点，将 `WHITE_WEBDAV_ENDPOINTS=https://webdav.towind.cn` 作为构建环境变量：
 
 ![构建 Next Chat 环境变量](./private-webdav/next-chat-vercel-env.png)
 
-现在，笔者自建的 Next Chat 站点便允许被作为请求 `https://webdav.towind.fun` 的代理服务器了。
+现在，笔者自建的 Next Chat 站点便允许被作为请求 `https://webdav.towind.cn` 的代理服务器了。
 
 配置云同步，检查可用性，成功在 WebDAV 的根目录下创建了文件夹 `chatgpt-next-chat`：
 
@@ -118,14 +118,14 @@ Next Chat 设计为 Web 端使用，部署时需要配置环境变量 `WHITE_WEB
 ```bash
 tail -n 10 /var/log/nginx/error.log
 ...
-[error] 2107#2107: *36701359 client intended to send too large body: 1663429 bytes, client: xxx.xx.xxx.xxx, server: webdav.towind.fun, request: "PUT /chatgpt-next-web/backup.json HTTP/2.0", host: "webdav.towind.fun"
+[error] 2107#2107: *36701359 client intended to send too large body: 1663429 bytes, client: xxx.xx.xxx.xxx, server: webdav.towind.cn, request: "PUT /chatgpt-next-web/backup.json HTTP/2.0", host: "webdav.towind.cn"
 ```
 
 可知 Nginx 拒绝了包含超过设定大小数据的请求，那么只需要将设定的大小放开一点就好。编辑对应的 Nginx 配置，例如设置允许的最大请求体为 `50M`：
 
 ```nginx
 server {
-  server_name webdav.towind.fun;
+  server_name webdav.towind.cn;
   client_max_body_size 50M;
 }
 ```

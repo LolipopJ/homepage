@@ -41,7 +41,7 @@ const useDiscordActivity = () => {
       }, REQUEST_TIMEOUT);
 
       try {
-        const res = await fetch("https://api.towind.fun/discord/activity", {
+        const res = await fetch("https://api.towind.cn/discord/activity", {
           signal: currentController.signal,
         });
         if (!res.ok)

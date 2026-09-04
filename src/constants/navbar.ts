@@ -76,7 +76,7 @@ export const NAVBAR_ITEMS: NavbarProps["items"] = [
       {
         icon: faCommentDots,
         label: "时间线",
-        url: "https://timeline.towind.fun",
+        url: "https://timeline.towind.cn",
       },
       {
         icon: faEnvelope,

@@ -17,7 +17,7 @@ const config: GatsbyConfig = {
     owner: "Lolipop",
     description:
       "Homepage and blog of Lolipop, share knowledge about software / frontend development.",
-    siteUrl: "https://blog.towind.fun",
+    siteUrl: "https://blog.towind.cn",
   } as SiteMetadata,
   flags: {
     // DEV_SSR: true,

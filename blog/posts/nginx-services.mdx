@@ -72,16 +72,16 @@ http {
     listen 443 ssl;
     http2 on;
 
-    ssl_certificate /etc/letsencrypt/live/towind.fun/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/towind.fun/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/towind.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/towind.cn/privkey.pem;
 
-    server_name towind.fun www.towind.fun blog.towind.fun;
-    root /var/www/towind.fun/blog;
+    server_name towind.cn www.towind.cn blog.towind.cn;
+    root /var/www/towind.cn/blog;
   }
 }
 ```
 
-通过上面的配置，笔者只需要将自己博客的静态资源放置在 `/var/www/towind.fun/blog` 目录，就可以通过 https://towind.fun 等域名访问到啦。
+通过上面的配置，笔者只需要将自己博客的静态资源放置在 `/var/www/towind.cn/blog` 目录，就可以通过 https://towind.cn 等域名访问到啦。
 
 当然，笔者不希望有这么多个域名显示完全一样的东西，我们可以配置域名跳转，将请求重定向到一个域名上：
 
@@ -90,13 +90,13 @@ http {
 http {
   server {
     # ...https configurations
-    server_name towind.fun www.towind.fun;
-    rewrite ^/(.*)$ https://blog.towind.fun/$1 permanent;
+    server_name towind.cn www.towind.cn;
+    rewrite ^/(.*)$ https://blog.towind.cn/$1 permanent;
   }
 }
 ```
 
-现在，访问 https://towind.fun 和 https://www.towind.fun 时，浏览器将自动 301 重定向到 https://blog.towind.fun。
+现在，访问 https://towind.cn 和 https://www.towind.cn 时，浏览器将自动 301 重定向到 https://blog.towind.cn。
 
 此外，笔者为了更好的 SEO，缩短了链接的级数，即从 `/YYYY/MM/DD/blog-title` -> `/YYYYMMDD/blog-title`。那么就需要将过去被搜索引擎收录的链接，重定向到新的链接，避免用户访问到 404 页面。可以编写配置如下：
 
@@ -105,7 +105,7 @@ http {
 http {
   server {
     # ...https configurations
-    server_name blog.towind.fun;
+    server_name blog.towind.cn;
     rewrite "^/(\d{4})/(\d{2})/(\d{2})/(.+)$" /$1$2$3/$4 permanent;
   }
 }
@@ -124,8 +124,8 @@ Nginx 配置中存在大量重复的内容，我们可以将这些内容提取�
 listen 443 ssl;
 http2 on;
 
-ssl_certificate /etc/letsencrypt/live/towind.fun/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/towind.fun/privkey.pem;
+ssl_certificate /etc/letsencrypt/live/towind.cn/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/towind.cn/privkey.pem;
 ```
 
 在需要的 `server` 块中引入：
@@ -135,7 +135,7 @@ ssl_certificate_key /etc/letsencrypt/live/towind.fun/privkey.pem;
 http {
   server {
     include /etc/nginx/conf.shared.d/https.conf;
-    server_name blog.towind.fun;
+    server_name blog.towind.cn;
   }
 }
 ```
@@ -164,7 +164,7 @@ return 301 https://$http_host$request_uri;
 
 ```bash
 # /path/to/update-blog.sh
-cd /var/www/towind.fun/blog
+cd /var/www/towind.cn/blog
 git pull
 ```
 
@@ -256,13 +256,13 @@ location ~* .(png|jpg|jpeg|gif|ico|svg|mp4|ogg|ogv|webm|htc|xml|woff|gz|zip|7z)$
 # /etc/nginx/conf.d/download.conf
 server {
   include /etc/nginx/conf.shared.d/http.conf;
-  server_name download.towind.fun;
+  server_name download.towind.cn;
 }
 
 server {
   include /etc/nginx/conf.shared.d/https.conf;
-  server_name download.towind.fun;
-  root /var/www/towind.fun/download;
+  server_name download.towind.cn;
+  root /var/www/towind.cn/download;
   # 允许浏览静态文件目录
   autoindex on;
   # 显示静态文件大小
@@ -274,7 +274,7 @@ server {
 }
 ```
 
-上面的配置表明：笔者将对外提供下载的静态文件放置在服务器的 `/var/www/towind.fun/download` 目录下；当访问 https://download.towind.fun 时，就可以看见所有可下载的静态文件。
+上面的配置表明：笔者将对外提供下载的静态文件放置在服务器的 `/var/www/towind.cn/download` 目录下；当访问 https://download.towind.cn 时，就可以看见所有可下载的静态文件。
 
 ## 提供代理服务器
 
@@ -291,14 +291,14 @@ server {
 # /etc/nginx/conf.d/xxx.conf
 server {
   include /etc/nginx/conf.shared.d/https.conf;
-  server_name xxx.towind.fun;
+  server_name xxx.towind.cn;
   location = / {
     proxy_pass http://127.0.0.1:15244;
   }
 }
 ```
 
-上面的配置表示：当通过 `https://xxx.towind.fun` 访问公网服务器时，请求将转发至本地的 15244 端口，再经由 frp 访问到内网服务器上对应的服务。
+上面的配置表示：当通过 `https://xxx.towind.cn` 访问公网服务器时，请求将转发至本地的 15244 端口，再经由 frp 访问到内网服务器上对应的服务。
 
 ### 内网服务访问性能优化
 

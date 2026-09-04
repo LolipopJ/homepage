@@ -159,7 +159,7 @@ AutoModpack 是一个**客户端和服务端模组**，安装了此模组的客�
 
 <img
   alt="Minecraft 服务器状态"
-  src="https://mcapi.us/server/image?ip=mc.towind.fun"
+  src="https://mcapi.us/server/image?ip=mc.towind.cn"
 />
 
 一些开放服务可以用来查询 Minecraft 服务器状态，并生成类似上面这样的卡片。想要生成同样的卡片？访问 [MCApi.us](https://mcapi.us) 了解更多。
@@ -168,7 +168,7 @@ AutoModpack 是一个**客户端和服务端模组**，安装了此模组的客�
 
 假设您已拥有一个域名并通过 DNS 服务商解析到了服务器，那么连接服务器时不再需要填写服务器的公网 IP 地址，使用域名就行。
 
-笔者的服务器就可以通过域名 `mc.towind.fun` 连接，Minecraft 客户端将查询到域名背后的 IP 地址，访问其 25565 端口。
+笔者的服务器就可以通过域名 `mc.towind.cn` 连接，Minecraft 客户端将查询到域名背后的 IP 地址，访问其 25565 端口。
 
 假设您还安装和配置好了 Nginx 服务，我们可以将服务器地图进行转发。例如：
 
@@ -178,7 +178,7 @@ server {
   ssl_certificate /path/to/fullchain.pem;
   ssl_certificate_key /path/to/privkey.pem;
 
-  server_name mc.towind.fun;
+  server_name mc.towind.cn;
 
   location /map/ {
     proxy_pass http://127.0.0.1:8123/;
@@ -186,7 +186,7 @@ server {
 }
 ```
 
-现在，我们不再需要放行 8123 端口，服务器地图通过 Nginx 监听的 443 端口转发，访问链接 https://mc.towind.fun/map 即可。
+现在，我们不再需要放行 8123 端口，服务器地图通过 Nginx 监听的 443 端口转发，访问链接 https://mc.towind.cn/map 即可。
 
 ### 服务器备份
 
