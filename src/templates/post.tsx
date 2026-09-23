@@ -7,6 +7,7 @@ import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import * as React from "react";
 
 import Card from "../components/card";
+import HintText from "../components/hint-text";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
@@ -58,6 +59,7 @@ const components: MDXProviderProps["components"] = {
   img: FancyBoxImage,
   Card,
   Link,
+  HintText,
 };
 
 type PostPageData = {

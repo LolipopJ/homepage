@@ -130,7 +130,7 @@ export const useMermaid = (
   config: UseMermaidConfig = {},
 ) => {
   const {
-    src = "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js",
+    src = "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js",
     ...mermaidConfig
   } = config;
 
