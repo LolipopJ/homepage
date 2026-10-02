@@ -31,12 +31,14 @@ import Icon from "../components/icon";
 import Planets from "../components/planets";
 import Post from "../components/post";
 import RotatingText from "../components/rotating-text";
+import ThemeSwitcher from "../components/theme-switcher";
 import { MIIT_BEIAN_LABEL, MPS_BEIAN_CODE } from "../constants/beian";
 import { FOOTER_SOCIAL_ITEMS, NAVBAR_ITEMS } from "../constants/navbar";
 import useAllMdx from "../hooks/useAllMdx";
 import useDiscordActivity from "../hooks/useDiscordActivity";
 import useTailwindBreakpoint from "../hooks/useScreenBreakpoint";
 import useSiteMetadata from "../hooks/useSiteMetadata";
+import useTheme from "../hooks/useTheme";
 import Navbar from "./navbar";
 import SiderBar, { SiderBarProps } from "./sider-bar";
 
@@ -81,32 +83,37 @@ interface SidebarStaticContentProps {
 }
 
 const SidebarStaticContent = React.memo<SidebarStaticContentProps>(
-  ({ activities, planetSize }) => (
-    <>
-      <div className={`relative z-10 flex flex-col gap-3`}>
-        {activities.map((activity, index) => (
-          <RichPresence
-            className="opacity-80 transition-opacity hover:opacity-100"
-            key={index}
-            activity={activity}
-            theme="dark"
-            size="normal"
-          />
-        ))}
-      </div>
-      <div
-        className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
-        style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
-      >
-        <Planets size={planetSize} />
-      </div>
-    </>
-  ),
+  ({ activities, planetSize }) => {
+    const { resolvedTheme } = useTheme();
+    return (
+      <>
+        <div className={`relative z-10 flex flex-col gap-3`}>
+          {activities.map((activity, index) => (
+            <RichPresence
+              className="opacity-80 transition-opacity hover:opacity-100"
+              key={index}
+              activity={activity}
+              theme={resolvedTheme ?? "dark"}
+              size="normal"
+            />
+          ))}
+        </div>
+        <div
+          className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+          style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
+        >
+          <Planets size={planetSize} />
+        </div>
+      </>
+    );
+  },
 );
 
 const Layout: React.FC<PageProps> = (props) => {
-  const { children, path = "/", location } = props;
+  const { children, location } = props;
   const { href, pathname, search, hash } = location;
+  // Gatsby can pass a wildcard route path during SSR; use the actual URL.
+  const path = pathname;
   const searchParams = new URLSearchParams(search);
 
   const [maskRemoved, setMaskRemoved] = React.useState<boolean>(false);
@@ -564,7 +571,7 @@ const Layout: React.FC<PageProps> = (props) => {
       {/* 初始化完成前的蒙版层 */}
       {!maskRemoved && (
         <div
-          className={`absolute inset-0 z-50 overflow-hidden bg-neutral-900 transition duration-500 ${layoutInitialized ? "pointer-events-none opacity-0" : ""}`}
+          className={`absolute inset-0 z-50 overflow-hidden bg-background transition duration-500 ${layoutInitialized ? "pointer-events-none opacity-0" : ""}`}
           onTransitionEnd={() => layoutInitialized && setMaskRemoved(true)}
         >
           <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 xl:bottom-8 xl:right-8">
@@ -628,7 +635,7 @@ const Layout: React.FC<PageProps> = (props) => {
         className={`flex-1 bg-background ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
         <header
-          className={`sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-neutral-900/80 print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+          className={`sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-header-background print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
         >
           <div
             className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
@@ -644,7 +651,8 @@ const Layout: React.FC<PageProps> = (props) => {
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {isPostPage ? pageTitle : staticPageTitle}
           </div>
-          <div className="ml-auto justify-end pl-16">
+          <div className="ml-auto flex shrink-0 items-center justify-end gap-2 pl-4 sm:pl-8">
+            <ThemeSwitcher />
             <Icon
               icon={faSearch}
               className="item-selectable rounded-md p-2"
@@ -702,6 +710,9 @@ const Layout: React.FC<PageProps> = (props) => {
                   }
                 />
               </div>
+              {isImmersiveActivated && (
+                <ThemeSwitcher className="rounded-full border border-border bg-background" />
+              )}
               {/* 沉浸式浏览按钮 */}
               <div className="hidden lg:block">
                 <ActionButton
@@ -793,7 +804,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
         {/* 小屏幕：打开侧边栏抽屉时的蒙版层 */}
         <div
-          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-neutral-900/80 backdrop-blur-sm lg:hidden print:hidden`}
+          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-overlay backdrop-blur-sm lg:hidden print:hidden`}
           onClick={() => setOpenSubNavbarDrawer(false)}
         />
       </main>
@@ -802,11 +813,11 @@ const Layout: React.FC<PageProps> = (props) => {
       {openAlgoliaSearch && (
         <div
           onClick={() => setOpenAlgoliaSearch(false)}
-          className="absolute inset-0 z-30 bg-neutral-900/60 backdrop-blur-sm print:hidden"
+          className="absolute inset-0 z-30 bg-overlay backdrop-blur-sm print:hidden"
         >
           <AlgoliaSearch
             onClose={() => setOpenAlgoliaSearch(false)}
-            className="max-h-[calc(100vh-4rem)]] mx-auto mt-16 border border-foreground-tertiary bg-neutral-900/90"
+            className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-dialog-background"
           />
         </div>
       )}

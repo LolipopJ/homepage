@@ -46,7 +46,7 @@ const Card: React.FC<CardProps> = (props) => {
   return (
     <div
       ref={cardRef}
-      className={`group relative overflow-hidden rounded-xl border border-neutral-700/60 bg-background-light px-6 py-4 text-foreground shadow-md shadow-black/20 transition-shadow duration-300 hover:shadow-lg hover:shadow-black/30 ${className}`}
+      className={`theme-card group relative overflow-hidden rounded-xl border border-border bg-background-light px-6 py-4 text-foreground transition-shadow duration-300 ${className}`}
       style={
         {
           ...style,
@@ -66,7 +66,7 @@ const Card: React.FC<CardProps> = (props) => {
       <div className="relative">
         <div className="text-lg font-bold">{headline}</div>
         {subhead && <div className="mt-3">{subhead}</div>}
-        <div className="mt-2 text-sm text-neutral-300">{body}</div>
+        <div className="mt-2 text-sm text-foreground-secondary">{body}</div>
         {actions && (
           <div className="mt-5 flex flex-wrap items-center gap-2">
             {actions.map(({ label, url }, index) => (
@@ -75,7 +75,7 @@ const Card: React.FC<CardProps> = (props) => {
                 href={url}
                 target="_blank"
                 rel="noreferrer"
-                className={`!rounded-full !border !border-primary !px-3 !py-1.5 !text-sm !transition hover:!border-solid hover:!no-underline ${index === actions.length - 1 ? "!bg-primary-light !text-background hover:!border-primary hover:!bg-primary" : "!text-primary hover:!border-primary-light hover:!text-primary-light"}`}
+                className={`!rounded-full !border !border-primary !px-3 !py-1.5 !text-sm !transition hover:!border-solid hover:!no-underline ${index === actions.length - 1 ? "!bg-primary-light !text-on-primary hover:!border-primary hover:!bg-primary" : "!text-primary hover:!border-primary-light hover:!text-primary-light"}`}
               >
                 {label}
               </a>

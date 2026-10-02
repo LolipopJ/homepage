@@ -1,6 +1,3 @@
-import "gitalk-react/gitalk-dark.css";
-
-import Gitalk from "gitalk-react";
 import * as React from "react";
 
 import {
@@ -10,6 +7,8 @@ import {
   GITHUB_REPO,
   GITHUB_REPO_OWNER,
 } from "../constants/gitalk";
+
+const Gitalk = React.lazy(() => import("gitalk-react"));
 
 export interface GitalkProps {
   gitalkId: string;
@@ -24,15 +23,16 @@ const GitalkComponent: React.FC<GitalkProps> = ({ gitalkId, ...restProps }) => {
     const el = containerRef.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { scrollMargin: "1200px" },
-    );
+    const observerOptions: IntersectionObserverInit & { scrollMargin: string } =
+      {
+        scrollMargin: "1200px",
+      };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, observerOptions);
 
     observer.observe(el);
     return () => observer.disconnect();
@@ -41,17 +41,19 @@ const GitalkComponent: React.FC<GitalkProps> = ({ gitalkId, ...restProps }) => {
   return (
     <div ref={containerRef} {...restProps}>
       {visible && (
-        <Gitalk
-          className="gitalk"
-          clientID={GITHUB_APP_CLIENT_ID}
-          clientSecret={GITHUB_APP_CLIENT_SECRET}
-          owner={GITHUB_REPO_OWNER}
-          repo={GITHUB_REPO}
-          admin={GITALK_ADMIN}
-          id={gitalkId}
-          enableHotKey={false}
-          createIssueManually
-        />
+        <React.Suspense fallback={null}>
+          <Gitalk
+            className="gitalk"
+            clientID={GITHUB_APP_CLIENT_ID}
+            clientSecret={GITHUB_APP_CLIENT_SECRET}
+            owner={GITHUB_REPO_OWNER}
+            repo={GITHUB_REPO}
+            admin={GITALK_ADMIN}
+            id={gitalkId}
+            enableHotKey={false}
+            createIssueManually
+          />
+        </React.Suspense>
       )}
     </div>
   );

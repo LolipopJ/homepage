@@ -1,0 +1,126 @@
+/* Override vendor system media queries using the site's resolved palette. */
+.post-entry.heti blockquote,
+.post-entry.heti pre,
+.post-entry.heti code {
+  background-color: var(--code-background);
+}
+.post-entry.heti pre code {
+  background: transparent;
+}
+.post-entry.heti hr {
+  background: var(--border);
+}
+.post-entry.heti table,
+.post-entry.heti th,
+.post-entry.heti td,
+.post-entry.heti .heti-fn {
+  border-color: var(--border);
+}
+.post-entry.heti mark,
+.algolia-hints mark {
+  background: var(--mark-background);
+  color: var(--foreground);
+}
+.post-entry.heti sup:target,
+.post-entry.heti sup a:target,
+.post-entry.heti .heti-fn li:target {
+  background: var(--selected);
+}
+.post-entry.heti u[title] {
+  border-bottom-color: var(--foreground-secondary);
+}
+html[data-theme] .post-entry pre[class*="language-"],
+html[data-theme] .post-entry :not(pre) > code[class*="language-"] {
+  background: var(--code-background);
+  color: var(--code-foreground);
+  text-shadow: none;
+}
+html[data-theme] .post-entry code[class*="language-"] {
+  color: var(--code-foreground);
+  text-shadow: none;
+}
+html[data-theme] .post-entry a code[class*="language-"] {
+  color: inherit;
+}
+html[data-theme] .post-entry pre:has(> .mermaid) {
+  background: var(--background-light);
+}
+.theme-card {
+  box-shadow:
+    0 4px 6px -1px var(--shadow),
+    0 2px 4px -2px var(--shadow);
+}
+.theme-card:hover {
+  box-shadow:
+    0 10px 15px -3px var(--shadow-hover),
+    0 4px 6px -4px var(--shadow-hover);
+}
+
+/* Cover titles remain readable over photographs in either site theme. */
+.post-banner {
+  color: #f5f5f5;
+  --category-software-from: #7dd3fc;
+  --category-software-via: #93c5fd;
+  --category-software-to: #818cf8;
+  --category-ai-from: #d8b4fe;
+  --category-ai-via: #e879f9;
+  --category-ai-to: #ec4899;
+  --category-misc-from: #86efac;
+  --category-misc-via: #6ee7b7;
+  --category-misc-to: #14b8a6;
+  --category-life-from: #fcd34d;
+  --category-life-via: #facc15;
+  --category-life-to: #f97316;
+}
+
+html[data-theme] .gitalk.gt-container {
+  --gt-theme-mode: var(--site-theme);
+  --gt-color-text: var(--foreground);
+  --gt-color-main: var(--primary);
+  --gt-color-main-lighter: var(--primary-light);
+  --gt-color-sub: var(--foreground-secondary);
+  --gt-color-loader: var(--foreground-secondary);
+  --gt-color-error: var(--alert-caution);
+  --gt-color-hr: var(--border);
+  --gt-color-input-border: var(--border);
+  --gt-color-input-bg: var(--background-lighter);
+  --gt-color-input-bg-lighter: var(--background-light);
+  --gt-color-comment-bg: var(--background-light);
+  --gt-color-comment-shadow: var(--shadow);
+  --gt-color-comment-shadow-admin: var(--shadow-hover);
+  --gt-color-comment-txt: var(--foreground);
+  --gt-color-comment-collapse-bg: linear-gradient(
+    transparent,
+    var(--background-light)
+  );
+  --gt-color-link-active: var(--foreground);
+  --gt-color-btn: var(--on-primary);
+  --gt-color-popbg: var(--background-light);
+}
+html[data-theme] .gitalk.gt-container.gt-input-focused::after {
+  background: var(--overlay);
+}
+html[data-theme] .gitalk .gt-comment-body .email-hidden-toggle a {
+  color: var(--foreground);
+  background: var(--background-lighter);
+}
+html[data-theme]
+  .gitalk
+  .gt-comment-body
+  .email-hidden-reply
+  .email-signature-reply {
+  color: var(--foreground-secondary);
+  border-color: var(--border);
+}
+html[data-theme] .gitalk .markdown-body {
+  color: var(--foreground);
+  background-color: transparent;
+}
+html[data-theme] .gitalk .markdown-body a {
+  color: var(--primary);
+}
+html[data-theme] .gitalk .markdown-body pre,
+html[data-theme] .gitalk .markdown-body code,
+html[data-theme] .gitalk .markdown-body table tr {
+  background-color: var(--background-lighter);
+}

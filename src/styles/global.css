@@ -1,4 +1,7 @@
+@import "prismjs/themes/prism.min.css";
 @import "prismjs/themes/prism-tomorrow.min.css";
+@import "gitalk-react/dist/gitalk-light.css";
+@import "gitalk-react/dist/gitalk-dark.css";
 @import "@fancyapps/ui/dist/fancybox/fancybox.css";
 @import "heti/umd/heti.min.css";
 @import "rich-presence-react/dist/rich-presence-react.css";
@@ -7,6 +10,8 @@
 @import "./animation.css";
 @import "./mermaid.css";
 @import "./nprogress.css";
+@import "./theme.css";
+@import "./theme-content.css";
 
 @tailwind base;
 @tailwind components;
@@ -16,21 +21,11 @@
   :root {
     --height-header: 4rem;
     --height-footer: 14rem;
-    --primary: #61bfad;
-    --primary-light: #80cbbd;
-    --primary-dark: #438579;
-    --foreground: rgb(245 245 245); /* neutral-100 */
-    --foreground-secondary: rgb(163, 163, 163); /* neutral-400 */
-    --foreground-tertiary: rgb(82 82 82 / 0.8); /* neutral-600/80 */
-    --background: #0f0f0f;
-    --background-light: #161616;
-    --background-lighter: #1d1d1d;
-    --background-dark: #0a0a0a;
-    --background-darker: #050505;
   }
 
   ::selection {
-    @apply bg-primary-dark;
+    background: var(--selection);
+    color: var(--foreground);
   }
 
   ::-webkit-scrollbar {
@@ -38,11 +33,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-800;
+    background: var(--scrollbar-track);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-md bg-neutral-700 hover:bg-neutral-600;
+    @apply rounded-md;
+    background: var(--scrollbar-thumb);
+
+    &:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
   }
 
   html {
@@ -62,11 +62,11 @@
 
 @layer components {
   .item-selectable {
-    @apply cursor-pointer transition-colors hover:bg-neutral-700/30;
+    @apply cursor-pointer transition-colors hover:bg-hover;
   }
 
   .item-selected {
-    @apply !bg-neutral-700/50 transition-colors;
+    @apply !bg-selected transition-colors;
   }
 
   .item-secondary {
@@ -133,7 +133,7 @@
       @apply !-mx-6 mb-6 mt-6 w-[calc(100%+3rem)] !max-w-none;
     }
 
-    /* 加载中和加载失败的图片显示深色占位背景 */
+    /* 加载中和加载失败的图片使用当前主题的占位背景 */
     img.gatsby-resp-image-image {
       box-shadow: var(--background-light) 0px 0px 0px 400px inset !important;
     }
@@ -189,7 +189,7 @@
   /* #region Gitlak 博客评论系统 */
   .gitalk {
     &.gt-container {
-      --gt-color-main: var(--primary-dark);
+      --gt-color-main: var(--primary);
       --gt-color-main-lighter: var(--primary);
 
       .gt-no-init {
@@ -213,7 +213,7 @@
       @apply flex w-full flex-wrap gap-2;
 
       > input {
-        @apply max-w-full flex-1 rounded-lg bg-neutral-800/80 px-2 py-1 text-base sm:px-3 sm:py-1.5 sm:text-lg;
+        @apply max-w-full flex-1 rounded-lg bg-input-background px-2 py-1 text-base sm:px-3 sm:py-1.5 sm:text-lg;
       }
 
       svg {

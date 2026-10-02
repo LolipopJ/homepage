@@ -1,39 +1,53 @@
-import type { MermaidConfig } from "mermaid";
+import type { Mermaid, MermaidConfig } from "mermaid";
 import * as React from "react";
+
+import useTheme from "./useTheme";
 
 interface UseMermaidConfig extends MermaidConfig {
   /** Mermaid 库的 CDN 地址，默认使用 cdn.jsdelivr.net */
   src?: string;
 }
 
-/**
- * 初始化并运行 Mermaid
- */
-const initializeMermaid = async (config?: MermaidConfig) => {
-  const mermaid = window.mermaid;
-  if (!mermaid) return false;
-
-  try {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: "dark",
-      darkMode: true,
-      securityLevel: "loose",
-      logLevel: "error",
-      ...config,
-    });
-    await mermaid.run();
-    return true;
-  } catch (error) {
-    console.error("Failed to initialize Mermaid:", error);
-    return false;
+const DEFAULT_CONFIG: UseMermaidConfig = {};
+const sources = new WeakMap<HTMLElement, string>();
+const viewports = new WeakMap<
+  HTMLElement,
+  {
+    scale: number;
+    translateX: number;
+    translateY: number;
   }
+>();
+const loads = new Map<string, Promise<Mermaid>>();
+// Mermaid's initialize() changes global configuration: serialize all renders.
+let renderQueue = Promise.resolve();
+
+const loadMermaid = (src: string): Promise<Mermaid> => {
+  if (window.mermaid) return Promise.resolve(window.mermaid);
+  const existing = loads.get(src);
+  if (existing) return existing;
+  const promise = new Promise<Mermaid>((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.onload = () => {
+      if (window.mermaid) resolve(window.mermaid);
+      else {
+        script.remove();
+        reject(new Error("Mermaid script did not expose its API"));
+      }
+    };
+    script.onerror = () => {
+      script.remove();
+      reject(new Error(`Failed to load Mermaid from ${src}`));
+    };
+    document.head.appendChild(script);
+  });
+  loads.set(src, promise);
+  void promise.catch(() => loads.delete(src));
+  return promise;
 };
 
-/**
- * 为 Mermaid 图表添加鼠标拖拽和滚轮缩放功能
- * @returns 清理函数
- */
 const setupPanZoom = (container: HTMLElement): (() => void) => {
   const preElements = container.querySelectorAll<HTMLPreElement>(
     "pre:has(> .mermaid)",
@@ -45,16 +59,21 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
     const svg = pre.querySelector<SVGSVGElement>(".mermaid > svg");
     if (!svg) return;
 
-    let scale = 1;
-    let translateX = 0;
-    let translateY = 0;
+    const view = viewports.get(pre) ?? {
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+    };
+    viewports.set(pre, view);
     let isDragging = false;
     let startX = 0;
     let startY = 0;
 
     const updateTransform = () => {
-      svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+      svg.style.transform = `translate(${view.translateX}px, ${view.translateY}px) scale(${view.scale})`;
     };
+
+    updateTransform();
 
     // 滚轮缩放，以光标位置为中心
     pre.addEventListener(
@@ -62,16 +81,16 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
       (e: WheelEvent) => {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const newScale = Math.min(Math.max(scale + delta, 0.2), 5);
+        const newScale = Math.min(Math.max(view.scale + delta, 0.2), 5);
 
         const rect = pre.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        const ratio = newScale / scale;
-        translateX = mouseX - ratio * (mouseX - translateX);
-        translateY = mouseY - ratio * (mouseY - translateY);
-        scale = newScale;
+        const ratio = newScale / view.scale;
+        view.translateX = mouseX - ratio * (mouseX - view.translateX);
+        view.translateY = mouseY - ratio * (mouseY - view.translateY);
+        view.scale = newScale;
 
         updateTransform();
       },
@@ -83,8 +102,8 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
       "mousedown",
       (e: MouseEvent) => {
         isDragging = true;
-        startX = e.clientX - translateX;
-        startY = e.clientY - translateY;
+        startX = e.clientX - view.translateX;
+        startY = e.clientY - view.translateY;
       },
       { signal },
     );
@@ -93,8 +112,8 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
       "mousemove",
       (e: MouseEvent) => {
         if (!isDragging) return;
-        translateX = e.clientX - startX;
-        translateY = e.clientY - startY;
+        view.translateX = e.clientX - startX;
+        view.translateY = e.clientY - startY;
         updateTransform();
       },
       { signal },
@@ -107,9 +126,9 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
     pre.addEventListener(
       "dblclick",
       () => {
-        scale = 1;
-        translateX = 0;
-        translateY = 0;
+        view.scale = 1;
+        view.translateX = 0;
+        view.translateY = 0;
         updateTransform();
       },
       { signal },
@@ -119,70 +138,62 @@ const setupPanZoom = (container: HTMLElement): (() => void) => {
   return () => controller.abort();
 };
 
-/**
- * 按需加载 Mermaid 库，通过动态脚本标签注入
- * 仅当页面存在 ```mermaid 代码块时才加载库
- * @param containerRef 包含文章内容的容器引用
- * @param config Mermaid 配置选项
- */
+/** Load Mermaid only for diagrams, and redraw their original source on theme changes. */
 export const useMermaid = (
   containerRef: React.RefObject<HTMLElement>,
-  config: UseMermaidConfig = {},
+  config: UseMermaidConfig = DEFAULT_CONFIG,
 ) => {
-  const {
-    src = "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js",
-    ...mermaidConfig
-  } = config;
+  const { resolvedTheme } = useTheme();
 
   React.useEffect(() => {
-    if (!containerRef.current) return;
-
     const container = containerRef.current;
+    if (!container || !resolvedTheme) return;
+    const blocks = Array.from(
+      container.querySelectorAll<HTMLElement>("code.language-mermaid"),
+    );
+    if (!blocks.length) return;
+    blocks.forEach((block) => {
+      if (!sources.has(block)) sources.set(block, block.textContent ?? "");
+    });
+
+    const {
+      src = "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.min.js",
+      ...mermaidConfig
+    } = config;
+    let cancelled = false;
     let cleanupPanZoom: (() => void) | undefined;
 
-    // 检查是否存在 mermaid 代码块
-    const hasMermaidBlock = container.querySelectorAll("code.language-mermaid");
+    renderQueue = renderQueue
+      .then(async () => {
+        if (cancelled) return;
+        const mermaid = await loadMermaid(src);
+        if (cancelled || !container.isConnected) return;
+        blocks.forEach((block) => {
+          block.classList.add("mermaid");
+          block.removeAttribute("data-processed");
+          block.textContent = sources.get(block) ?? "";
+        });
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "loose",
+          logLevel: "error",
+          ...mermaidConfig,
+          theme: resolvedTheme === "dark" ? "dark" : "default",
+          darkMode: resolvedTheme === "dark",
+        });
+        await mermaid.run({ nodes: blocks });
+        if (!cancelled && container.isConnected)
+          cleanupPanZoom = setupPanZoom(container);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) console.error("Failed to render Mermaid:", error);
+      });
 
-    if (!hasMermaidBlock.length) return;
-    hasMermaidBlock.forEach((code) => code.classList.add("mermaid"));
-
-    const initAndSetup = async () => {
-      const success = await initializeMermaid(mermaidConfig);
-      if (success) {
-        cleanupPanZoom = setupPanZoom(container);
-      }
-    };
-
-    // 若已加载，直接初始化和渲染
-    if (window.mermaid) {
-      initAndSetup();
-      return () => cleanupPanZoom?.();
-    }
-
-    // 未加载，创建脚本标签动态加载
-    const script = document.createElement("script");
-    script.src = src;
-    script.type = "text/javascript";
-    script.async = true;
-
-    script.onload = () => {
-      initAndSetup().catch(() => console.error("Mermaid failed to initialize"));
-    };
-
-    script.onerror = () => {
-      console.error(`Failed to load Mermaid from ${src}`);
-    };
-
-    document.head.appendChild(script);
-
-    // 清理：组件卸载时移除脚本和事件监听
     return () => {
+      cancelled = true;
       cleanupPanZoom?.();
-      if (script.parentNode) {
-        document.head.removeChild(script);
-      }
     };
-  }, [src, containerRef, mermaidConfig]);
+  }, [containerRef, config, resolvedTheme]);
 };
 
 export default useMermaid;

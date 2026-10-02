@@ -44,7 +44,7 @@ const CircularText: React.FC<CircularTextProps> = ({
 
   return (
     <div
-      className={`relative m-0 mx-auto h-[200px] w-[200px] origin-center rounded-full text-center font-black text-white transition-[scale] duration-300 ${className}`}
+      className={`relative m-0 mx-auto h-[200px] w-[200px] origin-center rounded-full text-center font-black text-foreground transition-[scale] duration-300 ${className}`}
       style={{
         animation: `circular-spin ${duration}s linear infinite`,
         animationPlayState: isPaused ? "paused" : "running",

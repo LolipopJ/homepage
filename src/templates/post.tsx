@@ -116,7 +116,18 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
       link.setAttribute("data-caption", image.alt);
     });
 
-    Fancybox.bind("[data-fancybox]");
+    Fancybox.bind("[data-fancybox]", {
+      on: {
+        initLayout: (instance) => {
+          instance
+            .getContainer()
+            ?.setAttribute(
+              "theme",
+              document.documentElement.dataset.theme ?? "light",
+            );
+        },
+      },
+    });
     return () => Fancybox.unbind("[data-fancybox]");
   }, []);
   //#endregion
