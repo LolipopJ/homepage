@@ -127,7 +127,7 @@ const HintText: React.FC<HintTextProps> = ({
   // 映射小箭头的 Tailwind 类名
   const getArrowClasses = () => {
     const base =
-      "absolute -z-10 size-2.5 border border-background-lighter bg-background-lighter";
+      "absolute -z-10 size-2.5 border border-border bg-background-lighter";
     switch (placement) {
       case "top":
         return `${base} bottom-[-5px] left-1/2 -translate-x-1/2 rotate-45 border-t-0 border-l-0`;
@@ -165,7 +165,7 @@ const HintText: React.FC<HintTextProps> = ({
       style={{ top: popoverPosition.top, left: popoverPosition.left }}
     >
       <div
-        className={`relative w-max rounded-lg border border-background-lighter bg-background-lighter p-4 shadow-lg ${popoverClassName}`}
+        className={`relative w-max rounded-lg border border-border bg-background-lighter p-4 text-foreground shadow-lg shadow-[color:var(--shadow)] ${popoverClassName}`}
       >
         {children}
         {/* 填充空白间隙，维持 hover 连续性 */}
@@ -178,11 +178,13 @@ const HintText: React.FC<HintTextProps> = ({
 
   return (
     <span className="relative inline-block">
-      {/* 触发文字 */}
+      {/* 双层背景：底部色带常驻，完整高亮从左向右展开 */}
       <span
         ref={textRef}
-        className={`cursor-pointer rounded bg-primary-dark px-1 transition-all ease-out ${
-          isHovered || isPinned ? "brightness-75" : ""
+        className={`cursor-pointer select-none rounded-sm bg-[linear-gradient(var(--mark-background),var(--mark-background)),linear-gradient(var(--mark-background),var(--mark-background))] bg-no-repeat px-1 font-bold text-foreground transition-[background-size] duration-300 ease-out [background-position:left_bottom] motion-reduce:transition-none ${
+          isHovered || isPinned
+            ? "[background-size:100%_100%,100%_35%]"
+            : "[background-size:0%_100%,100%_35%]"
         } ${className}`}
         onClick={(e) => {
           e.stopPropagation();
