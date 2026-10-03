@@ -8,10 +8,8 @@ title: 你好，这里是 Lolipop
 
 按照内容，我将博客划分为了四类：
 
-- <Link to="/categories/软件开发">**软件开发**</Link>
-  ，与软件项目生产开发相关的博客；
-- <Link to="/categories/人工智能">**人工智能**</Link>
-  ，与人工智能、大模型技术相关的研究和应用；
+- <Link to="/categories/软件开发">**软件开发**</Link>，与软件项目生产开发相关的博客；
+- <Link to="/categories/人工智能">**人工智能**</Link>，与人工智能、大模型技术相关的研究和应用；
 - <Link to="/categories/技术琐事">**技术琐事**</Link>，与其它技术相关的博客；
 - <Link to="/categories/生活闲暇">**生活闲暇**</Link>，与生活、游戏相关的博客。
 
@@ -31,7 +29,7 @@ title: 你好，这里是 Lolipop
 
 <p>
   <Card
-    headline="我的时间线"
+    headline="我的时间线 🎻"
     body="承载诸如生活随想、空间说说和视频收藏此类东西的一条时间线。"
     actions={[{ label: "看看", url: "https://timeline.towind.cn" }]}
   />
@@ -41,13 +39,13 @@ title: 你好，这里是 Lolipop
 
 我是一个出生于千禧年的纯正「00 后」，本科就读于电子科技大学，学习软件工程专业，现居于四川省成都市。
 
-### 软件工程师
+### 🖥️ 软件工程师
 
 我的主业是前端开发工程师，常使用 React 技术栈构建 Web 页面，也基于 Node.js 运行时部署后端服务。
 
 <p>
   <Card
-    headline="我的简历"
+    headline="我的简历 🤵🏻"
     body="写有我的工作经历、实习经历以及项目经历等等，用于面试求职赚 Money。"
     actions={[{ label: "瞅瞅", url: "https://resume.towind.cn" }]}
   />
@@ -55,7 +53,50 @@ title: 你好，这里是 Lolipop
 
 AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一位优秀的前端架构师，但现在更想成为一位**有品味的软件工程师**。不再局限于简单的前后端分工，而是确确实实地能从无到有，解决发现的痛点问题，推动项目的实现与落地。
 
-### “K 歌之王”
+#### 🛠️ 我开发和维护的项目
+
+暂时没有什么大的抱负，挚爱从自己的兴趣出发，开发和维护一些小工具与项目：
+
+- **[mdimg](https://github.com/LolipopJ/mdimg)**：将 Markdown 或 HTML 转换为图片的工具。基于 marked 和 Puppeteer 实现渲染与截图，提供命令行和 Node.js API，支持自定义模板、代码高亮、MathJax、Mermaid，以及插件和钩子扩展；也处理了本地资源加载、跨平台路径和临时文件等问题。<small><HintText text="预览" placement="bottom"><a href="https://github.com/LolipopJ/mdimg/blob/main/docs/darwin/github.png" target="_blank"><img src="https://raw.githubusercontent.com/LolipopJ/mdimg/refs/heads/main/docs/darwin/github.png" width={300} /></a></HintText></small>
+- **[gitalk-react](https://github.com/LolipopJ/gitalk-react)**：用 TypeScript、React 和 Vite 重新实现基于 GitHub Issues 的 Gitalk 评论组件。实现评论加载、发布和 Markdown 预览，补充暗色主题、多语言、长评论折叠、输入框自适应及管理员评论高亮，并提供组件类型和预览页面。<small><HintText text="预览" placement="bottom"><a href="https://lolipopj.github.io/gitalk-react/" target="_blank"><img src="/images/gitalk-react-preview.png" width={300} /></a></HintText></small>
+- **[dupimg-finder](https://github.com/LolipopJ/dupimg-finder)**：基于 EfficientIR 和 Electron 开发的 Windows 图片查重工具，可以查找相似图片对，也可以搜索指定图片的相似图像。实现索引管理、图片预览和删除、任务进度与取消、配置持久化，并改进文件信息收集和多进程索引的使用体验。<small><HintText text="预览" placement="bottom"><a href="https://github.com/LolipopJ/dupimg-finder/blob/main/docs/search-duplicate-images.png" target="_blank"><img src="https://raw.githubusercontent.com/LolipopJ/dupimg-finder/refs/heads/main/docs/search-duplicate-images.png" width={600} /></a></HintText></small>
+- **[homepage](https://github.com/LolipopJ/homepage)**：您正访问的这个博客本身！基于 Gatsby、React 和 MDX 构建，开发文章目录、阅读进度、沉浸式阅读、评论、RSS、主题切换和响应式布局，也持续优化图片加载、路由切换与组件渲染。
+- **[timeline](https://github.com/LolipopJ/timeline)**：基于 Bun 和 PostgreSQL 开发的个人时间线，聚合 GitHub Issue 评论、RSS / Atom、QQ 空间说说、Bilibili 收藏与作品、Steam 游戏评测等动态。实现定时同步、搜索和排序、媒体展示，以及管理员对时间线内容的管理。<small><HintText text="预览" placement="bottom"><a href="https://timeline.towind.cn/" target="_blank"><img src="/images/timeline-preview.png" width={600} /></a></HintText></small>
+- **[rich-presence-react](https://github.com/LolipopJ/rich-presence-react)** 与 **[discord-activity-sender](https://github.com/LolipopJ/discord-activity-sender)**：将 Discord 动态带到自己的网页上。前者是展示游戏、音乐和自定义状态的 React 卡片组件；后者是获取动态并通过 API 提供数据的 Python 服务，补充缓存、代理配置和 IGDB 游戏信息查询。<small><HintText text="预览" placement="bottom"><a href="https://lolipopj.github.io/rich-presence-react/" target="_blank"><img src="/images/rich-presence-react-preview.png" width={600} /></a></HintText></small>
+- **[ffxiv-pfbot](https://github.com/LolipopJ/ffxiv-pfbot)**：面向 FFXIV 国际服的 Discord 招募订阅机器人。从 xivpf.com 获取招募，按关键词、数据中心和类别筛选，生成中文招募卡片；支持按频道管理订阅、更新已有消息、清理过期招募，并使用 SQLite 保存订阅和推送记录。<small><HintText text="预览" placement="bottom"><a href="https://github.com/LolipopJ/ffxiv-pfbot/blob/main/docs/preview.png" target="_blank"><img src="https://raw.githubusercontent.com/LolipopJ/ffxiv-pfbot/refs/heads/main/docs/preview.png" width={600} /></a></HintText></small>
+- **[telly-bot](https://github.com/LolipopJ/telly-bot)**：基于 Bun 和 TypeScript 的 Telegram 机器人及个人 API 服务。整合 AList 随机图片、AI 对话、Minecraft 服务器监控，以及 GitHub Issue 评论和博客转发等功能，提供 Docker 部署方式。
+- **[resume](https://github.com/LolipopJ/resume)**：参考 best-resume-ever 的 Creative 模板，用 React 和 Next.js 重写自己的简历页面。支持中英文配置、主题切换，以及 PDF 和图片导出，并优化导出尺寸与背景显示。<small><HintText text="预览" placement="bottom"><a href="https://resume.towind.cn/" target="_blank"><img src="https://raw.githubusercontent.com/LolipopJ/resume/refs/heads/main/exports/resume-zh.png" width={600} /></a></HintText></small>
+- **[tvly-react](https://github.com/LolipopJ/tvly-react)** 与 **[NetUnion-Work-Demo](https://github.com/LolipopJ/NetUnion-Work-Demo)**：大学在校期间的 Web 开发实践，分别尝试了电子科大 IPTV 客户端，以及网盟招新报名页面和网页终端模拟器，练习路由、主题、表单、前后端交互和本地历史记录等功能。
+- **[uestc-coursework-repo](https://github.com/LolipopJ/uestc-coursework-repo)**：整理并公开本科期间的课程代码和实验报告，涵盖 C / C++、Java、Python、Android、操作系统、数据库、网络、Hadoop 等，也保留了人脸识别、词云和简易 Web 服务器等学习项目。
+
+#### 🧬 在 Fork 中实现的改进
+
+一些改动主要围绕我自己的使用习惯，在个人分支里开发和维护：
+
+- **[PixivPreviewerL](https://github.com/LolipopJ/PixivPreviewerL)**：基于 Ocrosoft/PixivPreviewer 重构并持续维护，用 TypeScript 和现代构建工具整理工程。扩展跨页面作品预览、动图预览、原图下载、作品排序、隐藏已收藏作品和元信息展示，并加入缓存、请求重试及下载进度等改进。<small><HintText text="预览" placement="bottom"><a href="https://greasyfork.org/zh-CN/scripts/533844-pixiv-previewer-l" target="_blank"><img src="/images/pixiv-previewer-l-preview.jpg" width={600} /></a></HintText></small>
+- **[EfficientIR](https://github.com/LolipopJ/EfficientIR)**：围绕 dupimg-finder 的需求，增加无界面调用、指定图片相似搜索、自定义配置路径和多进程特征提取，优化文件扫描、批量索引和进度显示，处理 Windows 打包及索引文件相关的问题。
+- **[Wplace-BlueMarble](https://github.com/LolipopJ/Wplace-BlueMarble)**：扩展待绘制像素的提取、排序和复制，增加颜色筛选、筛选配置持久化与数量统计，一切为了<Link to="/posts/wplace-painter-automatic">自动化脚本的实现</Link>。
+- **[design-patterns-for-humans-zh](https://github.com/LolipopJ/design-patterns-for-humans-zh)**：翻译和整理 Design Patterns for Humans，结合 JavaScript 示例解释创建型、结构型和行为型设计模式，并搭建 VuePress 阅读站点。<small><HintText text="预览" placement="bottom"><a href="https://lolipopj.github.io/design-patterns-for-humans-zh/" target="_blank"><img src="/images/design-patterns-for-humans-zh-preview.png" width={600} /></a></HintText></small>
+- **[现代 JavaScript 教程](https://github.com/LolipopJ/zh.javascript.info)**：添加 Python 脚本，将中文版教程导出为 EPUB，方便离线阅读。
+- **[jobs-zh-CN](https://github.com/LolipopJ/jobs-zh-CN)**：将 AI 对美国就业市场影响的可视化项目翻译为中文，补充数据翻译脚本、本地化职业数据、界面和说明。<small><HintText text="预览" placement="bottom"><a href="https://lolipopj.github.io/jobs-zh-CN/" target="_blank"><img src="/images/jobs-zh-cn-preview.png" width={600} /></a></HintText></small>
+- **[tieba-signin](https://github.com/LolipopJ/tieba-signin)**：在已有贴吧签到工具的基础上，将运行方式改为 Docker 部署，支持环境变量配置和定时执行，并添加 Discord Webhook 结果推送。
+- **FFXIV 汉化工具链**：在 **[SaintCoinach-GP](https://github.com/LolipopJ/SaintCoinach-GP/blob/hexcode/Scripts/process_csv.py)** 中编写 CSV 过滤和转换脚本，保留主键与字符串列、统一类型与转义规则；在 **[FFXIVChnTextPatch-GP](https://github.com/LolipopJ/FFXIVChnTextPatch-GP)** 中分离文本汉化、字体替换及各自的还原操作，优化校验和进度显示；在 **[FFXIVChnTextPatch-Souma](https://github.com/LolipopJ/FFXIVChnTextPatch-Souma)** 中集成自定义补丁工具，并在分支中补充其他遗漏文本。
+- **文档与部署实践**：在 **[lowcode-engine](https://github.com/LolipopJ/lowcode-engine)** 中整理组件加载与物料排查的 FAQ；为 **[what-you-need-know-about-house](https://github.com/LolipopJ/what-you-need-know-about-house)** 搭建 VuePress 阅读页面并补充参考资料；为 **[qq-music-api](https://github.com/LolipopJ/qq-music-api)** 添加 PM2 运行脚本；在 **[pointconv_pytorch](https://github.com/LolipopJ/pointconv_pytorch)** 中整理代码格式与说明；在进校前端页 **[pass](https://github.com/LolipopJ/pass/tree/memory)** 中调整路由和部署配置。
+
+#### 🩺 已合并到社区项目的贡献
+
+用着别人的开源项目，发现能帮上忙的地方，自然就动手修一修\~
+
+- **[hexo-theme-archer](https://github.com/fi3ework/hexo-theme-archer)**：参与多个版本的开发和维护。添加暗色模式、MathJax、Mermaid、Waline 评论和文章打赏等功能，重构文章目录的滚动定位与高亮，修复浏览器回退、特殊字符标签和移动端交互问题，同时维护主题配置、依赖和中文文档。
+- **[Umi](https://github.com/umijs/umi)**：在 Umi 4 开发阶段编写微前端、数据流、国际化、图表和 ProComponents 使用文档，改进文档站的代码高亮、目录滚动及布局；随后基于项目实践更新微前端文档。
+- **[Pixiv Plus](https://github.com/Ahaochan/Tampermonkey)**：适配 Pixiv 新版页面和搜索路由，修复搜索框、画师信息展示、标签末尾数字丢失、搜索条件错误及循环请求问题，并扩展按收藏量筛选作品的选项。
+- **[EfficientIR](https://github.com/Sg4Dylan/EfficientIR)**：修复图片不存在、重复标记删除时程序报错退出的问题，让本地图片整理更稳定。
+- **[camofox-browser](https://github.com/jo-inc/camofox-browser/pull/61)**：修复 Dockerfile 中服务端口与暴露端口不一致的问题，使默认端口映射能够正常访问服务。
+- **[uestc-course](https://github.com/Xovee/uestc-course)**：贡献操作系统、软件架构与设计、云计算和移动开发等课程资源，并补充实验与代码参考模块，方便后来的同学查阅。
+- **FFXIV 工具**：为 **[ChatTranslated](https://github.com/kelvin124124/ChatTranslated/pull/96)** 实现可持久化到磁盘的 LRU 翻译缓存，减少重启及缓存淘汰带来的重复翻译请求；为 **[tataru-assistant](https://github.com/winw1010/tataru-assistant/pull/24)** 添加自动识别语言选项；修复 **[FFXIVChnTextPatch-Souma](https://github.com/Souma-Sumire/FFXIVChnTextPatch-Souma/pull/102)** 探索笔记中部分遗漏的汉化内容。
+- **其他贡献**：修正 **[AntV X6](https://github.com/antvis/X6/pull/3368)** 文档中 React.memo 比较函数的判断逻辑；为 **[SOSCONF2020](https://github.com/YukariChiba/SOSCONF2020/pull/1)** 制作分会场与关于页面的原型；修正 **[Kuro-autosignin](https://github.com/mxyooR/Kuro-autosignin/pull/47)** Windows 通知中的拼写（Typo😄）等。
+
+### 🎧 并非"K 歌之王"
 
 听音乐总是令人十分愉悦的事情，生命的每一天都该有音乐陪伴！
 
@@ -70,7 +111,7 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 
 我觉得自己很能代入到歌曲中，像阅读小说一样短暂化身为或开心或沉重的另一个人，继而获得饱满情绪的五分钟。
 
-### 羽毛球初心者
+### 🏸 羽毛球初心者
 
 犹记得初中时放了学就与同学奔跑在空旷大操场，互相接着对方打过来的羽毛球。那时候风很大，汗很多，没有出界线，也没有羽毛球网，只是痛快地挥舞那青春，不知疲惫……咳咳，有些做作了。
 
@@ -84,25 +125,31 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 
 朋友有专门去学习羽毛球，遇到过不同水平的对手。据他所说，我的水平大抵在 2.5 级喵。
 
-### 健身房厌恶者
+### 🎭 健身房厌恶者
 
-我从来没有去过要付费的健身房，一方面觉得它的价格可能会坑人，另一方面自身也不喜欢付费去运动。
+我从来没有去过要付费的健身房，一方面觉得它的价格可能会坑人，另一方面自身也不喜欢付费去强迫自己运动。
 
-于是我选择了更经济、更舒适自由的健身方式：户外跑步（散步）。我通过智能手表记录行程与配速，使用 Keep 集成并管理数据，最后同步到自己的 Running Page 上，以此提高健身的积极性。
+于是在羽毛球之外，我选择了更经济、更舒适自由的健身方式：户外跑步（散步）。我通过智能手表记录行程与配速，使用 Keep 集成并管理数据，最后同步到自己的 Running Page 上，以此提高健身的积极性。
 
 <p>
   <Card
-    headline="我的跑步主页"
+    headline="我的跑步主页 🏃"
     body="我从 2018 年开始有了跑步记录，这里描绘着所有运动的轨迹。"
     actions={[{ label: "访问", url: "https://run.towind.cn" }]}
   />
 </p>
 
-嗯？为什么这么多的空白时间？嘿嘿嘿，毕竟想要去运动想要保持良好体重的心情是一阵一阵的，而且天气热的日子跑者也很辛苦嘛~
+嗯，为什么这么多的空白时间？嘿嘿嘿，毕竟想要去运动想要保持良好体重的心情是一阵一阵的，而且遇到天气热的日子要出门跑步也很辛苦嘛\~
 
-### 游戏玩家
+骑自行车也是不错的运动消遣，共享单车真是有用的发明。
 
-从 4399 乖乖猪世界的萌芽开始……到 3DM 论坛的刺客信条……再到淘宝第一次购入 Fallout 4 蓝光碟，你已经历许多。现在，继续我们伟大的探索吧：从古老猎人梦境的星辰钟楼到艾尼尔·伊利姆的螺旋塔。
+### 🛋️ 阿宅阿宅
+
+毋庸置疑的宅男之魂持有者，同时也是中等偏下傻逼的二次元。<br /><small>~ あと少しだけの勇気で 変えられた明日はあった ~</small>
+
+### 🎮 游戏玩家
+
+从 4399 乖乖猪世界的萌芽开始……到 3DM 论坛的刺客信条……再到淘宝第一次购入辐射 4 蓝光碟，你已经历许多。现在，继续我们伟大的探索吧：从古老猎人梦境的星辰钟楼到艾尼尔·伊利姆的螺旋塔。
 
 ![Exophase Game Card](https://card.exophase.com/2/0/264160.png)
 
@@ -116,10 +163,10 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 现在尚在游玩的网游和手游：
 
 - 英雄联盟<small><HintText text="祖安" placement="right"><a href="/images/league-of-legends-20260130.jpg" target="_blank"><img src="/images/league-of-legends-20260130.jpg" width={300} /></a></HintText></small>
-- 最终幻想 XIV<small><HintText text="国际服"><a href="https://www.fflogs.com/character/id/20629736" target="_blank"><img src="/images/fflogs-20260923.png" width={500} /></a></HintText></small>
-- 蔚蓝档案<small><HintText text="国际服"><a href="/images/blue-archieve-20260129.jpg" target='_blank'><img src="/images/blue-archieve-20260129.jpg" width={500} /></a></HintText></small>
+- 最终幻想 XIV<small><HintText text="国际服"><a href="https://www.fflogs.com/character/id/20629736" target="_blank"><img src="/images/fflogs-20260923.png" width={600} /></a></HintText></small>
+- 蔚蓝档案<small><HintText text="国际服"><a href="/images/blue-archieve-20260129.jpg" target='_blank'><img src="/images/blue-archieve-20260129.jpg" width={600} /></a></HintText></small>
 - 鸣潮<small><HintText text="国服" placement="right"><a href="/images/wuthering-waves-20260923.jpg" target="_blank"><img src="/images/wuthering-waves-20260923.jpg" width={300} /></a></HintText></small>
-- 明日方舟：终末地<small><HintText text="国服"><a href="/images/arknights-endfield-20260923.png" target="_blank"><img src="/images/arknights-endfield-20260923.png" width={500} /></a></HintText></small>
+- 明日方舟：终末地<small><HintText text="国服"><a href="/images/arknights-endfield-20260923.png" target="_blank"><img src="/images/arknights-endfield-20260923.png" width={600} /></a></HintText></small>
 
 曾玩了很久但如今已退坑的网游和手游：
 
@@ -129,10 +176,6 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 - 明日方舟
 - 元梦之星
 - ...
-
-### 阿宅阿宅
-
-中等偏下傻逼的二次元。<small>~ あと少しだけの勇気で 変えられた明日はあった ~</small>
 
 ## 开放（？）服务
 
