@@ -105,7 +105,7 @@ const Post: React.FC<PostProps> = (props) => {
             className="h-52 w-full rounded-md object-cover object-center md:h-56 xl:h-60"
             loading="lazy"
           />
-          <div className="post-banner absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-neutral-900/60 px-4 py-2.5 backdrop-blur-sm">
+          <div className="post-banner absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-[var(--post-banner-background)] px-4 py-2.5 text-foreground backdrop-blur-sm">
             {titleDom}
           </div>
         </div>

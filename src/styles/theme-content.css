@@ -56,23 +56,6 @@ html[data-theme] .post-entry pre:has(> .mermaid) {
     0 4px 6px -4px var(--shadow-hover);
 }
 
-/* Cover titles remain readable over photographs in either site theme. */
-.post-banner {
-  color: #f5f5f5;
-  --category-software-from: #7dd3fc;
-  --category-software-via: #93c5fd;
-  --category-software-to: #818cf8;
-  --category-ai-from: #d8b4fe;
-  --category-ai-via: #e879f9;
-  --category-ai-to: #ec4899;
-  --category-misc-from: #86efac;
-  --category-misc-via: #6ee7b7;
-  --category-misc-to: #14b8a6;
-  --category-life-from: #fcd34d;
-  --category-life-via: #facc15;
-  --category-life-to: #f97316;
-}
-
 html[data-theme] .gitalk.gt-container {
   --gt-theme-mode: var(--site-theme);
   --gt-color-text: var(--foreground);
