@@ -160,7 +160,7 @@
     }
 
     code {
-      @apply break-all;
+      @apply !break-all;
     }
 
     pre {
