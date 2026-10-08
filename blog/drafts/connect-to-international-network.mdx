@@ -1,7 +1,8 @@
 ---
 title: 连接至国际因特网
 date: 2024-07-08
-updated: 2024-07-08
+updated: 2026-10-08
+timeliness: -1
 ---
 
 这是一个简单的连接国际因特网攻略**模板**，供「这是群组名」群组内部使用。
@@ -23,23 +24,17 @@ Just My Socks - Just My Socks LA 1000
 
 ## 代理软件
 
-支持 `aes-256-gcm` 或 `v2ray` 协议的代理软件皆可。下面是我的选择：
+支持 `aes-256-gcm` 或 `v2ray` 协议的代理软件皆可。例如：
 
-### Windows
+### Windows / MacOS / Linux
 
-安装 [v2rayN](https://github.com/2dust/v2rayN)，下载并解压后运行。
+安装 [V2RayN](https://github.com/2dust/v2rayN)。
+
+我撰写了[《一文学会使用代理软件 V2RayN》](https://blog.towind.cn/posts/v2rayn-guide/)指南，可供参考。
 
 ### Android
 
-安装 [v2rayNG](https://github.com/2dust/v2rayNG)。
-
-### IOS
-
-在 App Store 搜索支持 `v2ray` 或 `aes-256-gcm` 协议的代理软件。由于国区限制，此类软件大多已下架，建议使用美区账号。
-
-### 其它系统
-
-在 Github 搜索支持 `v2ray` 或 `aes-256-gcm` 协议的代理软件。
+安装 [V2RayNG](https://github.com/2dust/v2rayNG)。
 
 ## 代理软件配置
 
@@ -83,17 +78,3 @@ JMS 建议使用该服务器进行文件下载操作，将使用相当于其他�
 ```plaintext
 vmess://[SERVICE_SECRET]
 ```
-
-## 实用帮助
-
-假如您使用 Shadowsocks 作为代理软件，您会发现系统代理有 `全局模式` 和 `Pac 模式` 两种模式。
-
-- `全局模式` 指所有网页，包括桌面应用都设置由代理访问。
-- `Pac 模式` 指 `pac.txt` 文件里预设的网页由代理访问，其余网页和桌面应用由本地网络访问。
-
-通常来说日常使用时启用 `Pac 模式` 即可，但也可能会出现以下几种情况：
-
-- 网页没有记录在 `pac.txt` 中的但是需要代理才能访问。可以参考 `pac.txt` 的格式手动修改内容。
-- 桌面应用需要代理才能访问。暂时启用 `全局模式`。
-
-而如果使用 v2rayN 作为代理软件，只需要在 `路由` 中设置为预设的 `绕过大陆` 模式，则可以包括桌面应用在内，对各类流量自动代理。
