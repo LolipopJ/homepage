@@ -697,21 +697,20 @@ const Layout: React.FC<PageProps> = (props) => {
           {isPostPage && (
             <div className="sticky bottom-8 z-10 mt-12 flex flex-col items-end justify-end gap-4 text-sm print:hidden">
               {/* 回到顶部按钮 */}
-              <div
-                className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
-                style={{
-                  background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
-                }}
-              >
-                <ActionButton
-                  icon={faChevronUp}
-                  onClick={() =>
-                    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
-                  }
-                />
-              </div>
-              {isImmersiveActivated && (
-                <ThemeSwitcher className="rounded-full border border-border bg-background" />
+              {!isImmersiveActivated && (
+                <div
+                  className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
+                  style={{
+                    background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
+                  }}
+                >
+                  <ActionButton
+                    icon={faChevronUp}
+                    onClick={() =>
+                      mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+                    }
+                  />
+                </div>
               )}
               {/* 沉浸式浏览按钮 */}
               <div className="hidden lg:block">
