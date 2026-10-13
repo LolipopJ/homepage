@@ -114,7 +114,6 @@ const Layout: React.FC<PageProps> = (props) => {
   const { href, pathname, search, hash } = location;
   // Gatsby can pass a wildcard route path during SSR; use the actual URL.
   const path = pathname;
-  const searchParams = new URLSearchParams(search);
 
   const [maskRemoved, setMaskRemoved] = React.useState<boolean>(false);
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
@@ -122,9 +121,7 @@ const Layout: React.FC<PageProps> = (props) => {
   /** 小屏幕开启导航栏抽屉状态 */
   const [openSubNavbarDrawer, setOpenSubNavbarDrawer] =
     React.useState<boolean>(false);
-  const [isImmersive, setIsImmersive] = React.useState<boolean>(
-    searchParams.has("immersive"),
-  );
+  const [isImmersive, setIsImmersive] = React.useState<boolean>(false);
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
@@ -169,6 +166,14 @@ const Layout: React.FC<PageProps> = (props) => {
   }, [path]);
 
   //#region 沉浸模式能力
+  React.useEffect(() => {
+    React.startTransition(() => {
+      setIsImmersive(
+        new URLSearchParams(window.location.search).has("immersive"),
+      );
+    });
+  }, []);
+
   /** 是否激活了沉浸模式 */
   const isImmersiveActivated = React.useMemo(() => {
     return isImmersive && isPostPage && breakpoint["lg"];
@@ -176,14 +181,18 @@ const Layout: React.FC<PageProps> = (props) => {
 
   /** 监听沉浸模式 URL Search Params */
   React.useEffect(() => {
+    if (!layoutInitialized) return;
+
     const params = new URLSearchParams(search);
     if (isImmersiveActivated) params.set("immersive", "true");
     else params.delete("immersive");
     const newSearch = params.toString() ? `?${params.toString()}` : "";
+    if (newSearch === search) return;
+
     navigate(`${pathname}${newSearch}${hash || ""}`, {
       replace: true,
     });
-  }, [isImmersiveActivated, pathname, search, hash]);
+  }, [isImmersiveActivated, layoutInitialized, pathname, search, hash]);
   //#endregion
 
   //#region 切换路由时初始化页面状态
