@@ -38,7 +38,7 @@ rtk init -g --codex
 可以在 Git 仓库里亲身感受一下 RTK 的能力：
 
 ```bash
-$ git log -n 3 
+$ git log -n 3
 commit d61cc85d725d4c349513f2e04424bc5541abb2d5 (HEAD -> main, origin/main, origin/HEAD)
 Author: Lolipop <42314340+LolipopJ@users.noreply.github.com>
 Date:   Tue Oct 13 09:01:55 2026 +0800
@@ -168,7 +168,7 @@ Headroom 采用「规则与结构化算法优先，机器学习模型按需参�
 services:
   cli:
     image: ${HEADROOM_IMAGE:-ghcr.io/headroomlabs-ai/headroom:latest}
-    entrypoint: ['headroom']
+    entrypoint: ["headroom"]
     working_dir: /workspace
     stdin_open: true
     tty: true
@@ -182,29 +182,29 @@ services:
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.claude:/tmp/headroom-home/.claude
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.codex:/tmp/headroom-home/.codex
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.gemini:/tmp/headroom-home/.gemini
-    command: ['--help']
+    command: ["--help"]
 
   proxy:
     image: ${HEADROOM_IMAGE:-ghcr.io/headroomlabs-ai/headroom:latest}
-    entrypoint: ['headroom', 'proxy']
+    entrypoint: ["headroom", "proxy"]
     working_dir: /workspace
     restart: unless-stopped
     environment:
       HOME: /tmp/headroom-home
       HEADROOM_HOST: 0.0.0.0
       HEADROOM_PROXY_TOKEN: ${HEADROOM_PROXY_TOKEN:-}
-      HEADROOM_ALLOW_UNAUTHENTICATED_BIND: '1'
+      HEADROOM_ALLOW_UNAUTHENTICATED_BIND: "1"
       HEADROOM_WORKSPACE_DIR: /tmp/headroom-home/.headroom
       HEADROOM_CONFIG_DIR: /tmp/headroom-home/.headroom/config
     ports:
-      - '${HEADROOM_PORT:-8787}:${HEADROOM_PORT:-8787}'
+      - "${HEADROOM_PORT:-8787}:${HEADROOM_PORT:-8787}"
     volumes:
       - ${HEADROOM_WORKSPACE:-.}:/workspace
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.headroom:/tmp/headroom-home/.headroom
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.claude:/tmp/headroom-home/.claude
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.codex:/tmp/headroom-home/.codex
       - ${HEADROOM_HOST_HOME:?set HEADROOM_HOST_HOME}/.gemini:/tmp/headroom-home/.gemini
-    command: ['--host', '0.0.0.0', '--port', '${HEADROOM_PORT:-8787}']
+    command: ["--host", "0.0.0.0", "--port", "${HEADROOM_PORT:-8787}"]
 ```
 
 这里，我按照官方文档的介绍，直接用了项目仓库里的 [`docker/docker-compose.native.yml`](https://github.com/headroomlabs-ai/headroom/blob/0126fba63f5af3c8022085d0d033dce56fe5db65/docker/docker-compose.native.yml)。唯一作了变更的位置是 `proxy` 服务的 `ports` 配置，官方文件的 `- "127.0.0.1:${HEADROOM_PORT:-8787}:${HEADROOM_PORT:-8787}"` 仅限本机访问，而为了让其他服务器访问，我把它修改为了 `- "${HEADROOM_PORT:-8787}:${HEADROOM_PORT:-8787}"`。

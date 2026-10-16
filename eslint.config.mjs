@@ -9,13 +9,18 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
+  globalIgnores([
+    "**/node_modules/",
+    "**/.cache/",
+    "**/public/",
+    "static/**/*.html",
+  ]),
   eslint.configs.recommended,
-  tseslint.configs.recommended,
+  ...tseslint.configs.recommended,
   reactHooks.configs.flat.recommended,
   tailwind.configs["flat/recommended"],
-  mdx.flat,
-  mdx.flatCodeBlocks,
   {
+    files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -37,11 +42,27 @@ export default defineConfig([
       "simple-import-sort/exports": "error",
     },
   },
+  {
+    files: ["blog/**/*.mdx"],
+    extends: [mdx.flat],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        __PATH_PREFIX__: true,
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      "tailwindcss/no-custom-classname": "off",
+    },
+  },
+  {
+    files: ["blog/**/*.mdx"],
+    extends: [mdx.flatCodeBlocks],
+  },
   prettierRecommended,
-  globalIgnores([
-    "**/node_modules/",
-    "**/.cache/",
-    "**/public/",
-    "static/**/*.html",
-  ]),
 ]);

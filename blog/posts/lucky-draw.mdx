@@ -3,6 +3,7 @@ title: 纯前端如何实现一个转盘抽奖组件
 date: 2024-09-06
 updated: 2024-09-07
 timeliness: -1
+banner: ./lucky-draw/banner.jpg
 categories:
   - 软件开发
 tags:
@@ -275,20 +276,24 @@ Ops，竟然是谢谢参与，我觉得有黑幕！但是可喜可贺，我们�
 
 ![lucky-draw-better-animation](./lucky-draw/lucky-draw-better-animation.gif)
 
-完整的 Demo 奉上：
+完整的 [Demo](https://codepen.io/editor/LolipopJ/pen/0191c330-f6b2-7883-9c3a-a87be4c744d9) 奉上：
 
-<iframe
-  height="600"
-  scrolling="no"
-  title="lucky-draw-demo"
-  src="https://codepen.io/LolipopJ/embed/QWXzwWp?default-tab=html%2Cresult"
-  frameBorder="no"
-  loading="lazy"
-  allowtransparency="true"
-  allowFullScreen={true}
->
-  See the Pen{" "}
-  <a href="https://codepen.io/LolipopJ/pen/QWXzwWp">lucky-draw-demo</a> by
-  JasonSung (<a href="https://codepen.io/LolipopJ">@LolipopJ</a>) on{" "}
-  <a href="https://codepen.io">CodePen</a>.
-</iframe>
+<div
+  dangerouslySetInnerHTML={{
+    __html: `<iframe
+    height="600"
+    scrolling="no"
+    style="width: 100%;"
+    title="lucky-draw-demo"
+    src="https://codepen.io/editor/LolipopJ/embed/0191c330-f6b2-7883-9c3a-a87be4c744d9?default-tab=html%2Cresult"
+    frameborder="no"
+    loading="lazy"
+    allowtransparency="true"
+    allowfullscreen="true"
+  >
+    See the Pen <a href="https://codepen.io/editor/LolipopJ/pen/0191c330-f6b2-7883-9c3a-a87be4c744d9">
+    lucky-draw-demo</a> by JasonSung (<a href="https://codepen.io/LolipopJ">@LolipopJ</a>)
+    on <a href="https://codepen.io">CodePen</a>.
+  </iframe>`,
+  }}
+/>
