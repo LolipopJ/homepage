@@ -63,7 +63,7 @@
     "gatsby-remark-responsive-iframe": "^6.16.0",
     "gatsby-source-filesystem": "^5.16.0",
     "gatsby-transformer-sharp": "^5.16.0",
-    "gitalk-react": "^1.1.0",
+    "gitalk-react": "^1.2.0",
     "heti": "^0.9.6",
     "lodash-es": "^4.18.1",
     "motion": "^13.5.1",

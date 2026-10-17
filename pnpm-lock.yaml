@@ -93,8 +93,8 @@ importers:
         specifier: ^5.16.0
         version: 5.16.0(gatsby-plugin-sharp@5.16.0(gatsby@5.16.1(babel-eslint@10.1.0(eslint@9.39.5(jiti@1.21.7)(supports-color@9.4.0))(supports-color@9.4.0))(cssnano@5.1.15(postcss@8.5.30))(csso@4.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@9.4.0)(type-fest@3.13.1)(typescript@5.9.3))(graphql@16.14.2)(supports-color@9.4.0))(gatsby@5.16.1(babel-eslint@10.1.0(eslint@9.39.5(jiti@1.21.7)(supports-color@9.4.0))(supports-color@9.4.0))(cssnano@5.1.15(postcss@8.5.30))(csso@4.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@9.4.0)(type-fest@3.13.1)(typescript@5.9.3))(graphql@16.14.2)(supports-color@9.4.0)
       gitalk-react:
-        specifier: ^1.1.0
-        version: 1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.2.0
+        version: 1.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       heti:
         specifier: ^0.9.6
         version: 0.9.6
@@ -4606,8 +4606,8 @@ packages:
     resolution: {integrity: sha512-w9UMqWwJxHNOvoNzSJ2oPF5wvYcvP7jUvYzhp67yEhTi17ZDBBC1z9pTdGuzjD+EFIqLSYRweZjqfiPzQ06Ebg==}
     engines: {node: '>= 0.4'}
 
-  gitalk-react@1.1.0:
-    resolution: {integrity: sha512-PJvcUjzIKiMWPXtobBTieblpkxPdXqXt9MwFcH4KB8BdHnnerb2ZopoUYhUJn4lCLe6zgDCFUi94pvFBgftb3g==}
+  gitalk-react@1.2.0:
+    resolution: {integrity: sha512-9JK1oOVDcwahvIEOn8eQpkdlszqNRoxthM9IFuJIWFGLQ75c0jyT7anzUuQtqhIRliJLjiuxQOLsIxH1kNDSsQ==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -14265,7 +14265,7 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
 
-  gitalk-react@1.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  gitalk-react@1.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@octokit/types': 18.0.0
       ahooks: 3.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
