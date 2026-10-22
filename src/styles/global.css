@@ -128,6 +128,7 @@
     > span > span.gatsby-resp-image-wrapper,
     > video,
     > a > video,
+    > span > div > pre,
     > table,
     > iframe {
       @apply !-mx-6 mb-6 mt-6 w-[calc(100%+3rem)] !max-w-none;
@@ -167,12 +168,12 @@
       @apply my-6;
     }
 
-    pre > code {
-      @apply print:whitespace-pre-wrap print:break-words;
+    pre > code[class*="language-"] {
+      @apply text-sm print:whitespace-pre-wrap print:break-words;
     }
 
     :not(pre) > code[class*="language-"] {
-      @apply mx-0.5 px-1.5;
+      @apply !mx-0 !px-1.5;
     }
 
     h1,

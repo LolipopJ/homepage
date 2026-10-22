@@ -39,6 +39,24 @@ html[data-theme] .post-entry code[class*="language-"] {
   color: var(--code-foreground);
   text-shadow: none;
 }
+.post-entry .gatsby-highlight[data-language] {
+  position: relative;
+}
+.post-entry .gatsby-highlight[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.25rem;
+  right: -1rem;
+  color: var(--foreground-secondary);
+  opacity: 0.3;
+  font-size: 0.75rem;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
 html[data-theme] .post-entry a code[class*="language-"] {
   color: inherit;
 }
