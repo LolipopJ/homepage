@@ -1,4 +1,4 @@
-import { animated, useSpringRef, useTransition } from "@react-spring/web";
+import { animated, useTransition } from "@react-spring/web";
 import * as React from "react";
 
 export interface SiderBarProps<T = string> extends React.DetailedHTMLProps<
@@ -37,9 +37,18 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const savedScrollTopRef = React.useRef<Record<string, number>>({});
 
-  const transitionRef = useSpringRef();
+  const handleTabClick = React.useCallback(
+    (key: T) => {
+      if (activeKey != null && containerRef.current) {
+        savedScrollTopRef.current[String(activeKey)] =
+          containerRef.current.scrollTop;
+      }
+      onActiveKeyChange?.(key);
+    },
+    [activeKey, onActiveKeyChange],
+  );
+
   const transitions = useTransition(activeKey, {
-    ref: transitionRef,
     from: { opacity: 0, transform: "translate3d(20%,0,0)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0)" },
     leave: { opacity: 0, transform: "translate3d(-40%,0,0)" },
@@ -48,42 +57,38 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
   });
 
   React.useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    if (!activeKey) return;
+    const timer = setTimeout(() => {
       containerRef.current?.scrollTo({
-        top: savedScrollTopRef.current?.[String(activeKey)] ?? 0,
+        top: savedScrollTopRef.current[String(activeKey)] ?? 0,
         behavior: "instant",
       });
     }, TRANSITION_DURATION);
-
-    return () => {
-      clearTimeout(timeoutId);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      savedScrollTopRef.current[String(activeKey)] =
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        containerRef.current?.scrollTop ?? 0;
-    };
+    return () => clearTimeout(timer);
   }, [activeKey]);
-
-  React.useEffect(() => {
-    if (activeKey) {
-      transitionRef.start();
-    }
-  }, [activeKey, transitionRef]);
 
   return (
     <aside
-      className={`border-r border-foreground-tertiary bg-background-light ${className}`}
+      className={`flex flex-col border-r border-foreground-tertiary bg-background-light ${className}`}
       {...restProps}
     >
-      <div className={`flex h-header items-center ${headerClassName}`}>
+      <div className={`flex h-header shrink-0 items-center ${headerClassName}`}>
         {header || (
-          <ul className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-background-lighter p-0.5">
+          <ul
+            role="tablist"
+            className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-background-lighter p-0.5"
+          >
             {items.map((item) => (
               <li
                 key={item.key}
+                role="tab"
+                aria-selected={activeKey === item.key}
+                tabIndex={0}
                 className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === item.key ? "item-converse-color" : ""}`}
-                onClick={() => {
-                  onActiveKeyChange?.(item.key);
+                onClick={() => handleTabClick(item.key)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ")
+                    handleTabClick(item.key);
                 }}
               >
                 {item.label}
@@ -92,17 +97,18 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
           </ul>
         )}
       </div>
+
       <div
         ref={containerRef}
         className={`h-[calc(100vh-var(--height-header))] overflow-y-auto overflow-x-hidden ${bodyClassName}`}
       >
         {children ||
           transitions((style, key) => {
-            // 兜底：激活标签暂未出现在可用列表时回退到第一项，避免内容区空白
-            const item = items.find((item) => item.key === key) ?? items[0];
+            const item = items.find((i) => i.key === key);
+            if (!item) return null;
             return (
-              <animated.div key={item?.key} className="h-full" style={style}>
-                {item?.children}
+              <animated.div key={key} className="h-full" style={style}>
+                {item.children}
               </animated.div>
             );
           })}

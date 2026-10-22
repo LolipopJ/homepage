@@ -520,10 +520,15 @@ const Layout: React.FC<PageProps> = (props) => {
     () => (
       <ol>
         {posts.map((post) => {
-          const isActive = new RegExp(`^/posts/${post.fields.slug}`).test(path);
+          const isActive = new RegExp(`^/posts/${post.fields.slug}/`).test(
+            path,
+          );
 
           return (
-            <li key={post.fields.slug}>
+            <li
+              key={post.fields.slug}
+              className={`rounded-lg transition-all ${isActive ? "sticky bottom-0 bg-background" : ""}`}
+            >
               <Post
                 post={post}
                 className={`mb-2 ${isActive ? "item-selected" : ""}`}
