@@ -1,7 +1,9 @@
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import {
   faBlog,
+  faCalendarDays,
   faChevronUp,
+  faClockRotateLeft,
   faClose,
   faCookie,
   faCookieBite,
@@ -43,6 +45,8 @@ import Navbar from "./navbar";
 import SiderBar, { SiderBarProps } from "./sider-bar";
 
 type SubNavbarActiveKey = "nav" | "posts" | "toc";
+
+type PostSortKey = "date" | "updated";
 
 type TocItemState = "past" | "active" | "none";
 
@@ -118,6 +122,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const [maskRemoved, setMaskRemoved] = React.useState<boolean>(false);
   const [subNavbarActiveKey, setSubNavbarActiveKey] =
     React.useState<SubNavbarActiveKey>();
+  const [postSortKey, setPostSortKey] = React.useState<PostSortKey>("date");
   /** 小屏幕开启导航栏抽屉状态 */
   const [openSubNavbarDrawer, setOpenSubNavbarDrawer] =
     React.useState<boolean>(false);
@@ -152,6 +157,19 @@ const Layout: React.FC<PageProps> = (props) => {
 
   const { title: siteTitle, owner: siteOwner } = useSiteMetadata();
   const posts = useAllMdx();
+  const sortedPosts = React.useMemo(
+    () =>
+      [...posts].sort(
+        (a, b) =>
+          dayjs(b.frontmatter[postSortKey]).valueOf() -
+          dayjs(a.frontmatter[postSortKey]).valueOf(),
+      ),
+    [posts, postSortKey],
+  );
+  const postSortDescription =
+    postSortKey === "date"
+      ? "按发布时间从新到旧排序，点击切换为更新时间"
+      : "按更新时间从新到旧排序，点击切换为发布时间";
   const [breakpoint, layoutInitialized] = useTailwindBreakpoint();
   const { activities } = useDiscordActivity();
 
@@ -519,7 +537,7 @@ const Layout: React.FC<PageProps> = (props) => {
   const siderBarPostItem = React.useMemo(
     () => (
       <ol>
-        {posts.map((post) => {
+        {sortedPosts.map((post) => {
           const isActive = new RegExp(`^/posts/${post.fields.slug}/`).test(
             path,
           );
@@ -531,6 +549,7 @@ const Layout: React.FC<PageProps> = (props) => {
             >
               <Post
                 post={post}
+                dateField={postSortKey}
                 className={`mb-2 ${isActive ? "item-selected" : ""}`}
                 excerptClassName="hidden"
               />
@@ -539,7 +558,7 @@ const Layout: React.FC<PageProps> = (props) => {
         })}
       </ol>
     ),
-    [posts, path],
+    [sortedPosts, path, postSortKey],
   );
   subSiderBarItems.push({
     key: "posts",
@@ -634,6 +653,26 @@ const Layout: React.FC<PageProps> = (props) => {
         items={subSiderBarItems}
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={setSubNavbarActiveKey}
+        headerExtra={
+          subNavbarActiveKey === "posts" && (
+            <button
+              type="button"
+              aria-label={postSortDescription}
+              title={postSortDescription}
+              onClick={() =>
+                setPostSortKey((key) => (key === "date" ? "updated" : "date"))
+              }
+              className="item-selectable flex size-8 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              <Icon
+                icon={
+                  postSortKey === "date" ? faCalendarDays : faClockRotateLeft
+                }
+                aria-hidden="true"
+              />
+            </button>
+          )
+        }
         headerClassName="px-4 mx-3"
         bodyClassName="px-4 h-[calc(100vh-var(--height-header)*2)] lg:h-[calc(100vh-var(--height-header))]"
         className={`print:hidden ${isImmersiveActivated ? "!hidden" : ""} ${

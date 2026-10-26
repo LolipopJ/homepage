@@ -25,6 +25,7 @@ export interface PostProps {
   ) => React.ReactElement;
   size?: "normal" | "large";
   showBanner?: boolean;
+  dateField?: "date" | "updated";
   className?: string;
   categoryClassName?: string;
   titleClassName?: string;
@@ -41,6 +42,7 @@ const Post: React.FC<PostProps> = (props) => {
     excerptRenderer,
     size = "normal",
     showBanner: propsShowBanner = false,
+    dateField = "date",
     className = "",
     categoryClassName = "",
     titleClassName = "",
@@ -72,6 +74,7 @@ const Post: React.FC<PostProps> = (props) => {
         : date,
     };
   }, [dateString, updatedDateString]);
+  const displayedDate = dateField === "updated" ? updatedDate : date;
 
   const titleDom = (
     <>
@@ -124,7 +127,7 @@ const Post: React.FC<PostProps> = (props) => {
           title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
           className="line-clamp-1"
         >
-          {date.format(
+          {displayedDate.format(
             size === "large" ? "MM 月 DD 日 YYYY 年" : "MM月DD日YYYY年",
           )}
         </div>

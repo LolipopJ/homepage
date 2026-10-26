@@ -11,6 +11,7 @@ export interface SiderBarProps<T = string> extends React.DetailedHTMLProps<
   headerClassName?: string;
   bodyClassName?: string;
   header?: React.ReactElement;
+  headerExtra?: React.ReactNode;
 }
 
 export interface SiderBarItem<T = string> {
@@ -29,6 +30,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
     headerClassName = "",
     bodyClassName = "",
     header,
+    headerExtra,
     children,
     className = "",
     ...restProps
@@ -72,11 +74,13 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
       className={`flex flex-col border-r border-foreground-tertiary bg-background-light ${className}`}
       {...restProps}
     >
-      <div className={`flex h-header shrink-0 items-center ${headerClassName}`}>
+      <div
+        className={`flex h-header shrink-0 items-center gap-2 ${headerClassName}`}
+      >
         {header || (
           <ul
             role="tablist"
-            className="flex select-none gap-1 rounded-full border border-foreground-tertiary bg-background-lighter p-0.5"
+            className="flex shrink-0 select-none gap-1 whitespace-nowrap rounded-full border border-foreground-tertiary bg-background-lighter p-0.5 text-sm sm:text-base"
           >
             {items.map((item) => (
               <li
@@ -84,7 +88,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
                 role="tab"
                 aria-selected={activeKey === item.key}
                 tabIndex={0}
-                className={`cursor-pointer rounded-full px-3 py-0.5 font-medium transition ${activeKey === item.key ? "item-converse-color" : ""}`}
+                className={`cursor-pointer rounded-full px-2 py-0.5 font-medium transition sm:px-3 ${activeKey === item.key ? "item-converse-color" : ""}`}
                 onClick={() => handleTabClick(item.key)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ")
@@ -96,6 +100,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
             ))}
           </ul>
         )}
+        {headerExtra && <div className="ml-auto shrink-0">{headerExtra}</div>}
       </div>
 
       <div

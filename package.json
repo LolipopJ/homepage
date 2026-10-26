@@ -27,10 +27,10 @@
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
-    "*.{json,css}": [
+    "*.{json,yaml,html,css}": [
       "prettier --write"
     ],
-    "*.{js,ts,jsx,tsx,md,mdx}": [
+    "*.{js,ts,mjs,mts,jsx,tsx,md,mdx}": [
       "eslint --fix"
     ]
   },
