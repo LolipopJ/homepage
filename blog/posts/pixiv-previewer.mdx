@@ -1,7 +1,7 @@
 ---
 title: 对油猴脚本 Pixiv Previewer 进行二次开发
 date: 2025-03-17
-updated: 2025-04-26
+updated: 2026-10-26
 banner: ./pixiv-previewer/previewer.png
 timeliness: -1
 categories:
@@ -17,44 +17,61 @@ tags:
 1. **作品预览**：鼠标悬浮在作品缩略图上时自动在当前页面显示大图，快速决定要不要点进作品页。
 2. **作品排序**：作品搜索页可以按“排序”按钮，自动获取若干页的作品并按照收藏数排序，快速筛选优质作品。
 
-出于爱好，笔者去[脚本仓库](https://github.com/Ocrosoft/PixivPreviewer)翻阅了一下源码，觉得有一些可以改进的地方，遂 Fork 之，进行二次开发。
+出于爱好，笔者去[脚本仓库](https://github.com/Ocrosoft/PixivPreviewer)翻阅了一下源码，想自己再折腾折腾，遂 Fork 之，进行二次开发。至于为什么不是提交 PR 共创，让项目变得更好？这是出自我的私心，因为有很多想做的东西都是自己喜欢的，但不确定作者是否需要的，最终多少会变得束手束脚。而转变心态，只要完全自己烹饪提供给自己享用，就可以最大化满足自己的愿望。
+
+实际的维护过程中，笔者也偶尔会看看上游最新的提交，如果有可以迁移的功能就顺便迁移过来。例如功能[「支持在当前页面记忆多图的预览进度」](https://github.com/Ocrosoft/PixivPreviewer/commit/b62ae741af7416fbe41ee59e4e4db7fb3485846a)很不错，我会把它[合并](https://github.com/LolipopJ/PixivPreviewerL/commit/4e85feba68e1d7424b9230a501116b4ed172b4cd)到自己的代码里。
+
+我流的 [Github 仓库地址](https://github.com/LolipopJ/PixivPreviewerL)。
 
 ## 工程化改造
 
 首当其冲的自然是前端项目工程化改造。大多数油猴脚本仓库都是孤零零的一个 JavaScript 文件，Pixiv Previewer 也不例外。直接手搓 JavaScript 虽然很便利，但在项目长期的维护开发中多半会掩埋掉许多未曾留意的 Bug，同时由于缺少关联提示，开发效率也会大打折扣。作为前端工程师，这样可怕的事情自然是不能接受的。
 
-### 通过 tsup 构建项目
+### 通过 tsdown 构建项目
 
-初始化 `package.json` 等过程跳过不表，添加 TypeScript 支持自然是对项目进行二次开发的前置步骤。由于我们最后构建的产物将作为油猴脚本运行，即打包为库，因此笔者选择了开箱即用的 [tsup](https://github.com/egoist/tsup)：
+> [!NOTE]
+> 在早期版本笔者选用了 tsup 作为打包器，但自 2025 年 8 月中旬起，tsup 宣布已不再活跃维护。
+> 现在，按照说明文档里的迁移介绍，笔者已切换项目的打包器为一脉相承的 tsdown。
+
+初始化 `package.json` 等过程跳过不表，添加 TypeScript 支持自然是对项目进行二次开发的前置步骤。由于我们最后构建的产物将作为油猴脚本运行，需要将 TypeScript 代码转换为浏览器可以运行的 JavaScript 代码，因此笔者选择了开箱即用的 [tsdown](https://github.com/rolldown/tsdown/)：
 
 ```bash
-yarn add -D tsup
+pnpm add -D tsdown
 ```
 
-添加 tsup 的配置文件 `tsup.config.ts`：
+添加 tsdown 的配置文件 `tsdown.config.ts`：
 
 ```ts
-import svg from "esbuild-plugin-svg";
-import { defineConfig } from "tsup";
+import svg from "rollup-plugin-svg";
+import { defineConfig } from "tsdown";
 
-import packageJson from "./package.json";
+import packageJson from "./package.json" with { type: "json" };
 
 export default defineConfig({
   entry: ["src/index.ts"],
+  outputOptions: {
+    entryFileNames: "pixiv-previewer-l.user.js",
+  },
   target: ["chrome107"],
   minify: false,
-  splitting: false,
   clean: true,
   platform: "browser",
-  esbuildPlugins: [svg()], // 为了正确处理项目中用到的 SVG 文件，添加了此插件
+  plugins: [svg()],
   env: {
     VERSION: packageJson.version,
+    BUG_REPORT_PAGE: packageJson.bugs.url,
   },
   banner: {
     js: `// ==UserScript==
 // @name                Pixiv Previewer L
 // @namespace           ${packageJson.homepage}
-// @version             ${packageJson.version}-${new Date().toLocaleDateString()}
+// @version             ${packageJson.version}-${new Date()
+      .toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .replace(/\//g, "")}
 // @description         ${packageJson.description}
 // @author              ${packageJson.author}
 // @license             ${packageJson.license}
@@ -62,60 +79,79 @@ export default defineConfig({
 // @match               *://www.pixiv.net/*
 // @grant               GM_getValue
 // @grant               GM_setValue
+// @grant               GM_addValueChangeListener
+// @grant               window.onurlchange
 // @grant               GM_registerMenuCommand
 // @grant               GM_unregisterMenuCommand
 // @grant               GM.xmlHttpRequest
+// @grant               GM_download
+// @grant               unsafeWindow
 // @icon                https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=https://www.pixiv.net
 // @icon64              https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=64&url=https://www.pixiv.net
 // @require             https://update.greasyfork.org/scripts/515994/1478507/gh_2215_make_GM_xhr_more_parallel_again.js
-// @require             http://code.jquery.com/jquery-3.7.1.min.js
-// @run-at              document-end
+// @require             https://code.jquery.com/jquery-4.0.0.min.js
+// @require             https://code.jquery.com/jquery-migrate-4.0.2.min.js
+// @run-at              document-start
 // ==/UserScript==`,
   },
+  format: "cjs",
+  dts: false,
 });
 ```
 
-上面的配置表示，tsup 将打包构建源文件 `src/index.ts` 至默认产物文件 `dist/index.js`，保证兼容 `Chrome >= 107`。其中，笔者复用了 `package.json` 里定义的若干字段，用于添加项目环境变量（脚本通过版本号判断是否显示更新日志框），以及生成油猴脚本顶部的配置项。
+上面的配置表示，tsdown 将打包构建源文件 `src/index.ts` 至默认产物文件 `dist/pixiv-previewer-l.user.js`，保证兼容 `Chrome >= 107`。其中，笔者复用了 `package.json` 里定义的若干字段，用于添加项目环境变量（脚本通过版本号判断是否显示更新日志框），以及生成油猴脚本顶部的配置项。
 
-这样，当执行 `tsup` 命令时，构建的产物形如：
+这样，当执行 `tsdown` 命令时，构建的产物形如：
 
 ```js
 // ==UserScript==
 // @name                Pixiv Previewer L
 // @namespace           https://github.com/LolipopJ/PixivPreviewer
-// @version             1.1.1-2025/4/25
+// @version             1.7.2-20261026
 // @description         Original project: https://github.com/Ocrosoft/PixivPreviewer.
 // @author              Ocrosoft, LolipopJ
-// @license             GPL-3.0
+// @license             GPL-3.0-only
 // @supportURL          https://github.com/LolipopJ/PixivPreviewer
 // @match               *://www.pixiv.net/*
 // @grant               GM_getValue
 // @grant               GM_setValue
+// @grant               GM_addValueChangeListener
+// @grant               window.onurlchange
 // @grant               GM_registerMenuCommand
 // @grant               GM_unregisterMenuCommand
 // @grant               GM.xmlHttpRequest
+// @grant               GM_download
+// @grant               unsafeWindow
 // @icon                https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=https://www.pixiv.net
 // @icon64              https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=64&url=https://www.pixiv.net
 // @require             https://update.greasyfork.org/scripts/515994/1478507/gh_2215_make_GM_xhr_more_parallel_again.js
-// @require             http://code.jquery.com/jquery-3.7.1.min.js
-// @run-at              document-end
+// @require             https://code.jquery.com/jquery-4.0.0.min.js
+// @require             https://code.jquery.com/jquery-migrate-4.0.2.min.js
+// @run-at              document-start
 // ==/UserScript==
 
 // ... 脚本构建后的代码
 ```
 
-在默认情况下，tsup 会使用预设的 `tsconfig.json`。但笔者在开发过程中，发现 VSCode 有时会遗漏某些类型的定义，于是手动添加了 `tsconfig.json` 在根目录：
+在默认情况下，tsdown 会使用预设的 `tsconfig.json`。但笔者在开发过程中，发现 VSCode 有时会遗漏某些类型的定义，于是手动添加了 `tsconfig.json` 在根目录：
 
 ```json
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "esnext",
-    "esModuleInterop": true,
+    "target": "esnext",
+    "lib": ["es2023", "dom"],
+    "moduleDetection": "force",
+    "module": "preserve",
     "moduleResolution": "bundler",
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["esnext", "dom"]
+    "resolveJsonModule": true,
+    "types": ["jquery", "node", "tampermonkey"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
   },
   "include": ["src/"],
   "exclude": ["node_modules/", "dist/"]
@@ -124,64 +160,57 @@ export default defineConfig({
 
 ### 代码质量检查与格式化工具
 
-TypeScript 自身已包含类型检查等能力，但还可以引入更多质量检查的通用规范，提升项目的健壮性。对于 TypeScript 项目，目前来看最好的选择应当是 [`typescript-eslint`](https://github.com/typescript-eslint/typescript-eslint)，参考官方文档添加依赖并配置 `eslint.config.mjs`：
+TypeScript 自身已包含类型检查等能力，但还可以引入更多质量检查的通用规范，提升项目的健壮性。对于 TypeScript 项目可以选择 [`typescript-eslint`](https://github.com/typescript-eslint/typescript-eslint)，参考官方文档添加依赖：
 
 ```bash
-yarn add --dev eslint @eslint/js typescript typescript-eslint
+pnpm add -D eslint @eslint/js typescript typescript-eslint
 ```
+
+笔者喜欢将 Prettier 与 ESLint 结合起来一起使用，即在执行 `eslint src --fix` 修复质量问题的同时，自动格式化代码，对应 ESLint 的插件 [`eslint-plugin-prettier`](https://github.com/prettier/eslint-plugin-prettier)：
+
+```bash
+pnpm add -D prettier eslint-plugin-prettier eslint-config-prettier
+```
+
+笔者的些许强迫症，甚至希望 `import` 的库也能按照约定的规则自动排序好，对应 ESLint 的插件 [`eslint-plugin-simple-import-sort`](https://github.com/lydell/eslint-plugin-simple-import-sort)：
+
+```bash
+pnpm add -D eslint-plugin-simple-import-sort
+```
+
+此外，项目依赖于 JQuery 来执行查找与修改 DOM 的操作，笔者添加了相应的类型提示：
+
+```bash
+pnpm add -D globals @types/jquery
+```
+
+最终版本的 `eslint.config.mjs` 配置如下：
 
 ```js
 // @ts-check
 
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
-);
-```
-
-现在执行 `eslint src --fix` 即可查找并尝试修复 `src/` 目录下所有文件的质量问题。
-
-接着为项目添加自动格式化能力，Prettier 是笔者最推荐的选项。此外，笔者喜欢将 Prettier 与 ESLint 结合起来一起使用，即在执行 `eslint src --fix` 修复质量问题的同时，自动格式化代码。ESLint 的插件 [`eslint-plugin-prettier`](https://github.com/prettier/eslint-plugin-prettier) 可以实现如上能力，添加此插件作为依赖并进一步配置 `eslint.config.mjs`：
-
-```bash
-yarn add -D prettier eslint-plugin-prettier eslint-config-prettier
-```
-
-```js
-// @ts-check
-
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
-);
-```
-
-此外，Pixiv Previewer 项目依赖于 JQuery 来执行查找与修改 DOM 的操作，笔者添加了相应的类型提示：
-
-```bash
-yarn add -D @types/jquery globals
-```
-
-```js
-// @ts-check
-
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
+  globalIgnores(["dist/", "node_modules/"]),
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+    },
+    rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "no-undef": "off",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -192,6 +221,8 @@ export default tseslint.config(
   eslintPluginPrettierRecommended,
 );
 ```
+
+现在执行 `eslint src --fix` 即可查找并尝试修复 `src/` 目录下所有文件的质量问题。
 
 至此，基本的项目工程化改造告一段落。项目可以基于 TypeScript 开发，并且拥有了质量检查和格式化能力。将原来的 JavaScript 代码放到 `src/index.ts` 文件里，开始正式的二次开发吧！
 
@@ -609,133 +640,54 @@ const detailedIllustrations = await execLimitConcurrentPromises(
 
 ### 前端展示作品
 
-根据条件过滤作品和排序作品的过程跳过不表，直接来到最后展示作品的环节！
-
-```ts
-class IllustrationsSorter {
-  type: IllustSortType;
-  illustrations: IllustrationDetails[];
-  listElement: JQuery<HTMLUListElement>;
-
-  constructor() {
-    // ...
-    this.showIllustrations();
-  }
-
-  showIllustrations() {
-    const fragment = document.createDocumentFragment();
-    for (const {
-      aiType,
-      alt,
-      bookmarkData,
-      bookmark_user_total,
-      id,
-      illustType,
-      pageCount,
-      profileImageUrl,
-      tags,
-      title,
-      url,
-      userId,
-      userName,
-    } of this.illustrations) {
-      const isUgoira = illustType === IllustType.UGOIRA;
-
-      const listItem = document.createElement("li");
-
-      const container = document.createElement("div");
-      container.style = "width: 184px;";
-
-      const illustrationAnchor = document.createElement("a");
-      illustrationAnchor.setAttribute("data-gtm-value", id);
-      illustrationAnchor.setAttribute("data-gtm-user-id", userId);
-      illustrationAnchor.href = `/artworks/${id}`;
-      illustrationAnchor.target = "_blank";
-      illustrationAnchor.rel = "external";
-      illustrationAnchor.style =
-        "display: block; position: relative; width: 184px;";
-
-      const illustrationImageWrapper = document.createElement("div");
-      illustrationImageWrapper.style =
-        "position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;";
-
-      const illustrationImage = document.createElement("img");
-      illustrationImage.src = url;
-      illustrationImage.alt = alt;
-      illustrationImage.style =
-        "object-fit: cover; object-position: center center; width: 100%; height: 100%; border-radius: 4px; background-color: rgb(31, 31, 31);";
-
-      const ugoriaSvg = document.createElement("div");
-      ugoriaSvg.style = "position: absolute;";
-      ugoriaSvg.innerHTML = playIcon;
-
-      const illustrationMeta = document.createElement("div");
-      illustrationMeta.style =
-        "position: absolute; top: 0px; left: 0px; right: 0px; display: flex; align-items: flex-start; padding: 4px 4px 0; pointer-events: none; font-size: 10px;";
-      illustrationMeta.innerHTML = `
-          ${
-            pageCount > 1
-              ? `
-                <div style="margin-left: auto;">
-                  <div style="display: flex; justify-content: center; align-items: center; height: 20px; min-width: 20px; color: rgb(245, 245, 245); font-weight: bold; padding: 0px 6px; background: rgba(0, 0, 0, 0.32); border-radius: 10px; line-height: 10px;">
-                    ${pageIcon}
-                    <span>${pageCount}</span>
-                  </div>
-                </div>`
-              : ""
-          }
-        `;
-
-      const illustrationToolbar = document.createElement("div");
-      illustrationToolbar.style =
-        "position: absolute; top: 154px; left: 0px; right: 0px; display: flex; align-items: center; padding: 0 4px 4px; pointer-events: none; font-size: 12px;";
-      // Mock: 暂未实现点击爱心收藏 / 取消收藏的功能
-      illustrationToolbar.innerHTML = `
-          <div style="padding: 0px 4px; border-radius: 4px; color: rgb(245, 245, 245); background: ${bookmark_user_total > 50000 ? "#9f1239" : bookmark_user_total > 10000 ? "#dc2626" : bookmark_user_total > 5000 ? "#1d4ed8" : bookmark_user_total > 1000 ? "#15803d" : "#475569"}; font-weight: bold; line-height: 16px; user-select: none;">❤ ${bookmark_user_total}</div>
-          <div style="margin-left: auto;">${bookmarkData ? heartFilledIcon : heartIcon}</div>
-        `;
-
-      const illustrationTitle = document.createElement("div");
-      illustrationTitle.innerHTML = title;
-      illustrationTitle.style =
-        "margin-top: 4px; max-width: 100%; overflow: hidden; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; line-height: 22px; font-size: 14px; font-weight: bold; color: rgb(245, 245, 245); transition: color 0.2s;";
-
-      const illustrationAuthor = document.createElement("a");
-      illustrationAuthor.setAttribute("data-gtm-value", userId);
-      illustrationAuthor.href = `/users/${userId}`;
-      illustrationAuthor.target = "_blank";
-      illustrationAuthor.rel = "external";
-      illustrationAuthor.style =
-        "display: flex; align-items: center; margin-top: 4px;";
-      illustrationAuthor.innerHTML = `
-          <img src="${profileImageUrl}" alt="${userName}" style="object-fit: cover; object-position: center top; width: 24px; height: 24px; border-radius: 50%; margin-right: 4px;">
-          <span style="min-width: 0px; line-height: 22px; font-size: 14px; color: rgb(214, 214, 214); text-decoration: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${userName}</span>
-        `;
-
-      illustrationImageWrapper.appendChild(illustrationImage);
-      if (isUgoira) illustrationImageWrapper.appendChild(ugoriaSvg);
-      illustrationAnchor.appendChild(illustrationImageWrapper);
-      illustrationAnchor.appendChild(illustrationMeta);
-      illustrationAnchor.appendChild(illustrationToolbar);
-      illustrationAnchor.appendChild(illustrationTitle);
-      container.appendChild(illustrationAnchor);
-      container.appendChild(illustrationAuthor);
-      listItem.appendChild(container);
-      fragment.appendChild(listItem);
-    }
-
-    this.listElement.find("li").remove();
-    this.listElement.append(fragment);
-  }
-}
-```
-
-在上面的代码里，笔者参考 Pixiv 作品节点的 DOM，手动构造了大抵一致的作品节点，尽管部分功能缺失，但能够满足排序作品的需要。笔者也考虑过克隆原生节点再修改 DOM 节点里的属性会否更好，但是忧心前端版本更新导致 DOM 节点结构更新，以及担心不同页面的 DOM 节点结构不同，所以还是人工捏出来了通用节点。
+笔者参考 Pixiv 作品节点的 DOM，手动构造了大抵一致的作品节点。笔者也考虑过克隆原生节点再修改 DOM 节点里的属性会否更好，但是忧心前端版本更新导致 DOM 节点结构更新，以及担心不同页面的 DOM 节点结构不同，所以还是人工捏出来了通用节点。
 
 最后，在想要排序的页面点击按钮，看看大家都爱什么作品吧！
 
 ![排序包含“天童爱丽丝”标签的作品](./pixiv-previewer/sorting-result.png)
 
+## 添加自己想要的功能
+
+完成上面对已有功能的优化改造之后，是时候添加自己想要的功能了。
+
+### 在作品预览窗口显示元数据信息
+
+可以从接口里拉取到分页信息，自然也可以请求接口拉取作品的元数据信息。将元数据信息展示在预览窗口上，多是一件美事儿啊。
+
+![包含元数据的预览窗口](./pixiv-previewer/illust-meta.png)
+
+### 作品预览添加单手模式
+
+冬天手冷，只想一只手放在外面预览和存图时，这个功能就很有用了。通过长按鼠标左键进入单手模式，可以实现单手操作切换预览的图片页面，以及点击下载原图按钮。
+
+![进入单手预览模式](./pixiv-previewer/one-hand-mode.gif)
+
+### 新增列表管理原图下载
+
+网络状况不总是一帆风顺，有时点击了下载原图，但还没等下载完成保存到本地就关闭了标签页，恐怕一生都会痛失这张插画作品了。于是笔者加入了下载列表功能，避免此类悲剧的发生。
+
+![查看下载记录](./pixiv-previewer/downloads-list.png)
+
+### 下载不同分级原图到对应子目录
+
+笔者将不同分级的作品放到了不同文件夹中存储，井水不犯河水。添加此功能旨在提升分类的效率，当下载了一堆插画作品到本地后，能更快地将它们安置到对应目录下。
+
+为了正常使用该功能，需要在 Tampermonkey 设置页面将配置模式改为「高级」，滑到下面找到下载选项，将下载模式设置为「浏览器 API」：
+
+![使用浏览器 API 下载模式](./pixiv-previewer/download-with-browser-api.png)
+
+### 过滤当前页面已收藏的作品
+
+虽然在找图过程中重新遇见曾收藏过的作品很美好，但贪婪的屯屯鼠更想收集前所未见的新插画作品！点击按钮，一键过滤当前页面所有标记了爱心的作品，只留下还未被视网膜欣赏的野花。
+
+![过滤当前页面已收藏的作品](./pixiv-previewer/hide-favorite.gif)
+
+### 本地标签管理
+
+老老实实遵循 Pixiv 普通用户只能保存十个标签的限制很枯燥吧？现在可以添加无限个标签，不丢失任何一条通往美好世界的高速入口。利用 Tampermonkey 的导出机制，还能够将添加的本地标签导入到别的设备上。
+
+![本地标签管理](./pixiv-previewer/manage-tags.png)
+
 ## 最后
 
-附上 [Github 仓库地址](https://github.com/LolipopJ/PixivPreviewerL)与 [Tampermonkey 脚本地址](https://greasyfork.org/zh-CN/scripts/533844)，希望对有类似需求的人带来一些帮助。
+附上 [Tampermonkey 脚本地址](https://greasyfork.org/zh-CN/scripts/533844)，如果你的口味与我相近，不妨来试试这款独立出来的脚本。
