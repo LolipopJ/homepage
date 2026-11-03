@@ -51,6 +51,8 @@ export default defineConfig([
         Card: "readonly",
         Link: "readonly",
         HintText: "readonly",
+        GameCard: "readonly",
+        Grid: "readonly",
         ProjectCard: "readonly",
         ProjectGrid: "readonly",
         __PATH_PREFIX__: true,

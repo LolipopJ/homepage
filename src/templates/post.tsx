@@ -7,6 +7,8 @@ import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import * as React from "react";
 
 import Card from "../components/card";
+import GameCard from "../components/game-card";
+import Grid from "../components/grid";
 import HintText from "../components/hint-text";
 import ProjectCard, { ProjectGrid } from "../components/project-card";
 import SEO from "../components/seo";
@@ -61,6 +63,8 @@ const components: MDXProviderProps["components"] = {
   Card,
   Link,
   HintText,
+  GameCard,
+  Grid,
   ProjectCard,
   ProjectGrid,
 };

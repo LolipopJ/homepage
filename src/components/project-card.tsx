@@ -1,19 +1,9 @@
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
-import { createPortal } from "react-dom";
 
+import useHoverPreview from "../hooks/useHoverPreview";
+import Grid, { GRID_UNITS, type GridProps } from "./grid";
 import Icon from "./icon";
-
-/** 项目卡片网格划分的总份数，卡片宽度以该值作为基准 */
-const GRID_UNITS = 24;
-/** 悬浮预览图与卡片之间的间距（px） */
-const PREVIEW_SPACING = 12;
-/** 悬浮预览图的最大宽度（px） */
-const PREVIEW_MAX_WIDTH = 576;
-/** 悬浮预览图的最大高度（px） */
-const PREVIEW_MAX_HEIGHT = 320;
-/** 悬浮预览图与视口边缘的最小间距（px） */
-const VIEWPORT_GAP = 8;
 
 export interface ProjectCardProps {
   /** 项目名称 */
@@ -37,13 +27,6 @@ export interface ProjectCardProps {
   span?: number;
 }
 
-interface PreviewPosition {
-  left: number;
-  maxHeight: number;
-  top?: number;
-  bottom?: number;
-}
-
 const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
   description,
@@ -54,79 +37,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   links,
   span = GRID_UNITS / 2,
 }) => {
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  const [previewPosition, setPreviewPosition] =
-    React.useState<PreviewPosition | null>(null);
+  const {
+    targetRef: cardRef,
+    previewNode,
+    showPreview,
+    hidePreview,
+  } = useHoverPreview({ src: preview, alt: `${title} 预览` });
 
   const cardSpan = Math.min(Math.max(Math.round(span) || 1, 1), GRID_UNITS);
-
-  // 将预览图水平居中于卡片，并选择空间更充裕的一侧展开
-  const showPreview = React.useCallback(() => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!preview || !rect) return;
-
-    const halfWidth =
-      Math.min(window.innerWidth - VIEWPORT_GAP * 2, PREVIEW_MAX_WIDTH) / 2;
-    const left = Math.min(
-      Math.max(rect.left + rect.width / 2, halfWidth + VIEWPORT_GAP),
-      window.innerWidth - halfWidth - VIEWPORT_GAP,
-    );
-
-    const spaceAbove = rect.top - PREVIEW_SPACING - VIEWPORT_GAP;
-    const spaceBelow =
-      window.innerHeight - rect.bottom - PREVIEW_SPACING - VIEWPORT_GAP;
-    const expandUpwards = spaceAbove >= spaceBelow;
-
-    setPreviewPosition({
-      left,
-      maxHeight: Math.min(
-        Math.max(expandUpwards ? spaceAbove : spaceBelow, 96),
-        PREVIEW_MAX_HEIGHT,
-      ),
-      ...(expandUpwards
-        ? { bottom: window.innerHeight - rect.top + PREVIEW_SPACING }
-        : { top: rect.bottom + PREVIEW_SPACING }),
-    });
-  }, [preview]);
-
-  const hidePreview = React.useCallback(() => {
-    setPreviewPosition(null);
-  }, []);
-
-  // 滚动或调整窗口时收起预览图，避免悬浮窗与卡片脱节
-  React.useEffect(() => {
-    if (!previewPosition) return;
-    window.addEventListener("scroll", hidePreview, true);
-    window.addEventListener("resize", hidePreview);
-    return () => {
-      window.removeEventListener("scroll", hidePreview, true);
-      window.removeEventListener("resize", hidePreview);
-    };
-  }, [previewPosition, hidePreview]);
-
-  const previewNode =
-    preview && previewPosition && typeof document !== "undefined"
-      ? createPortal(
-          <div
-            className="pointer-events-none fixed z-50 -translate-x-1/2 animate-[project-card-preview-in_150ms_ease-out] motion-reduce:animate-none"
-            style={{
-              left: previewPosition.left,
-              top: previewPosition.top,
-              bottom: previewPosition.bottom,
-            }}
-          >
-            <img
-              alt={`${title} 预览`}
-              src={preview}
-              loading="lazy"
-              decoding="async"
-              style={{ maxHeight: previewPosition.maxHeight }}
-              className="w-auto max-w-[min(36rem,calc(100vw-1rem))] rounded-lg border border-border bg-background-light object-contain shadow-lg shadow-[color:var(--shadow-hover)]"
-            />
-          </div>,
-          document.body,
-        )
-      : null;
 
   return (
     <div
@@ -222,19 +140,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   );
 };
 
-export interface ProjectGridProps extends React.HTMLAttributes<HTMLDivElement> {
-  children?: React.ReactNode;
-}
+export type ProjectGridProps = GridProps;
 
-/** 项目卡片网格，与正文中的图片一样向两侧突破正文栏 */
-export const ProjectGrid: React.FC<ProjectGridProps> = ({
-  className = "",
-  children,
-  ...restProps
-}) => (
-  <div className={`project-card-grid ${className}`} {...restProps}>
-    {children}
-  </div>
+/**
+ * 项目卡片网格
+ * @description 保留此别名以兼容既有用法，新代码建议直接使用 {@link Grid}
+ */
+export const ProjectGrid: React.FC<ProjectGridProps> = (props) => (
+  <Grid {...props} />
 );
 
 export default ProjectCard;
