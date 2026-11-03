@@ -48,6 +48,11 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.browser,
+        Card: "readonly",
+        Link: "readonly",
+        HintText: "readonly",
+        ProjectCard: "readonly",
+        ProjectGrid: "readonly",
         __PATH_PREFIX__: true,
       },
     },

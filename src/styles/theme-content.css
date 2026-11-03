@@ -63,6 +63,44 @@ html[data-theme] .post-entry a code[class*="language-"] {
 html[data-theme] .post-entry pre:has(> .mermaid) {
   background: var(--background-light);
 }
+/* 项目卡片网格，与正文中的图片一致地向两侧突破正文栏 */
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: calc(100% + 3rem);
+  margin-block: 1.5rem;
+  margin-inline: -1.5rem;
+}
+.project-card {
+  grid-column: span var(--card-span) / span var(--card-span);
+}
+/* 卡片内容默认不拦截点击，让整张卡片都能响应跳转 */
+.project-card-body a {
+  pointer-events: auto;
+}
+/* 卡片内的链接不继承正文链接的波浪下划线 */
+.post-entry .project-card .project-card-hit,
+.post-entry .project-card .project-card-hit:hover,
+.post-entry .project-card .project-card-link,
+.post-entry .project-card .project-card-link:hover {
+  text-decoration: none;
+}
+/* 抵消 Heti 与正文链接在悬浮时追加的下内边距、下边框和边框样式重置 */
+.post-entry .project-card .project-card-hit:hover {
+  padding-block-end: 0;
+  border: 0;
+}
+.post-entry .project-card .project-card-link:hover {
+  padding-block-end: 0.125rem;
+  border: 1px solid var(--primary);
+}
+@media (max-width: 640px) {
+  .project-card {
+    grid-column: span 24 / span 24;
+  }
+}
+
 .theme-card {
   box-shadow:
     0 4px 6px -1px var(--shadow),

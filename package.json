@@ -22,16 +22,16 @@
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
     "lint": "npm run prettier && npm run eslint",
-    "eslint": "eslint --fix **/*.{js,ts,jsx,tsx,md,mdx}",
-    "prettier": "prettier --write .",
+    "eslint": "eslint --fix **/*.{js,mjs,ts,jsx,tsx,md,mdx}",
+    "prettier": "prettier --write . --ignore-unknown",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
-    "*.{json,yaml,html,css}": [
-      "prettier --write"
-    ],
-    "*.{js,ts,mjs,mts,jsx,tsx,md,mdx}": [
+    "*.{js,mjs,ts,jsx,tsx,md,mdx}": [
       "eslint --fix"
+    ],
+    "!(*.js|*.mjs|*.ts|*.jsx|*.tsx|*.md|*.mdx)": [
+      "prettier --write --ignore-unknown"
     ]
   },
   "dependencies": {
@@ -44,9 +44,9 @@
     "@mdx-js/react": "^3.1.1",
     "@react-spring/web": "^10.1.2",
     "@types/lodash-es": "^4.17.12",
-    "algoliasearch": "^5.60.0",
+    "algoliasearch": "^5.61.0",
     "dayjs": "^1.11.23",
-    "dotenv": "^18.0.8",
+    "dotenv": "^18.0.9",
     "gatsby": "^5.16.1",
     "gatsby-plugin-algolia": "^1.0.3",
     "gatsby-plugin-feed": "^5.16.0",
@@ -72,7 +72,7 @@
     "prismjs": "^1.30.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-instantsearch": "^7.52.0",
+    "react-instantsearch": "^7.53.0",
     "remark-gfm": "^3.0.1",
     "remark-github-alerts": "^0.1.1",
     "rich-presence-react": "^1.0.0-beta.4"
@@ -86,28 +86,25 @@
     "@types/nprogress": "^0.2.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
-    "autoprefixer": "^10.6.1",
+    "autoprefixer": "^10.6.2",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-mdx": "^3.8.2",
+    "eslint-plugin-mdx": "^3.9.1",
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-tailwindcss": "^3.18.3",
-    "globals": "^17.13.0",
+    "globals": "^17.14.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "mermaid": "^12.2.0",
-    "postcss": "^8.5.31",
+    "postcss": "^8.5.32",
     "postcss-import": "^17.0.1",
     "postcss-nesting": "^14.0.3",
     "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.72.0"
-  },
-  "resolutions": {
-    "eslint": "^9"
+    "typescript-eslint": "^8.72.1"
   }
 }

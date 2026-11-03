@@ -8,6 +8,7 @@ import * as React from "react";
 
 import Card from "../components/card";
 import HintText from "../components/hint-text";
+import ProjectCard, { ProjectGrid } from "../components/project-card";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
@@ -60,6 +61,8 @@ const components: MDXProviderProps["components"] = {
   Card,
   Link,
   HintText,
+  ProjectCard,
+  ProjectGrid,
 };
 
 type PostPageData = {

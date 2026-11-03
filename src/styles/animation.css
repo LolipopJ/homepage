@@ -1,3 +1,15 @@
+/* 项目卡片悬浮预览图的浮现动画 */
+@keyframes project-card-preview-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* CircularText 加载动画 */
 @keyframes circular-spin {
   from {
