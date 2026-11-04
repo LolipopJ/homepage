@@ -46,7 +46,12 @@ const Card: React.FC<CardProps> = (props) => {
   return (
     <div
       ref={cardRef}
-      className={`group relative overflow-hidden rounded-xl border border-border bg-background-light px-6 py-4 text-foreground transition-all duration-300 ${className}`}
+      className={`
+        group relative overflow-hidden rounded-xl border border-border
+        bg-background-light px-6 py-4 text-foreground transition-all
+        duration-300
+        ${className}
+      `}
       style={
         {
           ...style,
@@ -60,9 +65,24 @@ const Card: React.FC<CardProps> = (props) => {
       {...restProps}
     >
       {/* Glow effect layer */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(320px_circle_at_var(--glow-x)_var(--glow-y),var(--background-lighter),transparent_60%)] opacity-[--glow-opacity] transition-opacity duration-300" />
+      <div
+        className="
+          pointer-events-none absolute inset-0
+          bg-[radial-gradient(320px_circle_at_var(--glow-x)_var(--glow-y),var(--background-lighter),transparent_60%)]
+          opacity-(--glow-opacity) transition-opacity duration-300
+        "
+      />
       {/* Border glow effect layer */}
-      <div className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(400px_circle_at_var(--glow-x)_var(--glow-y),var(--background-lighter),transparent_60%)] p-px opacity-[--glow-opacity] transition-opacity duration-300 [-webkit-mask-composite:xor] [mask-composite:exclude] [mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]" />
+      <div
+        className="
+          pointer-events-none absolute inset-0 rounded-xl
+          bg-[radial-gradient(400px_circle_at_var(--glow-x)_var(--glow-y),var(--background-lighter),transparent_60%)]
+          mask-[linear-gradient(#fff_0_0),linear-gradient(#fff_0_0)]
+          mask-exclude [mask-clip:content-box,border-box]
+          [mask-origin:content-box,border-box] p-px opacity-(--glow-opacity)
+          transition-opacity duration-300
+        "
+      />
       <div className="relative">
         <div className="text-lg font-bold">{headline}</div>
         {subhead && <div className="mt-3">{subhead}</div>}
@@ -75,7 +95,22 @@ const Card: React.FC<CardProps> = (props) => {
                 href={url}
                 target="_blank"
                 rel="noreferrer"
-                className={`!rounded-full !border !border-primary !px-3 !py-1.5 !text-sm !transition hover:!border-solid hover:!no-underline ${index === actions.length - 1 ? "!bg-primary-light !text-on-primary hover:!border-primary hover:!bg-primary" : "!text-primary hover:!border-primary-light hover:!text-primary-light"}`}
+                className={`
+                  rounded-full! border! border-primary! px-3! py-1.5! text-sm!
+                  transition!
+                  hover:border-solid! hover:no-underline!
+                  ${
+                    index === actions.length - 1
+                      ? `
+                        bg-primary-light! text-on-primary!
+                        hover:border-primary! hover:bg-primary!
+                      `
+                      : `
+                        text-primary!
+                        hover:border-primary-light! hover:text-primary-light!
+                      `
+                  }
+                `}
               >
                 {label}
               </a>

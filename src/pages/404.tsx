@@ -11,7 +11,9 @@ const NotFoundPage: React.FC<PageProps> = () => {
       <div className="mt-8">
         <Link
           to="/"
-          className="item-selectable rounded-lg border border-foreground-tertiary p-2"
+          className="
+            item-selectable rounded-lg border border-foreground-tertiary p-2
+          "
         >
           回到主页
         </Link>

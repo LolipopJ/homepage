@@ -93,7 +93,11 @@ const useHoverPreview = <T extends HTMLElement = HTMLDivElement>({
     src && position && typeof document !== "undefined"
       ? createPortal(
           <div
-            className="pointer-events-none fixed z-50 -translate-x-1/2 animate-[project-card-preview-in_150ms_ease-out] motion-reduce:animate-none"
+            className="
+              pointer-events-none fixed z-50 -translate-x-1/2
+              animate-[project-card-preview-in_150ms_ease-out]
+              motion-reduce:animate-none
+            "
             style={{
               left: position.left,
               top: position.top,
@@ -106,7 +110,11 @@ const useHoverPreview = <T extends HTMLElement = HTMLDivElement>({
               loading="lazy"
               decoding="async"
               style={{ maxHeight: position.maxHeight }}
-              className="w-auto max-w-[min(36rem,calc(100vw-1rem))] rounded-lg border border-border bg-background-light object-contain shadow-lg shadow-[color:var(--shadow-hover)]"
+              className="
+                w-auto max-w-[min(36rem,calc(100vw-1rem))] rounded-lg border
+                border-border bg-background-light object-contain shadow-lg
+                shadow-(color:--shadow-hover)
+              "
             />
           </div>,
           document.body,

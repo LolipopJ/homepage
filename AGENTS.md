@@ -1,6 +1,6 @@
 # AGENTS.md
 
-`homepage` 是 Lolipop 的个人主页与博客，使用 Gatsby 5、React 18、TypeScript 和 Tailwind CSS 3，文章由 MDX 编写，构建为静态站点并部署到 GitHub Pages。本文件适用于整个仓库。
+`homepage` 是 Lolipop 的个人主页与博客，使用 Gatsby 5、React 18、TypeScript 和 Tailwind CSS 4，文章由 MDX 编写，构建为静态站点并部署到 GitHub Pages。本文件适用于整个仓库。
 
 修改构建、内容处理或路由前，先读 [gatsby-config.ts](gatsby-config.ts) 和 [gatsby-node.ts](gatsby-node.ts)。命令与环境要求以 [package.json](package.json) 和 [部署工作流](.github/workflows/deployment.yml) 为准。
 
@@ -80,9 +80,9 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 - 保持 Gatsby SSR 可执行。浏览器 API 放在 effect、事件处理或明确的客户端调用路径中，避免模块加载或服务端渲染期间直接访问 `window`、`document`、`localStorage`。
 - 浏览器与 SSR 入口必须使用一致的 `ThemeProvider`。`gatsby-ssr.js` 在 React 启动前注入 `getThemeScript()`，React 首次渲染与 SSR 保持一致，避免主题闪烁或 hydration 不匹配。
 - 主题偏好为 `system | light | dark`，实际主题为 `light | dark`；存储键、解析和首屏脚本由 [theme.ts](src/utils/theme.ts) 统一维护。组件通过 [useTheme](src/hooks/useTheme.ts) 使用主题，不另建存储键或主题状态。
-- 样式以根元素的 `data-theme` 和语义 CSS 变量为准。颜色变量放在 [theme.css](src/styles/theme.css)，文章亮暗主题配色放在 [theme-content.css](src/styles/theme-content.css)，Tailwind 映射放在 `tailwind.config.js`。组件布局和交互样式放在组件的 `className` 中。
-- Prism 与 Gitalk 的明暗样式由 [postcss-theme-scope.cjs](plugins/postcss-theme-scope.cjs) 按来源文件限定作用域；修改导入、选择器处理或插件顺序时保留对逗号选择器和 keyframes 的正确处理。
-- Tailwind 的 `content` 扫描 `blog/**/*.mdx` 和指定的 `src/` 目录。`Grid` 的子组件可通过 `className` 使用 `col-span-1` 至 `col-span-24` 设置列宽。
+- 样式以根元素的 `data-theme` 和语义 CSS 变量为准。颜色变量放在 [theme.css](src/styles/theme.css)，文章亮暗主题配色放在 [theme-content.css](src/styles/theme-content.css)，Tailwind 主题映射放在 [global.css](src/styles/global.css) 的 `@theme` 中。`src/styles/` 中能用工具类表达的声明统一用 `@apply`，组件布局和交互样式放在组件的 `className` 中。
+- Prism 与 Gitalk 的明暗样式由 [postcss-theme-scope.cjs](plugins/postcss-theme-scope.cjs) 按来源文件限定作用域。PostCSS 先展开第三方导入并限定作用域，再运行 Tailwind。
+- Tailwind 通过 `@source` 扫描 `blog/**/*.mdx` 和指定的 `src/` 目录。`Grid` 的子组件可通过 `className` 使用 `col-span-1` 至 `col-span-24` 设置列宽。
 - 交互组件沿用现有 React、Motion、Tailwind 和 CSS 变量体系。effect 中创建的监听器、定时器和第三方实例由对应 effect 清理。
 
 ## 密钥、构建与部署
@@ -116,7 +116,7 @@ POSIX shell 可使用 `ALGOLIA_DRY_RUN=true pnpm build`。不要为了通过本�
 
 - 不为机械修改或低风险可逆改动新增测试。仅在复现实际回归或保护容易无声破坏的行为时增加最小测试，优先复用现有 Node.js 测试入口。
 - TypeScript 使用 `strict: true`。复用现有类型和库类型，避免用 `any`、无依据的类型断言或重复运行时防御掩盖数据问题；外部输入在实际读取处按需校验。
-- ESLint 使用 flat config，启用导入排序、React Hooks、Tailwind 和 Prettier 规则。保持现有文件命名及模块格式；不要全局关闭规则来绕过局部问题。
+- ESLint 使用 flat config，启用导入排序、React Hooks、Prettier 和 `eslint-plugin-better-tailwindcss` 规则。Tailwind 规则覆盖组件类名、MDX 类名和 CSS 中的 `@apply`。保持现有文件命名及模块格式；不要全局关闭规则来绕过局部问题。
 - 注释解释不明显的用途、限制与资源归属，不复述代码或保留工作过程。行为、命令或目录变化时同步更新相关 README 与本文件。
 - 交付时说明修改内容、实际运行的检查及结果；未运行或受环境限制的检查如实说明，不把未执行当作通过。
 - 检查 diff 只包含任务相关变更，文件以一个换行符结尾。每次编码任务完成后，使用 `caveman-commit` skill 生成 Conventional Commit 提交信息。

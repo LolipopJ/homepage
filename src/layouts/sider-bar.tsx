@@ -71,16 +71,26 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
 
   return (
     <aside
-      className={`flex flex-col border-r border-foreground-tertiary bg-background-light ${className}`}
+      className={`
+        flex flex-col border-r border-foreground-tertiary bg-background-light
+        ${className}
+      `}
       {...restProps}
     >
       <div
-        className={`flex h-header shrink-0 items-center gap-2 ${headerClassName}`}
+        className={`
+          flex h-header shrink-0 items-center gap-2
+          ${headerClassName}
+        `}
       >
         {header || (
           <ul
             role="tablist"
-            className="flex shrink-0 select-none gap-1 whitespace-nowrap rounded-full border border-foreground-tertiary bg-background-lighter p-0.5 text-sm sm:text-base"
+            className="
+              flex shrink-0 gap-1 rounded-full border border-foreground-tertiary
+              bg-background-lighter p-0.5 text-sm whitespace-nowrap select-none
+              sm:text-base
+            "
           >
             {items.map((item) => (
               <li
@@ -88,7 +98,11 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
                 role="tab"
                 aria-selected={activeKey === item.key}
                 tabIndex={0}
-                className={`cursor-pointer rounded-full px-2 py-0.5 font-medium transition sm:px-3 ${activeKey === item.key ? "item-converse-color" : ""}`}
+                className={`
+                  cursor-pointer rounded-full px-2 py-0.5 font-medium transition
+                  sm:px-3
+                  ${activeKey === item.key ? "item-converse-color" : ""}
+                `}
                 onClick={() => handleTabClick(item.key)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ")
@@ -105,7 +119,10 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
 
       <div
         ref={containerRef}
-        className={`h-[calc(100vh-var(--height-header))] overflow-y-auto overflow-x-hidden ${bodyClassName}`}
+        className={`
+          h-[calc(100vh-var(--height-header))] overflow-x-hidden overflow-y-auto
+          ${bodyClassName}
+        `}
       >
         {children ||
           transitions((style, key) => {

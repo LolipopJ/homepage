@@ -32,7 +32,12 @@ const ThemeSwitcher: React.FC<{ className?: string }> = ({
   return (
     <button
       type="button"
-      className={`item-selectable flex size-9 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${className}`}
+      className={`
+        flex size-9 item-selectable items-center justify-center rounded-md
+        focus-visible:outline focus-visible:outline-2
+        focus-visible:outline-offset-2 focus-visible:outline-primary
+        ${className}
+      `}
       aria-label={description}
       title={description}
       disabled={resolvedTheme === null}

@@ -82,7 +82,10 @@ const Planets: React.FC<PlanetsProps> = ({
 
   return (
     <div
-      className={`rounded-full ${className}`}
+      className={`
+        rounded-full
+        ${className}
+      `}
       style={{
         ...style,
         height: size,

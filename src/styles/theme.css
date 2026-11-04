@@ -1,6 +1,6 @@
 /* Both palettes share semantic tokens. Explicit choices override the system. */
 :root {
-  color-scheme: light;
+  @apply scheme-light;
   --site-theme: light;
   --primary: #176b5b;
   --primary-light: #197762;
@@ -51,7 +51,7 @@
 }
 
 :root[data-theme="dark"] {
-  color-scheme: dark;
+  @apply scheme-dark;
   --site-theme: dark;
   --primary: #61bfad;
   --primary-light: #80cbbd;
@@ -104,7 +104,7 @@
 /* CSS fallback while JavaScript is loading or unavailable. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    color-scheme: dark;
+    @apply scheme-dark;
     --site-theme: dark;
     --primary: #61bfad;
     --primary-light: #80cbbd;

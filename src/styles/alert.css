@@ -3,93 +3,76 @@
  */
 /* #region https://github.com/sindresorhus/github-markdown-css/blob/e49401776c9d581ad42367fc4ea3d677d13e2e39/github-markdown-dark.css#L1055-L1115 */
 .markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
-  color: inherit;
-  border-left: 0.25rem solid var(--border);
+  @apply
+    mt-3 mb-6 rounded-l-sm rounded-r-lg border-l-4 border-border
+    bg-background-light p-4 text-inherit
+  ;
 }
 
 .markdown-alert > :first-child {
-  margin-top: 0;
+  @apply mt-0;
 }
 
 .markdown-alert > :last-child {
-  margin-bottom: 0;
+  @apply mb-0;
 }
 
 .markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1;
+  @apply mb-4 flex items-center leading-none font-bold;
 }
 
 .markdown-alert.markdown-alert-note {
-  border-left-color: var(--alert-note);
+  @apply border-l-alert-note;
 }
 
 .markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--alert-note);
+  @apply text-alert-note;
 }
 
 .markdown-alert.markdown-alert-important {
-  border-left-color: var(--alert-important);
+  @apply border-l-alert-important;
 }
 
 .markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--alert-important);
+  @apply text-alert-important;
 }
 
 .markdown-alert.markdown-alert-warning {
-  border-left-color: var(--alert-warning);
+  @apply border-l-alert-warning;
 }
 
 .markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--alert-warning);
+  @apply text-alert-warning;
 }
 
 .markdown-alert.markdown-alert-tip {
-  border-left-color: var(--alert-tip);
+  @apply border-l-alert-tip;
 }
 
 .markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--alert-tip);
+  @apply text-alert-tip;
 }
 
 .markdown-alert.markdown-alert-caution {
-  border-left-color: var(--alert-caution);
+  @apply border-l-alert-caution;
 }
 
 .markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--alert-caution);
+  @apply text-alert-caution;
 }
 /* #endregion */
 
 /* #region https://github.com/hyoban/remark-github-alerts/blob/43ff491ba4052b149e9a48093a750c7a88d72551/styles/github-base.css#L23-L37 */
 .markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  overflow: visible !important;
-  mask: var(--oct-icon) no-repeat;
-  mask-size: 100% 100%;
-  background-color: currentColor;
-  color: inherit;
-  display: inline-block;
-  vertical-align: text-bottom;
-  width: 1em;
-  height: 1em;
+  @apply
+    mr-2 inline-block size-[1em] overflow-visible! bg-current mask-(--oct-icon)
+    mask-size-[100%_100%] mask-no-repeat align-text-bottom text-inherit
+  ;
 }
 /* #endregion */
 
 /* #region Custom styles */
-.markdown-alert {
-  @apply mb-6 mt-3 rounded-l rounded-r-lg bg-background-light p-4;
-}
-
-.markdown-alert .markdown-alert-title {
-  @apply mb-4 font-bold;
-}
-
 .markdown-alert p {
-  @apply mb-4 mt-0 whitespace-pre-wrap;
+  @apply mt-0 mb-4 whitespace-pre-wrap;
 }
 /* #endregion */

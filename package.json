@@ -21,16 +21,14 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
-    "lint": "npm run prettier && npm run eslint",
-    "eslint": "eslint --fix **/*.{js,mjs,ts,jsx,tsx,md,mdx}",
-    "prettier": "prettier --write . --ignore-unknown",
+    "lint": "eslint \"**/*.{js,mjs,ts,jsx,tsx,mdx,css}\"",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
-    "*.{js,mjs,ts,jsx,tsx,md,mdx}": [
+    "*.{js,mjs,ts,jsx,tsx,mdx,css}": [
       "eslint --fix"
     ],
-    "!(*.js|*.mjs|*.ts|*.jsx|*.tsx|*.md|*.mdx)": [
+    "!(*.js|*.mjs|*.ts|*.jsx|*.tsx|*.mdx|*.css)": [
       "prettier --write --ignore-unknown"
     ]
   },
@@ -80,30 +78,30 @@
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^8.0.5",
     "@eslint/compat": "^2.1.1",
+    "@eslint/css": "^2.0.1",
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.3.4",
     "@types/node": "^24.19.2",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
-    "autoprefixer": "^10.6.2",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-better-tailwindcss": "^4.10.0",
     "eslint-plugin-mdx": "^3.9.1",
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-simple-import-sort": "^14.0.0",
-    "eslint-plugin-tailwindcss": "^3.18.3",
     "globals": "^17.14.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "mermaid": "^12.2.0",
     "postcss": "^8.5.32",
     "postcss-import": "^17.0.1",
-    "postcss-nesting": "^14.0.3",
     "prettier": "^3.9.10",
-    "prettier-plugin-tailwindcss": "^0.8.1",
-    "tailwindcss": "^3.4.19",
+    "tailwind-csstree": "^0.4.2",
+    "tailwindcss": "^4.3.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.1"
   }

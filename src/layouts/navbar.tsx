@@ -31,7 +31,15 @@ const Navbar: React.FC<NavbarProps> = ({
         return (
           <nav className="mb-6" key={item.title ?? item.routes[0]?.url}>
             {item.title && (
-              <div className="relative mb-3 flex px-5 text-sm font-bold leading-5 text-foreground-secondary after:mb-2.5 after:ml-8 after:w-full after:border-b after:border-foreground-secondary after:opacity-40 after:content-['']">
+              <div
+                className="
+                  relative mb-3 flex px-5 text-sm/5 font-bold
+                  text-foreground-secondary
+                  after:mb-2.5 after:ml-8 after:w-full after:border-b
+                  after:border-foreground-secondary after:opacity-40
+                  after:content-['']
+                "
+              >
                 <span className="min-w-fit">{item.title}</span>
               </div>
             )}
@@ -54,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     key: route.url,
                   },
                   <>
-                    <Icon icon={route.icon} className="w-8" />
+                    <Icon icon={route.icon} style={{ "--fa-width": "2rem" }} />
                     <span
                       className={`mr-6 flex-1 overflow-hidden text-ellipsis`}
                     >
@@ -63,7 +71,8 @@ const Navbar: React.FC<NavbarProps> = ({
                     {isExternal && (
                       <Icon
                         icon={faArrowUp}
-                        className="ml-auto w-8 rotate-45"
+                        style={{ "--fa-width": "2rem" }}
+                        className="ml-auto rotate-45"
                       />
                     )}
                   </>,

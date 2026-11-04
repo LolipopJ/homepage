@@ -261,7 +261,13 @@ const Particles: React.FC<ParticlesProps> = ({
   ]);
 
   return (
-    <div ref={containerRef} className={`relative size-full ${className}`} />
+    <div
+      ref={containerRef}
+      className={`
+        relative size-full
+        ${className}
+      `}
+    />
   );
 };
 

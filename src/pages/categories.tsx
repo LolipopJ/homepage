@@ -33,7 +33,12 @@ const Categories: React.FC<PageProps> = () => {
                 className="item-selectable rounded-md px-3 py-2"
               >
                 <span className="font-bold">{categoryName}</span>
-                <span className="text-sm text-foreground-secondary before:mx-1 before:content-['/']">
+                <span
+                  className="
+                    text-sm text-foreground-secondary
+                    before:mx-1 before:content-['/']
+                  "
+                >
                   {postCount} 篇
                 </span>
               </Link>

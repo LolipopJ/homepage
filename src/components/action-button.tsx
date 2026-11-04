@@ -13,7 +13,12 @@ const ActionButton: React.FC<ActionButtonProps> = (props) => {
 
   return (
     <div
-      className={`flex size-8 cursor-pointer items-center justify-center rounded-full bg-background transition hover:bg-foreground hover:text-background ${className}`}
+      className={`
+        flex size-8 cursor-pointer items-center justify-center rounded-full
+        bg-background transition
+        hover:bg-foreground hover:text-background
+        ${className}
+      `}
       onClick={onClick}
       {...restProps}
     >

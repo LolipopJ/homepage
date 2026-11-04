@@ -150,17 +150,30 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
         {categories?.length && (
           <Link
             to={`/categories/${encodeURIComponent(categories[0])}`}
-            className="w-fit rounded bg-background-lighter px-3 py-2 leading-normal transition-opacity hover:opacity-75"
+            className="
+              w-fit rounded-sm bg-background-lighter px-3 py-2 leading-normal
+              transition-opacity
+              hover:opacity-75
+            "
           >
             <span
-              className={`cursor-pointer bg-gradient-to-tr from-0% via-40% to-90% bg-clip-text text-lg font-bold leading-none text-transparent ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""}`}
+              className={`
+                cursor-pointer bg-linear-to-tr/srgb from-0% via-40% to-90%
+                bg-clip-text text-lg leading-none font-bold text-transparent
+                ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""}
+              `}
             >
               {categories[0]}
             </span>
           </Link>
         )}
         <h1 className="text-3xl font-bold">{title}</h1>
-        <div className="item-secondary flex flex-col gap-2 lg:flex-row">
+        <div
+          className="
+            flex flex-col gap-2 item-secondary
+            lg:flex-row
+          "
+        >
           {dateString && (
             <span
               title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
@@ -169,12 +182,17 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
             </span>
           )}
           {tags?.length && (
-            <div className="flex flex-1 flex-wrap gap-2 lg:before:content-['•']">
+            <div
+              className="
+                flex flex-1 flex-wrap gap-2
+                lg:before:content-['•']
+              "
+            >
               {tags.map((tag) => (
                 <Tag
                   key={tag}
                   name={tag}
-                  className="item-secondary item-selectable"
+                  className="item-selectable item-secondary"
                 />
               ))}
             </div>
@@ -184,17 +202,22 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
 
       <article ref={articleRef} className="heti post-entry">
         {isDraft && (
-          <blockquote className="!border-red-400">
+          <blockquote className="border-red-400!">
             这是一篇<strong>尚未正式发布</strong>
             的博客，内容可能暂不完善或存在纰漏，建议您仔细评估文章的可靠性。
           </blockquote>
         )}
         {showTimelinessWarning && diffDays !== null && (
-          <blockquote className="!border-orange-400">
+          <blockquote className="border-orange-400!">
             这是一篇
             <strong>
               最后更新于 <span className="print:hidden">{diffDays} 天前</span>
-              <span className="hidden print:inline">
+              <span
+                className="
+                  hidden
+                  print:inline
+                "
+              >
                 {updatedDate.format("YYYY 年 MM 月 DD 日")}
               </span>
             </strong>

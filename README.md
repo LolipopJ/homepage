@@ -4,12 +4,14 @@
 
 ## Development
 
-Make sure your Node.js >= 24.0.0, pnpm >= 9.0.0.
+Use Node.js 24 or later and pnpm 12 or later.
 
 ```bash
 pnpm install
 pnpm develop
 ```
+
+Check lint errors:
 
 ```bash
 pnpm lint

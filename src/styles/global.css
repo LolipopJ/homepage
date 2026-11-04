@@ -1,10 +1,13 @@
-@import "prismjs/themes/prism.min.css";
-@import "prismjs/themes/prism-tomorrow.min.css";
-@import "gitalk-react/dist/gitalk-light.css";
-@import "gitalk-react/dist/gitalk-dark.css";
-@import "@fancyapps/ui/dist/fancybox/fancybox.css";
-@import "heti/umd/heti.min.css";
-@import "rich-presence-react/dist/rich-presence-react.css";
+@layer theme, base, vendor, components, utilities;
+
+@import "tailwindcss" source(none);
+@import "prismjs/themes/prism.min.css" layer(vendor);
+@import "prismjs/themes/prism-tomorrow.min.css" layer(vendor);
+@import "gitalk-react/light.css" layer(vendor);
+@import "gitalk-react/dark.css" layer(vendor);
+@import "@fancyapps/ui/dist/fancybox/fancybox.css" layer(vendor);
+@import "heti/umd/heti.min.css" layer(vendor);
+@import "rich-presence-react/style.css" layer(vendor);
 
 @import "./alert.css";
 @import "./animation.css";
@@ -13,9 +16,57 @@
 @import "./theme.css";
 @import "./theme-content.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source "../../blog/**/*.mdx";
+@source "../components";
+@source "../constants";
+@source "../layouts";
+@source "../pages";
+@source "../templates";
+
+@theme {
+  --font-site:
+    -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "PingFang SC",
+    "Hiragino Sans GB", STHeiti, "Microsoft YaHei", "Microsoft JhengHei",
+    "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN",
+    "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC",
+    "WenQuanYi Micro Hei", SimSun, sans-serif;
+}
+
+@theme inline {
+  --spacing-header: var(--height-header);
+  --spacing-footer: var(--height-footer);
+  --color-border: var(--border);
+  --color-hover: var(--hover);
+  --color-selected: var(--selected);
+  --color-input-background: var(--input-background);
+  --color-header-background: var(--header-background);
+  --color-overlay: var(--overlay);
+  --color-dialog-background: var(--dialog-background);
+  --color-on-primary: var(--on-primary);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-tertiary: var(--foreground-tertiary);
+  --color-background: var(--background);
+  --color-background-light: var(--background-light);
+  --color-background-lighter: var(--background-lighter);
+  --color-background-dark: var(--background-dark);
+  --color-background-darker: var(--background-darker);
+  --color-selection: var(--selection);
+  --color-scrollbar-track: var(--scrollbar-track);
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
+  --color-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
+  --color-alert-note: var(--alert-note);
+  --color-alert-important: var(--alert-important);
+  --color-alert-warning: var(--alert-warning);
+  --color-alert-tip: var(--alert-tip);
+  --color-alert-caution: var(--alert-caution);
+  --color-code-background: var(--code-background);
+  --color-code-foreground: var(--code-foreground);
+  --color-mark-background: var(--mark-background);
+}
 
 @layer base {
   :root {
@@ -24,8 +75,7 @@
   }
 
   ::selection {
-    background: var(--selection);
-    color: var(--foreground);
+    @apply bg-selection text-foreground;
   }
 
   ::-webkit-scrollbar {
@@ -33,26 +83,19 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
+    @apply bg-scrollbar-track;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-md;
-    background: var(--scrollbar-thumb);
+    @apply rounded-md bg-scrollbar-thumb;
 
     &:hover {
-      background: var(--scrollbar-thumb-hover);
+      @apply bg-scrollbar-thumb-hover;
     }
   }
 
   html {
-    font-family:
-      -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "PingFang SC",
-      "Hiragino Sans GB", STHeiti, "Microsoft YaHei", "Microsoft JhengHei",
-      "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN",
-      "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC",
-      "WenQuanYi Micro Hei", SimSun, sans-serif;
-    text-autospace: normal;
+    @apply font-site [text-autospace:normal];
   }
 
   body {
@@ -60,53 +103,59 @@
   }
 }
 
+@utility item-selectable {
+  @apply
+    cursor-pointer transition-colors
+    hover:bg-hover
+  ;
+}
+
+@utility item-selected {
+  @apply bg-selected! transition-colors;
+}
+
+@utility item-secondary {
+  @apply text-foreground-secondary;
+
+  &.item-selectable {
+    @apply
+      transition-colors
+      hover:bg-inherit hover:text-foreground
+    ;
+  }
+}
+
+@utility item-converse-color {
+  @apply bg-foreground text-background;
+
+  &.item-selectable {
+    @apply
+      transition-colors
+      hover:bg-foreground-secondary hover:text-background-darker
+    ;
+  }
+}
+
+@utility item-link {
+  @apply
+    text-primary-light
+    hover:border-none hover:text-primary hover:underline hover:decoration-wavy
+    hover:decoration-2 hover:underline-offset-2
+  ;
+}
+
 @layer components {
-  .item-selectable {
-    @apply cursor-pointer transition-colors hover:bg-hover;
-  }
-
-  .item-selected {
-    @apply !bg-selected transition-colors;
-  }
-
-  .item-secondary {
-    @apply text-foreground-secondary;
-
-    &.item-selectable {
-      @apply transition-colors hover:bg-inherit hover:text-foreground;
-    }
-  }
-
-  .item-converse-color {
-    @apply bg-foreground text-background;
-
-    &.item-selectable {
-      @apply transition-colors hover:bg-foreground-secondary hover:text-background-darker;
-    }
-  }
-
-  .item-link {
-    @apply text-primary-light hover:border-none hover:text-primary hover:underline hover:decoration-wavy hover:decoration-2 hover:underline-offset-2;
-  }
-
   /* #region 博客主体 */
   .post-entry {
     .gatsby-highlight[data-language] {
-      position: relative;
+      @apply relative;
 
       &::before {
-        content: attr(data-language);
-        position: absolute;
-        top: 0.25rem;
-        right: -1rem;
-        opacity: 0.3;
-        font-size: 0.75rem;
-        font-weight: bold;
-        line-height: 1;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        pointer-events: none;
-        user-select: none;
+        @apply
+          pointer-events-none absolute top-1 -right-4 text-xs/none font-bold
+          tracking-wider uppercase opacity-30 content-[attr(data-language)]
+          select-none
+        ;
       }
     }
 
@@ -125,7 +174,7 @@
     }
 
     blockquote {
-      @apply me-0 ms-0 rounded-l border-l-4 border-primary;
+      @apply mx-0 rounded-l-sm border-l-4 border-primary;
 
       :first-child {
         @apply mt-2;
@@ -150,12 +199,12 @@
     > span > div > pre,
     > table,
     > iframe {
-      @apply !-mx-6 mb-6 mt-6 w-[calc(100%+3rem)] !max-w-none;
+      @apply -mx-6! my-6 w-[calc(100%+3rem)] max-w-none!;
     }
 
     /* 加载中和加载失败的图片使用当前主题的占位背景 */
     img.gatsby-resp-image-image {
-      box-shadow: var(--background-light) 0px 0px 0px 400px inset !important;
+      @apply shadow-[inset_0_0_0_400px_var(--background-light)]!;
     }
 
     a {
@@ -166,7 +215,10 @@
        * 覆盖 Heti 的相关样式，避免鼠标悬浮在图片上时引起间距变化
        */
       &.gatsby-resp-image-link {
-        @apply rounded-lg hover:pb-0;
+        @apply
+          rounded-lg
+          hover:pb-0
+        ;
 
         .gatsby-resp-image-background-image {
           @apply rounded-lg;
@@ -180,7 +232,7 @@
     }
 
     code {
-      @apply !break-all;
+      @apply break-all!;
     }
 
     pre {
@@ -188,11 +240,14 @@
     }
 
     pre > code[class*="language-"] {
-      @apply text-sm print:whitespace-pre-wrap print:break-words;
+      @apply
+        text-sm
+        print:wrap-break-word print:whitespace-pre-wrap
+      ;
     }
 
     :not(pre) > code[class*="language-"] {
-      @apply !mx-0 !px-1.5;
+      @apply mx-0! px-1.5!;
     }
 
     h1,
@@ -233,18 +288,27 @@
       @apply flex w-full flex-wrap gap-2;
 
       > input {
-        @apply max-w-full flex-1 rounded-lg bg-input-background px-2 py-1 text-base sm:px-3 sm:py-1.5 sm:text-lg;
+        @apply
+          max-w-full flex-1 rounded-lg bg-input-background px-2 py-1 text-base
+          sm:px-3 sm:py-1.5 sm:text-lg
+        ;
       }
 
       svg {
-        @apply size-4 fill-current sm:size-5;
+        @apply
+          size-4 fill-current
+          sm:size-5
+        ;
       }
 
       button {
-        @apply item-selectable -mr-2 rounded-md px-2;
+        @apply -mr-2 item-selectable rounded-md px-2;
 
         &.ais-SearchBox-reset {
-          @apply hidden sm:block;
+          @apply
+            hidden
+            sm:block
+          ;
         }
       }
     }
@@ -265,7 +329,7 @@
   }
 
   .algolia-pagination {
-    @apply select-none border-t border-foreground-tertiary px-6 py-2 sm:px-8 sm:py-3;
+    @apply border-t border-foreground-tertiary px-6 py-2 select-none sm:px-8 sm:py-3;
 
     > ul {
       @apply flex items-center justify-center gap-2;
@@ -282,7 +346,7 @@
         }
 
         > a {
-          @apply item-selectable rounded px-1.5 py-1 text-lg;
+          @apply item-selectable rounded-sm px-1.5 py-1 text-lg;
         }
       }
     }

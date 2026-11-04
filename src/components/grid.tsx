@@ -13,7 +13,10 @@ export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
  */
 const Grid: React.FC<GridProps> = ({ className = "", ...restProps }) => (
   <div
-    className={`post-grid -mx-6 my-6 grid w-[calc(100%+3rem)] grid-cols-[repeat(24,minmax(0,1fr))] gap-3 ${className}`}
+    className={`
+      post-grid -mx-6 my-6 grid w-[calc(100%+3rem)] grid-cols-24 gap-3
+      ${className}
+    `}
     {...restProps}
   />
 );

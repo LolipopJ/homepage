@@ -63,13 +63,16 @@ const TocItem = React.memo<TocItemProps>(({ heading, index, state, onRef }) => {
     <li
       ref={(el) => onRef(el, index)}
       style={{ marginLeft }}
-      className={`item-selectable mb-1 rounded-lg ${
-        state === "past"
-          ? "text-foreground-secondary"
-          : state === "active"
-            ? "item-selected"
-            : ""
-      }`}
+      className={`
+        mb-1 item-selectable rounded-lg
+        ${
+          state === "past"
+            ? "text-foreground-secondary"
+            : state === "active"
+              ? "item-selected"
+              : ""
+        }
+      `}
     >
       <a href={`#${heading.id}`} className="block px-3 py-2 transition">
         <span
@@ -94,7 +97,10 @@ const SidebarStaticContent = React.memo<SidebarStaticContentProps>(
         <div className={`relative z-10 flex flex-col gap-3`}>
           {activities.map((activity, index) => (
             <RichPresence
-              className="opacity-80 transition-opacity hover:opacity-100"
+              className="
+                opacity-80 transition-opacity
+                hover:opacity-100
+              "
               key={index}
               activity={activity}
               theme={resolvedTheme ?? "dark"}
@@ -103,7 +109,10 @@ const SidebarStaticContent = React.memo<SidebarStaticContentProps>(
           ))}
         </div>
         <div
-          className={`pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40 sm:block`}
+          className={`
+            pointer-events-none fixed bottom-0 hidden overflow-hidden opacity-40
+            sm:block
+          `}
           style={{ height: planetSize * 0.82, left: -planetSize * 0.18 }}
         >
           <Planets size={planetSize} />
@@ -545,12 +554,18 @@ const Layout: React.FC<PageProps> = (props) => {
           return (
             <li
               key={post.fields.slug}
-              className={`rounded-lg transition-all ${isActive ? "sticky bottom-0 bg-background" : ""}`}
+              className={`
+                rounded-lg transition-all
+                ${isActive ? "sticky bottom-0 bg-background" : ""}
+              `}
             >
               <Post
                 post={post}
                 dateField={postSortKey}
-                className={`mb-2 ${isActive ? "item-selected" : ""}`}
+                className={`
+                  mb-2
+                  ${isActive ? "item-selected" : ""}
+                `}
                 excerptClassName="hidden"
               />
             </li>
@@ -600,14 +615,29 @@ const Layout: React.FC<PageProps> = (props) => {
   //#endregion
 
   return (
-    <div className="flex h-screen print:h-auto">
+    <div
+      className="
+        flex h-screen
+        print:h-auto
+      "
+    >
       {/* 初始化完成前的蒙版层 */}
       {!maskRemoved && (
         <div
-          className={`absolute inset-0 z-50 overflow-hidden bg-background transition duration-500 ${layoutInitialized ? "pointer-events-none opacity-0" : ""}`}
+          className={`
+            absolute inset-0 z-50 overflow-hidden bg-background transition
+            duration-500
+            ${layoutInitialized ? "pointer-events-none opacity-0" : ""}
+          `}
           onTransitionEnd={() => layoutInitialized && setMaskRemoved(true)}
         >
-          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 xl:bottom-8 xl:right-8">
+          <div
+            className="
+              absolute right-4 bottom-4
+              md:right-6 md:bottom-6
+              xl:right-8 xl:bottom-8
+            "
+          >
             <CircularText
               text="NOW*LOADING*NOW*LOADING*"
               onHover="goBonkers"
@@ -619,12 +649,20 @@ const Layout: React.FC<PageProps> = (props) => {
 
       {/* 侧边栏 */}
       <SiderBar
-        className={`hidden w-72 2xl:block print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+        className={`
+          hidden w-72
+          2xl:block
+          print:hidden
+          ${isImmersiveActivated ? "hidden!" : ""}
+        `}
         header={
           <div className="mx-5 px-4">
             <Link
               to="/"
-              className="flex items-center text-lg font-bold transition-colors hover:text-primary"
+              className="
+                flex items-center text-lg font-bold transition-colors
+                hover:text-primary
+              "
             >
               Lolipop's
               <RotatingText
@@ -662,7 +700,12 @@ const Layout: React.FC<PageProps> = (props) => {
               onClick={() =>
                 setPostSortKey((key) => (key === "date" ? "updated" : "date"))
               }
-              className="item-selectable flex size-8 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="
+                flex size-8 item-selectable items-center justify-center
+                rounded-md
+                focus-visible:outline-2 focus-visible:outline-offset-2
+                focus-visible:outline-primary
+              "
             >
               <Icon
                 icon={
@@ -675,23 +718,56 @@ const Layout: React.FC<PageProps> = (props) => {
         }
         headerClassName="px-4 mx-3"
         bodyClassName="px-4 h-[calc(100vh-var(--height-header)*2)] lg:h-[calc(100vh-var(--height-header))]"
-        className={`print:hidden ${isImmersiveActivated ? "!hidden" : ""} ${
-          breakpoint["lg"]
-            ? `w-96 2xl:w-88`
-            : `fixed top-[calc(var(--height-header))] z-20 h-[calc(100vh-var(--height-header))] w-full border-none transition sm:w-96 ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
-        }`}
+        className={`
+          print:hidden
+          ${isImmersiveActivated ? "hidden!" : ""}
+          ${
+            breakpoint["lg"]
+              ? `
+                w-96
+                2xl:w-88
+              `
+              : `
+                fixed top-[calc(var(--height-header))] z-20
+                h-[calc(100vh-var(--height-header))] w-full border-none
+                transition
+                sm:w-96
+                ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
+          }
+        `}
       />
 
       {/* 路由主体 */}
       <main
         ref={mainRef}
-        className={`flex-1 bg-background ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
+        className={`
+          flex-1 bg-background
+          ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
         <header
-          className={`sticky top-0 z-20 flex h-header items-center bg-background-light px-8 backdrop-blur-sm lg:bg-header-background print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+          className={`
+            sticky top-0 z-20 flex h-header items-center bg-background-light
+            px-8 backdrop-blur-xs
+            lg:bg-header-background
+            print:hidden
+            ${isImmersiveActivated ? "hidden!" : ""}
+          `}
         >
           <div
-            className={`item-selectable mr-4 flex size-8 items-center justify-center rounded-md border-2 border-foreground lg:hidden ${openSubNavbarDrawer ? "bg-foreground text-background hover:border-foreground-secondary hover:bg-foreground-secondary hover:text-background-darker" : ""}`}
+            className={`
+              mr-4 flex size-8 item-selectable items-center justify-center
+              rounded-md border-2 border-foreground
+              lg:hidden
+              ${
+                openSubNavbarDrawer
+                  ? `
+                    bg-foreground text-background
+                    hover:border-foreground-secondary
+                    hover:bg-foreground-secondary hover:text-background-darker
+                  `
+                  : ""
+              }
+            `}
             onClick={() => {
               setOpenSubNavbarDrawer((prev) => !prev);
             }}
@@ -704,7 +780,12 @@ const Layout: React.FC<PageProps> = (props) => {
           <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
             {isPostPage ? pageTitle : staticPageTitle}
           </div>
-          <div className="ml-auto flex shrink-0 items-center justify-end gap-2 pl-4 sm:pl-8">
+          <div
+            className="
+              ml-auto flex shrink-0 items-center justify-end gap-2 pl-4
+              sm:pl-8
+            "
+          >
             <ThemeSwitcher />
             <Icon
               icon={faSearch}
@@ -716,10 +797,20 @@ const Layout: React.FC<PageProps> = (props) => {
 
         <div
           ref={pageRef}
-          className="relative min-h-[calc(100vh-var(--height-header)-var(--height-footer))] p-8 lg:px-16 lg:py-12 2xl:px-24"
+          className="
+            relative
+            min-h-[calc(100vh-var(--height-header)-var(--height-footer))] p-8
+            lg:px-16 lg:py-12
+            2xl:px-24
+          "
         >
           {/* 站点信息（打印时显示） */}
-          <div className="mb-12 hidden print:block">
+          <div
+            className="
+              mb-12 hidden
+              print:block
+            "
+          >
             <div>Site: {siteTitle}</div>
             <div>Print Date: {printDate}</div>
             <div>
@@ -742,17 +833,29 @@ const Layout: React.FC<PageProps> = (props) => {
             <GitalkComponent
               key={postSlug}
               gitalkId={postSlug}
-              className="mx-auto mt-24 max-w-xl print:hidden"
+              className="
+                mx-auto mt-24 max-w-xl
+                print:hidden
+              "
             />
           )}
 
           {/* 博客页的操作按钮 */}
           {isPostPage && (
-            <div className="sticky bottom-8 z-10 mt-12 flex flex-col items-end justify-end gap-4 text-sm print:hidden">
+            <div
+              className="
+                sticky bottom-8 z-10 mt-12 flex flex-col items-end justify-end
+                gap-4 text-sm
+                print:hidden
+              "
+            >
               {/* 回到顶部按钮 */}
               {!isImmersiveActivated && (
                 <div
-                  className={`relative flex size-9 items-center justify-center rounded-full transition ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
+                  className={`
+                    relative flex size-9 items-center justify-center
+                    rounded-full transition
+                    ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
                   style={{
                     background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
                   }}
@@ -766,11 +869,18 @@ const Layout: React.FC<PageProps> = (props) => {
                 </div>
               )}
               {/* 沉浸式浏览按钮 */}
-              <div className="hidden lg:block">
+              <div
+                className="
+                  hidden
+                  lg:block
+                "
+              >
                 <ActionButton
                   icon={isImmersive ? faCookieBite : faCookie}
                   onClick={() => setIsImmersive((prev) => !prev)}
-                  className={`size-9 border-2 ${isImmersive ? "border-foreground" : "border-foreground-tertiary"}`}
+                  className={`
+                    size-9 border-2
+                    ${isImmersive ? "border-foreground" : "border-foreground-tertiary"}`}
                   title={isImmersive ? "退出沉浸模式" : "进入沉浸模式"}
                 />
               </div>
@@ -779,9 +889,19 @@ const Layout: React.FC<PageProps> = (props) => {
         </div>
 
         <footer
-          className={`flex h-footer flex-col justify-center gap-2 border-t border-foreground-tertiary bg-background-lighter px-16 print:hidden ${isImmersiveActivated ? "!hidden" : ""}`}
+          className={`
+            flex h-footer flex-col justify-center gap-2 border-t
+            border-foreground-tertiary bg-background-lighter px-16
+            print:hidden
+            ${isImmersiveActivated ? "hidden!" : ""}
+          `}
         >
-          <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          <div
+            className="
+              flex flex-col gap-2
+              md:flex-row md:items-center
+            "
+          >
             <span>
               Powered by{" "}
               <a
@@ -793,7 +913,13 @@ const Layout: React.FC<PageProps> = (props) => {
                 Gatsby
               </a>
             </span>
-            <Icon icon={faRainbow} className="hidden md:block" />
+            <Icon
+              icon={faRainbow}
+              className="
+                hidden
+                md:block
+              "
+            />
             <span>
               Inspired by{" "}
               <a
@@ -807,7 +933,12 @@ const Layout: React.FC<PageProps> = (props) => {
             </span>
           </div>
           {(MIIT_BEIAN_LABEL || MPS_BEIAN_CODE) && (
-            <div className="flex flex-col gap-2 md:flex-row md:items-center">
+            <div
+              className="
+                flex flex-col gap-2
+                md:flex-row md:items-center
+              "
+            >
               <a
                 href="https://beian.miit.gov.cn/"
                 target="_blank"
@@ -818,7 +949,10 @@ const Layout: React.FC<PageProps> = (props) => {
               <img
                 src="/images/beian.png"
                 alt="beian-icon"
-                className="hidden size-5 md:block"
+                className="
+                  hidden size-5
+                  md:block
+                "
               />
               <a
                 href={`http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=${MPS_BEIAN_CODE}`}
@@ -856,7 +990,12 @@ const Layout: React.FC<PageProps> = (props) => {
 
         {/* 小屏幕：打开侧边栏抽屉时的蒙版层 */}
         <div
-          className={`${openSubNavbarDrawer ? "block" : "hidden"} absolute inset-0 bg-overlay backdrop-blur-sm lg:hidden print:hidden`}
+          className={`
+            ${openSubNavbarDrawer ? "block" : "hidden"}
+            absolute inset-0 bg-overlay backdrop-blur-xs
+            lg:hidden
+            print:hidden
+          `}
           onClick={() => setOpenSubNavbarDrawer(false)}
         />
       </main>
@@ -865,11 +1004,17 @@ const Layout: React.FC<PageProps> = (props) => {
       {openAlgoliaSearch && (
         <div
           onClick={() => setOpenAlgoliaSearch(false)}
-          className="absolute inset-0 z-30 bg-overlay backdrop-blur-sm print:hidden"
+          className="
+            absolute inset-0 z-30 bg-overlay backdrop-blur-xs
+            print:hidden
+          "
         >
           <AlgoliaSearch
             onClose={() => setOpenAlgoliaSearch(false)}
-            className="mx-auto mt-16 max-h-[calc(100vh-4rem)] border border-foreground-tertiary bg-dialog-background"
+            className="
+              mx-auto mt-16 max-h-[calc(100vh-4rem)] border
+              border-foreground-tertiary bg-dialog-background
+            "
           />
         </div>
       )}

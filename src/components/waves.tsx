@@ -19,7 +19,10 @@ const Waves: React.FC<WavesProps> = (props) => {
         viewBox="0 0 2880 200"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
-        className={`block w-[200%] ${svgClassName}`}
+        className={`
+          block w-[200%]
+          ${svgClassName}
+        `}
       >
         <g>
           <path

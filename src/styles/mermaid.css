@@ -5,7 +5,7 @@
 
 /* Mermaid 拖拽 & 缩放 */
 pre:has(> .mermaid) {
-  @apply cursor-grab touch-none select-none overflow-hidden;
+  @apply cursor-grab touch-none overflow-hidden select-none;
 }
 
 pre:has(> .mermaid):active {
@@ -13,5 +13,5 @@ pre:has(> .mermaid):active {
 }
 
 pre:has(> .mermaid) > .mermaid > svg {
-  @apply origin-[0_0];
+  @apply origin-top-left;
 }

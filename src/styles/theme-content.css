@@ -2,59 +2,55 @@
 .post-entry.heti blockquote,
 .post-entry.heti pre,
 .post-entry.heti code {
-  background-color: var(--code-background);
+  @apply bg-code-background;
 }
 .post-entry.heti pre code {
-  background: transparent;
+  @apply bg-transparent;
 }
 .post-entry.heti hr {
-  background: var(--border);
+  @apply bg-border;
 }
 .post-entry.heti table,
 .post-entry.heti th,
 .post-entry.heti td,
 .post-entry.heti .heti-fn {
-  border-color: var(--border);
+  @apply border-border;
 }
 .post-entry.heti mark,
 .algolia-hints mark {
-  background: var(--mark-background);
-  color: var(--foreground);
+  @apply bg-mark-background text-foreground;
 }
 .post-entry.heti sup:target,
 .post-entry.heti sup a:target,
 .post-entry.heti .heti-fn li:target {
-  background: var(--selected);
+  @apply bg-selected;
 }
 .post-entry.heti u[title] {
-  border-bottom-color: var(--foreground-secondary);
+  @apply border-b-foreground-secondary;
 }
 html[data-theme] .post-entry pre[class*="language-"],
 html[data-theme] .post-entry :not(pre) > code[class*="language-"] {
-  background: var(--code-background);
-  color: var(--code-foreground);
-  text-shadow: none;
+  @apply bg-code-background text-code-foreground text-shadow-none;
 }
 html[data-theme] .post-entry code[class*="language-"] {
-  color: var(--code-foreground);
-  text-shadow: none;
+  @apply text-code-foreground text-shadow-none;
 }
 .post-entry .gatsby-highlight[data-language]::before {
-  color: var(--foreground-secondary);
+  @apply text-foreground-secondary;
 }
 html[data-theme] .post-entry a code[class*="language-"] {
-  color: inherit;
+  @apply text-inherit;
 }
 html[data-theme] .post-entry pre:has(> .mermaid) {
-  background: var(--background-light);
+  @apply bg-background-light;
 }
 
 html[data-theme="dark"] .game-card-logo-invert {
-  filter: invert(1);
+  @apply invert;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .game-card-logo-invert {
-    filter: invert(1);
+    @apply invert;
   }
 }
 
@@ -83,29 +79,26 @@ html[data-theme] .gitalk.gt-container {
   --gt-color-popbg: var(--background-light);
 }
 html[data-theme] .gitalk.gt-container.gt-input-focused::after {
-  background: var(--overlay);
+  @apply bg-overlay;
 }
 html[data-theme] .gitalk .gt-comment-body .email-hidden-toggle a {
-  color: var(--foreground);
-  background: var(--background-lighter);
+  @apply bg-background-lighter text-foreground;
 }
 html[data-theme]
   .gitalk
   .gt-comment-body
   .email-hidden-reply
   .email-signature-reply {
-  color: var(--foreground-secondary);
-  border-color: var(--border);
+  @apply border-border text-foreground-secondary;
 }
 html[data-theme] .gitalk .markdown-body {
-  color: var(--foreground);
-  background-color: transparent;
+  @apply bg-transparent text-foreground;
 }
 html[data-theme] .gitalk .markdown-body a {
-  color: var(--primary);
+  @apply text-primary;
 }
 html[data-theme] .gitalk .markdown-body pre,
 html[data-theme] .gitalk .markdown-body code,
 html[data-theme] .gitalk .markdown-body table tr {
-  background-color: var(--background-lighter);
+  @apply bg-background-lighter;
 }

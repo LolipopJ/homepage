@@ -38,10 +38,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   } = useHoverPreview({ src: preview, alt: `${title} 预览` });
 
   return (
-    <div className={`max-[640px]:col-span-full ${className}`} {...props}>
+    <div
+      className={`
+        max-[640px]:col-span-full
+        ${className}
+      `}
+      {...props}
+    >
       <div
         ref={cardRef}
-        className="group relative flex h-full cursor-pointer flex-col rounded-xl border border-border bg-background-light p-4 transition duration-300 hover:-translate-y-1 hover:border-primary"
+        className="
+          group relative flex h-full cursor-pointer flex-col rounded-xl border
+          border-border bg-background-light p-4 transition duration-300
+          hover:-translate-y-1 hover:border-primary
+        "
         onMouseEnter={showPreview}
         onMouseLeave={hidePreview}
       >
@@ -51,7 +61,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="absolute inset-0 rounded-xl hover:!border-0 hover:!pb-0 hover:!no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="
+              absolute inset-0 rounded-xl
+              hover:border-0! hover:pb-0! hover:no-underline!
+              focus-visible:outline focus-visible:outline-2
+              focus-visible:outline-offset-2 focus-visible:outline-primary
+            "
             onFocus={showPreview}
             onBlur={hidePreview}
           >
@@ -59,16 +74,35 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </a>
         )}
 
-        <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-3 [&_a]:pointer-events-auto">
+        <div
+          className="
+            pointer-events-none relative z-10 flex flex-1 flex-col gap-3
+            [&_a]:pointer-events-auto
+          "
+        >
           <div className="flex items-start gap-3">
             {icon && (
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background-lighter text-lg leading-none">
+              <span
+                className="
+                  flex size-9 shrink-0 items-center justify-center rounded-lg
+                  bg-background-lighter text-lg leading-none
+                "
+              >
                 {icon}
               </span>
             )}
             <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2 font-bold leading-tight">
-                <span className="break-words transition-colors group-hover:text-primary">
+              <div
+                className="
+                  flex items-start justify-between gap-2 leading-tight font-bold
+                "
+              >
+                <span
+                  className="
+                    wrap-break-word transition-colors
+                    group-hover:text-primary
+                  "
+                >
                   {title}
                 </span>
               </div>
@@ -80,7 +114,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
           {!!badges?.length && (
             <div
-              className={`mt-auto flex flex-wrap items-center gap-1 ${icon ? "ms-12" : ""}`}
+              className={`
+                mt-auto flex flex-wrap items-center gap-1
+                ${icon ? "ms-12" : ""}
+              `}
             >
               {badges.map(({ alt, src }) => (
                 <img
@@ -96,14 +133,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           )}
 
           {!!links?.length && (
-            <div className={`flex flex-wrap gap-1.5 ${icon ? "ms-12" : ""}`}>
+            <div
+              className={`
+                flex flex-wrap gap-1.5
+                ${icon ? "ms-12" : ""}
+              `}
+            >
               {links.map(({ label, url: linkUrl }) => (
                 <a
                   key={linkUrl}
                   href={linkUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-primary-light px-2 py-0.5 text-xs !text-primary transition-colors hover:!border-solid hover:!border-primary hover:bg-primary-light hover:!pb-0.5 hover:!text-on-primary hover:!no-underline"
+                  className="
+                    rounded-full border border-primary-light px-2 py-0.5 text-xs
+                    text-primary! transition-colors
+                    hover:border-solid! hover:border-primary!
+                    hover:bg-primary-light hover:pb-0.5! hover:text-on-primary!
+                    hover:no-underline!
+                  "
                 >
                   {label}
                 </a>

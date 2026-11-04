@@ -80,14 +80,24 @@ const Post: React.FC<PostProps> = (props) => {
     <>
       {categories?.length && (
         <div
-          className={`w-fit bg-gradient-to-tr from-0% via-40% to-90% bg-clip-text font-bold text-transparent ${size === "large" ? "text-base" : "text-sm"} ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""} ${categoryClassName}`}
+          className={`
+            w-fit bg-linear-to-tr/srgb from-0% via-40% to-90% bg-clip-text
+            font-bold text-transparent
+            ${size === "large" ? "text-base" : "text-sm"}
+            ${CATEGORY_GRADIENT_CLASSNAME[categories[0]] ?? ""}
+            ${categoryClassName}
+          `}
         >
           {categories[0]}
         </div>
       )}
       <h1
         title={title}
-        className={`line-clamp-3 font-bold ${size === "large" ? "text-lg" : "text-base"} ${titleClassName}`}
+        className={`
+          line-clamp-3 font-bold
+          ${size === "large" ? "text-lg" : "text-base"}
+          ${titleClassName}
+        `}
       >
         {titleRenderer?.(title, post) || title}
       </h1>
@@ -98,17 +108,30 @@ const Post: React.FC<PostProps> = (props) => {
     <Link
       to={`/posts/${slug}`}
       onClick={onClick}
-      className={`item-selectable flex flex-col gap-1.5 rounded-lg px-4 py-3 ${className}`}
+      className={`
+        flex item-selectable flex-col gap-1.5 rounded-lg px-4 py-3
+        ${className}
+      `}
     >
       {showBanner ? (
         <div className="relative -mx-4">
           <GatsbyImage
             image={bannerImage}
             alt={title ?? slug}
-            className="h-52 w-full rounded-md object-cover object-center md:h-56 xl:h-60"
+            className="
+              h-52 w-full rounded-md object-cover object-center
+              md:h-56
+              xl:h-60
+            "
             loading="lazy"
           />
-          <div className="post-banner absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-[var(--post-banner-background)] px-4 py-2.5 text-foreground backdrop-blur-sm">
+          <div
+            className="
+              post-banner absolute inset-x-0 bottom-0 flex flex-col gap-0.5
+              bg-(--post-banner-background) px-4 py-2.5 text-foreground
+              backdrop-blur-xs
+            "
+          >
             {titleDom}
           </div>
         </div>
@@ -116,12 +139,21 @@ const Post: React.FC<PostProps> = (props) => {
         titleDom
       )}
       {excerpt && (
-        <p title={excerpt} className={`${excerptClassName}`}>
+        <p
+          title={excerpt}
+          className={`
+            ${excerptClassName}
+          `}
+        >
           {excerptRenderer?.(excerpt, post) || excerpt}
         </p>
       )}
       <div
-        className={`flex text-foreground-secondary ${size === "large" ? "text-base" : "text-sm"} ${footerClassName}`}
+        className={`
+          flex text-foreground-secondary
+          ${size === "large" ? "text-base" : "text-sm"}
+          ${footerClassName}
+        `}
       >
         <div
           title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
@@ -134,7 +166,11 @@ const Post: React.FC<PostProps> = (props) => {
         {tags?.length && (
           <div
             title={tags.join(" ")}
-            className={`line-clamp-1 flex-1 before:content-['•'] ${size === "large" ? "before:mx-1.5" : "before:mx-1"}`}
+            className={`
+              line-clamp-1 flex-1
+              before:content-['•']
+              ${size === "large" ? "before:mx-1.5" : "before:mx-1"}
+            `}
           >
             {tags.join(" ")}
           </div>

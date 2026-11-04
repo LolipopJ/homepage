@@ -79,7 +79,10 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className={`flex h-[568px] max-w-2xl flex-col rounded-xl ${className}`}
+      className={`
+        flex h-142 max-w-2xl flex-col rounded-xl
+        ${className}
+      `}
       style={style}
     >
       <InstantSearch
