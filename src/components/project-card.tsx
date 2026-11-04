@@ -1,11 +1,8 @@
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 
 import useHoverPreview from "../hooks/useHoverPreview";
-import Grid, { GRID_UNITS, type GridProps } from "./grid";
-import Icon from "./icon";
 
-export interface ProjectCardProps {
+export interface ProjectCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 项目名称 */
   title: string;
   /** 项目简介 */
@@ -20,11 +17,6 @@ export interface ProjectCardProps {
   badges?: { alt: string; src: string }[];
   /** 卡片内额外的链接，例如同一项目中其它仓库的地址 */
   links?: { label: string; url: string }[];
-  /**
-   * 卡片占用的宽度
-   * @description 按一行 `24` 份计算，支持 `1` - `24` 的整数，默认为 `12`
-   */
-  span?: number;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -35,7 +27,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   preview,
   badges,
   links,
-  span = GRID_UNITS / 2,
+  className = "",
+  ...props
 }) => {
   const {
     targetRef: cardRef,
@@ -44,16 +37,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     hidePreview,
   } = useHoverPreview({ src: preview, alt: `${title} 预览` });
 
-  const cardSpan = Math.min(Math.max(Math.round(span) || 1, 1), GRID_UNITS);
-
   return (
-    <div
-      className="project-card"
-      style={{ "--card-span": cardSpan } as React.CSSProperties}
-    >
+    <div className={`max-[640px]:col-span-full ${className}`} {...props}>
       <div
         ref={cardRef}
-        className="theme-card group relative flex h-full cursor-pointer flex-col rounded-xl border border-border bg-background-light p-4 transition duration-300 hover:-translate-y-1 hover:border-primary-light"
+        className="group relative flex h-full cursor-pointer flex-col rounded-xl border border-border bg-background-light p-4 transition duration-300 hover:-translate-y-1 hover:border-primary"
         onMouseEnter={showPreview}
         onMouseLeave={hidePreview}
       >
@@ -63,7 +51,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="project-card-hit absolute inset-0 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="absolute inset-0 rounded-xl hover:!border-0 hover:!pb-0 hover:!no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             onFocus={showPreview}
             onBlur={hidePreview}
           >
@@ -71,7 +59,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </a>
         )}
 
-        <div className="project-card-body pointer-events-none relative z-10 flex flex-1 flex-col gap-3">
+        <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-3 [&_a]:pointer-events-auto">
           <div className="flex items-start gap-3">
             {icon && (
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background-lighter text-lg leading-none">
@@ -83,16 +71,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 <span className="break-words transition-colors group-hover:text-primary">
                   {title}
                 </span>
-                {/* 可跳转的卡片在标题右侧提示外部链接 */}
-                {url && (
-                  <span className="flex h-5 shrink-0 items-center">
-                    <Icon
-                      icon={faArrowUpRightFromSquare}
-                      aria-hidden="true"
-                      className="text-[0.625rem] text-foreground-tertiary transition-colors group-hover:text-primary"
-                    />
-                  </span>
-                )}
               </div>
               <div className="mt-1 text-sm text-foreground-secondary">
                 {description}
@@ -125,7 +103,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   href={linkUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="project-card-link rounded-full border border-primary-light px-2 py-0.5 text-xs !text-primary transition-colors hover:border-primary hover:bg-primary-light hover:!text-on-primary"
+                  className="rounded-full border border-primary-light px-2 py-0.5 text-xs !text-primary transition-colors hover:!border-solid hover:!border-primary hover:bg-primary-light hover:!pb-0.5 hover:!text-on-primary hover:!no-underline"
                 >
                   {label}
                 </a>
@@ -139,15 +117,5 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     </div>
   );
 };
-
-export type ProjectGridProps = GridProps;
-
-/**
- * 项目卡片网格
- * @description 保留此别名以兼容既有用法，新代码建议直接使用 {@link Grid}
- */
-export const ProjectGrid: React.FC<ProjectGridProps> = (props) => (
-  <Grid {...props} />
-);
 
 export default ProjectCard;

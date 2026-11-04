@@ -78,16 +78,16 @@ const useHoverPreview = <T extends HTMLElement = HTMLDivElement>({
     setPosition(null);
   }, []);
 
-  // 滚动或调整窗口时收起预览图，避免悬浮窗与卡片脱节
+  // 滚动时收起预览图，窗口缩放时重新计算位置
   React.useEffect(() => {
     if (!position) return;
     window.addEventListener("scroll", hidePreview, true);
-    window.addEventListener("resize", hidePreview);
+    window.addEventListener("resize", showPreview);
     return () => {
       window.removeEventListener("scroll", hidePreview, true);
-      window.removeEventListener("resize", hidePreview);
+      window.removeEventListener("resize", showPreview);
     };
-  }, [position, hidePreview]);
+  }, [position, hidePreview, showPreview]);
 
   const previewNode =
     src && position && typeof document !== "undefined"

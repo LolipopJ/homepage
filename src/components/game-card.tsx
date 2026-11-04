@@ -1,9 +1,11 @@
 import * as React from "react";
 
 import useHoverPreview from "../hooks/useHoverPreview";
-import { GRID_UNITS } from "./grid";
 
-export interface GameCardProps {
+const artImageClassName =
+  "absolute inset-0 size-full object-cover transition-[opacity,transform] [transition-duration:320ms,420ms] [transition-timing-function:ease,cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
+
+export interface GameCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 游戏名称 */
   title?: string;
   /** 游戏 Logo 图片地址 */
@@ -25,11 +27,6 @@ export interface GameCardProps {
    * @description 仅适用于纯黑色的单色 Logo，彩色 Logo 反色后会失真
    */
   logoInvert?: boolean;
-  /**
-   * 卡片占用的宽度
-   * @description 按一行 `24` 份计算，支持 `1` - `24` 的整数，默认为 `24`
-   */
-  span?: number;
 }
 
 const GameCard: React.FC<GameCardProps> = ({
@@ -42,49 +39,51 @@ const GameCard: React.FC<GameCardProps> = ({
   url,
   preview,
   logoInvert,
-  span = GRID_UNITS,
+  className = "",
+  ...props
 }) => {
   const {
     targetRef: cardRef,
     previewNode,
     showPreview,
     hidePreview,
-  } = useHoverPreview({ src: preview, alt: `${title} 预览` });
-
-  const cardSpan = Math.min(Math.max(Math.round(span) || 1, 1), GRID_UNITS);
+  } = useHoverPreview({ src: preview, alt: `${title} preview` });
 
   return (
     <div
-      className="game-card"
-      style={{ "--card-span": cardSpan } as React.CSSProperties}
+      title={title}
+      className={`relative [--game-card-art-width:6rem] min-[360px]:[--game-card-art-width:clamp(11rem,46%,22rem)] [.post-grid>&]:m-0 ${className}`}
+      {...props}
     >
       <div
         ref={cardRef}
-        className="game-card-frame group"
+        className="group relative isolate"
         onMouseEnter={showPreview}
         onMouseLeave={hidePreview}
       >
-        <div className="game-card-surface theme-card relative rounded-xl border border-border bg-background-light py-4 transition duration-300 hover:border-primary-light">
-          <div className="game-card-body pointer-events-none relative z-10 flex flex-col gap-2">
+        <div className="relative rounded-xl border border-border bg-background-light py-4 pe-[calc(var(--game-card-art-width)+1.25rem)] ps-5 transition duration-300 group-hover:border-primary max-[640px]:pe-[calc(var(--game-card-art-width)+0.75rem)] max-[640px]:ps-4">
+          <div className="pointer-events-none relative z-10 flex flex-col gap-2 [&_a]:pointer-events-auto">
             <div className="flex items-center gap-3">
               <img
                 alt={`${title} Logo`}
                 src={logo}
                 loading="lazy"
                 decoding="async"
-                className={`game-card-logo h-8 w-auto max-w-40 shrink-0 !rounded-none object-contain object-left ${logoInvert ? "game-card-logo-invert" : ""}`}
+                className={`h-12 w-auto max-w-40 shrink-0 !rounded-none object-contain object-left transition-[filter] duration-200 ease-[ease] ${logoInvert ? "game-card-logo-invert" : ""}`}
               />
-              {title && (
+              {/* {title && (
                 <span className="min-w-0 break-words font-bold leading-tight transition-colors group-hover:text-primary">
                   {title}
                 </span>
-              )}
+              )} */}
             </div>
 
             {id && (
-              <div className="game-card-id">
-                <span className="game-card-id-label">ID</span>
-                <span className="game-card-id-value">{id}</span>
+              <div className="flex flex-wrap items-baseline gap-1.5 text-[0.875rem]">
+                <span className="text-[0.625rem] font-bold uppercase leading-none tracking-[0.08em] text-foreground-tertiary">
+                  ID
+                </span>
+                <span className="font-semibold">{id}</span>
               </div>
             )}
 
@@ -98,22 +97,22 @@ const GameCard: React.FC<GameCardProps> = ({
 
         {/* 右侧装饰图，通过越出卡片边界营造层次感 */}
         {image && (
-          <div className="game-card-art">
+          <div className="pointer-events-none absolute -inset-y-3 -right-3 z-20 w-[var(--game-card-art-width)] translate-y-[0.35rem] -rotate-2 overflow-hidden rounded-xl border border-border shadow-lg shadow-[color:var(--shadow-hover)] transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:rotate-0 motion-reduce:transition-none max-[640px]:right-0">
             <img
-              alt={`${title} 图片`}
+              alt={`${title} image`}
               src={image}
               loading="lazy"
               decoding="async"
-              className="game-card-art-img game-card-art-img-idle"
+              className={`${artImageClassName} group-hover:translate-x-[-8%] group-hover:scale-[0.94] group-hover:opacity-0`}
               referrerPolicy="no-referrer"
             />
             {hoverImage && (
               <img
-                alt={`${title} 悬浮图片`}
+                alt={`${title} hover image`}
                 src={hoverImage}
                 loading="lazy"
                 decoding="async"
-                className="game-card-art-img game-card-art-img-hover"
+                className={`${artImageClassName} translate-x-[8%] scale-[1.08] opacity-0 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100`}
                 referrerPolicy="no-referrer"
               />
             )}
@@ -126,7 +125,7 @@ const GameCard: React.FC<GameCardProps> = ({
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="game-card-hit rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="absolute inset-0 rounded-xl hover:!border-0 hover:!pb-0 hover:!no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <span className="sr-only">{title}</span>
           </a>

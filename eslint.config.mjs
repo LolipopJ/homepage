@@ -20,6 +20,16 @@ export default defineConfig([
   reactHooks.configs.flat.recommended,
   tailwind.configs["flat/recommended"],
   {
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+    },
+    rules: {
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+      "tailwindcss/no-custom-classname": "off",
+    },
+  },
+  {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       globals: {
@@ -33,18 +43,10 @@ export default defineConfig([
         version: "detect",
       },
     },
-    plugins: {
-      "simple-import-sort": simpleImportSort,
-    },
-    rules: {
-      "tailwindcss/no-custom-classname": 0,
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
-    },
   },
   {
     files: ["blog/**/*.mdx"],
-    extends: [mdx.flat],
+    extends: [mdx.flat, mdx.flatCodeBlocks],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -52,9 +54,9 @@ export default defineConfig([
         Link: "readonly",
         HintText: "readonly",
         GameCard: "readonly",
+        GamePlatformCard: "readonly",
         Grid: "readonly",
         ProjectCard: "readonly",
-        ProjectGrid: "readonly",
         __PATH_PREFIX__: true,
       },
     },
@@ -63,13 +65,6 @@ export default defineConfig([
         version: "detect",
       },
     },
-    rules: {
-      "tailwindcss/no-custom-classname": "off",
-    },
-  },
-  {
-    files: ["blog/**/*.mdx"],
-    extends: [mdx.flatCodeBlocks],
   },
   prettierRecommended,
 ]);

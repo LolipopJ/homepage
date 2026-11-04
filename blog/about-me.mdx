@@ -2,6 +2,40 @@
 title: 你好，这里是 Lolipop
 ---
 
+import {
+  faPlaystation,
+  faSteam,
+  faXbox,
+} from "@fortawesome/free-brands-svg-icons";
+
+import arknightsEndfieldScreenshot from "./posts/about-me/arknights-endfield-20260923.png";
+import arknightsEndfieldLogo from "./posts/about-me/arknights-endfield-logo.png";
+import blueArchiveScreenshot from "./posts/about-me/blue-archieve-20260129.jpg";
+import blueArchiveLogo from "./posts/about-me/blue-archive-logo.png";
+import designPatternsPreview from "./posts/about-me/design-patterns-for-humans-zh-preview.png";
+import ffxivLogo from "./posts/about-me/ffxiv-logo.png";
+import ffxivPfbotPreview from "./posts/about-me/ffxiv-pfbot-preview.png";
+import gitalkReactPreview from "./posts/about-me/gitalk-react-preview.png";
+import jobsZhCnPreview from "./posts/about-me/jobs-zh-cn-preview.png";
+import leagueOfLegendsScreenshot from "./posts/about-me/league-of-legends-20260130.jpg";
+import leagueOfLegendsLogo from "./posts/about-me/league-of-legends-logo.png";
+import mdimgPreview from "./posts/about-me/mdimg-preview.png";
+import nintendoLogo from "./posts/about-me/nintendo.svg";
+import nintendoAvatar from "./posts/about-me/nintendo-avatar.webp";
+import pixivPreviewerPreview from "./posts/about-me/pixiv-previewer-l-preview.jpg";
+import playstationAvatar from "./posts/about-me/playstation-avatar.png";
+import ps5 from "./posts/about-me/ps5.webp";
+import richPresenceReactPreview from "./posts/about-me/rich-presence-react-preview.png";
+import rtx4070Super from "./posts/about-me/rtx-4070-super.png";
+import steamAvatar from "./posts/about-me/steam-avatar.webp";
+import switch2 from "./posts/about-me/switch-2.png";
+import timelinePreview from "./posts/about-me/timeline-preview.png";
+import wplaceBluemarblePreview from "./posts/about-me/wplace-bluemarble-preview.png";
+import wutheringWavesScreenshot from "./posts/about-me/wuthering-waves-20260923.jpg";
+import wutheringWavesLogo from "./posts/about-me/wuthering-waves-logo.png";
+import xboxAvatar from "./posts/about-me/xbox-avatar.png";
+import xboxOneS from "./posts/about-me/xbox-one-s.png";
+
 欢迎您造访我的个人主页 & 技术博客！
 
 ## 关于博客
@@ -16,25 +50,27 @@ title: 你好，这里是 Lolipop
 
 至于平时琐碎、矛盾而无法整理成文的想法，则放到了这里：
 
-<p>
+<Grid>
   <Card
+    className="col-span-full"
     headline="生活随想 ☄️"
     body="不爱在空间或朋友圈发表生活的种种，也不想在个人的博客中放置太杂乱的东西。于是简单地在 Github Issues 中找到这些琐碎想法，感动降临瞬间的归宿。"
     actions={[
       { label: "看看", url: "https://github.com/LolipopJ/LolipopJ/issues/2" },
     ]}
   />
-</p>
+</Grid>
 
 我还部署了专属于我的时间线站点，按照时间聚合了包含这些想法在内与我相关的动态：
 
-<p>
+<Grid>
   <Card
+    className="col-span-full"
     headline="我的时间线 🎻"
     body="承载诸如生活随想、空间说说和视频收藏此类东西的一条时间线。"
     actions={[{ label: "看看", url: "https://timeline.towind.cn" }]}
   />
-</p>
+</Grid>
 
 ## 描述我自己
 
@@ -44,13 +80,14 @@ title: 你好，这里是 Lolipop
 
 我的主业是前端开发工程师，常使用 React 技术栈构建 Web 页面，也基于 Node.js 运行时部署后端服务。
 
-<p>
+<Grid>
   <Card
+    className="col-span-full"
     headline="我的简历 🤵🏻"
     body="写有我的工作经历、实习经历以及项目经历等等，用于面试求职赚 Money。"
     actions={[{ label: "瞅瞅", url: "https://resume.towind.cn" }]}
   />
-</p>
+</Grid>
 
 AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一位优秀的前端架构师，但现在更想成为一位**有品味的软件工程师**。不再局限于简单的前后端分工，而是确确实实地能从无到有，解决发现的痛点问题，推动项目的实现与落地。
 
@@ -63,8 +100,8 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="mdimg"
     icon="🖼️"
     url="https://github.com/LolipopJ/mdimg"
-    preview="/images/mdimg-preview.png"
-    span={24}
+    preview={mdimgPreview}
+    className="col-span-full"
     badges={[
       {
         alt: "mdimg-version",
@@ -85,8 +122,8 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="gitalk-react"
     icon="💬"
     url="https://github.com/LolipopJ/gitalk-react"
-    preview="/images/gitalk-react-preview.png"
-    span={24}
+    preview={gitalkReactPreview}
+    className="col-span-full"
     badges={[
       {
         alt: "gitalk-react-version",
@@ -108,7 +145,7 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     icon="🔍"
     url="https://github.com/LolipopJ/dupimg-finder"
     preview="https://raw.githubusercontent.com/LolipopJ/dupimg-finder/refs/heads/main/docs/search-duplicate-images.png"
-    span={24}
+    className="col-span-full"
     badges={[
       {
         alt: "dupimg-finder-release",
@@ -121,16 +158,16 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="timeline"
     icon="🎻"
     url="https://github.com/LolipopJ/timeline"
-    preview="/images/timeline-preview.png"
-    span={14}
+    preview={timelinePreview}
+    className="col-span-14"
     description="基于 Bun 和 PostgreSQL 开发的个人时间线，聚合 GitHub Issue 评论、RSS / Atom、QQ 空间说说、Bilibili 收藏与作品、Steam 游戏评测等动态。实现定时同步、搜索和排序、媒体展示，以及管理员对时间线内容的管理。"
   />
   <ProjectCard
     title="rich-presence-react"
     icon="🪅"
     url="https://github.com/LolipopJ/rich-presence-react"
-    preview="/images/rich-presence-react-preview.png"
-    span={10}
+    preview={richPresenceReactPreview}
+    className="col-span-10"
     links={[
       {
         label: "discord-activity-sender",
@@ -143,15 +180,15 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="ffxiv-pfbot"
     icon="🪧"
     url="https://github.com/LolipopJ/ffxiv-pfbot"
-    preview="/images/ffxiv-pfbot-preview.png"
-    span={10}
+    preview={ffxivPfbotPreview}
+    className="col-span-10"
     description="面向 FFXIV 国际服的 Discord 招募订阅机器人。从 xivpf.com 获取招募，按关键词、数据中心和类别筛选，生成招募卡片。"
   />
   <ProjectCard
     title="homepage"
     icon="🏠"
     url="https://github.com/LolipopJ/homepage"
-    span={14}
+    className="col-span-14"
     badges={[
       {
         alt: "homepage-last-commit",
@@ -165,21 +202,21 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     icon="🪪"
     url="https://github.com/LolipopJ/resume"
     preview="https://raw.githubusercontent.com/LolipopJ/resume/refs/heads/main/exports/resume-zh.png"
-    span={12}
+    className="col-span-12"
     description="参考 best-resume-ever 的 Creative 模板，用 React 和 Next.js 重写自己的简历页面。支持中英文配置、主题切换，以及 PDF 和图片导出，并优化导出尺寸与背景显示。"
   />
   <ProjectCard
     title="telly-bot"
     icon="🤖"
     url="https://github.com/LolipopJ/telly-bot"
-    span={12}
+    className="col-span-12"
     description="基于 Bun 和 TypeScript 的 Telegram 机器人及个人 API 服务。整合 AList 随机图片、AI 对话、Minecraft 服务器监控，以及 GitHub Issue 评论和博客转发等功能。"
   />
   <ProjectCard
+    className="col-span-full"
     title="uestc-coursework-repo"
     icon="🎓"
     url="https://github.com/LolipopJ/uestc-coursework-repo"
-    span={24}
     badges={[
       {
         alt: "uestc-coursework-repo-stars",
@@ -199,8 +236,8 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="PixivPreviewerL"
     icon="🎨"
     url="https://github.com/LolipopJ/PixivPreviewerL"
-    preview="/images/pixiv-previewer-l-preview.jpg"
-    span={24}
+    preview={pixivPreviewerPreview}
+    className="col-span-full"
     badges={[
       {
         alt: "pixiv-previewer-l-tag",
@@ -217,15 +254,15 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="EfficientIR"
     icon="🧩"
     url="https://github.com/LolipopJ/EfficientIR"
-    span={12}
+    className="col-span-12"
     description="围绕 dupimg-finder 的需求，增加无界面调用、自定义配置路径和多进程特征提取，优化文件扫描、批量索引和进度显示，处理 Windows 打包及索引文件相关的问题。"
   />
   <ProjectCard
     title="Wplace-BlueMarble"
     icon="🖌️"
     url="https://github.com/LolipopJ/Wplace-BlueMarble"
-    preview="/images/wplace-bluemarble-preview.png"
-    span={12}
+    preview={wplaceBluemarblePreview}
+    className="col-span-12"
     description="扩展待绘制像素的提取、排序和复制，增加颜色筛选、筛选配置持久化与数量统计。"
     links={[
       {
@@ -238,36 +275,37 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     title="design-patterns-for-humans-zh"
     icon="📚"
     url="https://github.com/LolipopJ/design-patterns-for-humans-zh"
-    preview="/images/design-patterns-for-humans-zh-preview.png"
-    span={14}
+    preview={designPatternsPreview}
+    className="col-span-14"
     description="翻译和整理 Design Patterns for Humans，结合 JavaScript 示例解释设计模式，并搭建 VuePress 阅读站点。"
   />
   <ProjectCard
     title="jobs-zh-CN"
     icon="📈"
     url="https://github.com/LolipopJ/jobs-zh-CN"
-    span={10}
+    preview={jobsZhCnPreview}
+    className="col-span-10"
     description="将 AI 对美国就业市场影响的可视化项目翻译为中文，补充数据翻译脚本、职业数据、界面和说明。"
   />
   <ProjectCard
     title="现代 JavaScript 教程"
     icon="📙"
     url="https://github.com/LolipopJ/zh.javascript.info"
-    span={11}
+    className="col-span-11"
     description="添加 Python 脚本，将教程导出为 EPUB，方便离线阅读。"
   />
   <ProjectCard
     title="tieba-signin"
     icon="📅"
     url="https://github.com/LolipopJ/tieba-signin"
-    span={13}
+    className="col-span-13"
     description="将运行方式改为 Docker 部署，支持环境变量配置和定时执行，并添加 Discord Webhook 结果推送。"
   />
   <ProjectCard
+    className="col-span-full"
     title="FFXIV 汉化工具链"
     icon="🌏"
     url="https://github.com/LolipopJ/FFXIVChnTextPatch-GP"
-    span={24}
     links={[
       {
         label: "SaintCoinach-GP",
@@ -285,10 +323,10 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
     description="在 SaintCoinach-GP 中编写 CSV 过滤和转换脚本，保留主键与字符串列、统一类型与转义规则；在 FFXIVChnTextPatch-GP 中分离文本汉化、字体替换及各自的还原操作，优化校验和进度显示；在 FFXIVChnTextPatch-Souma 中集成自定义补丁工具，并在分支中补充其他遗漏文本。"
   />
   <ProjectCard
+    className="col-span-full"
     title="文档与部署实践"
     icon="📝"
     url="https://github.com/LolipopJ/lowcode-engine"
-    span={24}
     links={[
       {
         label: "what-you-need-know-about-house",
@@ -355,13 +393,14 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 
 于是在羽毛球之外，我选择了更经济、更舒适自由的健身方式：户外跑步（散步）。我通过智能手表记录行程与配速，使用 Keep 集成并管理数据，最后同步到自己的 Running Page 上，以此提高健身的积极性。
 
-<p>
+<Grid>
   <Card
+    className="col-span-full"
     headline="我的跑步主页 🏃"
     body="我从 2018 年开始有了跑步记录，这里描绘着所有运动的轨迹。"
     actions={[{ label: "访问", url: "https://run.towind.cn" }]}
   />
-</p>
+</Grid>
 
 嗯，为什么这么多的空白时间？嘿嘿嘿，毕竟想要去运动想要保持良好体重的心情是一阵一阵的，而且遇到天气热的日子要出门跑步也很辛苦嘛\~
 
@@ -377,62 +416,110 @@ AI 时代的巨浪推动着人大步向前，过去我的目标只是成为一�
 
 ![Exophase Game Card](https://card.exophase.com/2/0/264160.png)
 
-主要活跃的游戏平台：
-
-- [Steam](https://steamcommunity.com/id/lolipopj_703)
-- [PlayStation](https://www.exophase.com/psn/user/KNKDaisy)
-- [Nintendo](https://www.exophase.com/nintendo/user/ff7e9abe3e49da78)
-- [Xbox](https://www.exophase.com/xbox/user/Lolipop703)
+<Grid>
+  <GamePlatformCard
+    className="col-span-12"
+    platform="Steam"
+    platformColor={{ light: "#2a475e", dark: "#66c0f4" }}
+    logo={faSteam}
+    id="lolipopj_703"
+    url="https://steamcommunity.com/id/lolipopj_703"
+    avatar={steamAvatar}
+    hardware="影驰 RTX 4070 SUPER 星曜 OC 显卡"
+    hardwareImage={rtx4070Super}
+  />
+  <GamePlatformCard
+    className="col-span-12"
+    platform="PlayStation"
+    platformColor={{ light: "#0070cc", dark: "#00aaff" }}
+    logo={faPlaystation}
+    id="KNKDaisy"
+    url="https://www.exophase.com/psn/user/KNKDaisy"
+    avatar={playstationAvatar}
+    hardware="PS5 标准版主机"
+    hardwareImage={ps5}
+  />
+  <GamePlatformCard
+    className="col-span-12"
+    platform="Nintendo"
+    platformColor={{ light: "#e60012", dark: "#ff3344" }}
+    logo={nintendoLogo}
+    id="Lolipop"
+    url="https://www.exophase.com/nintendo/user/ff7e9abe3e49da78"
+    avatar={nintendoAvatar}
+    hardware="Switch 2"
+    hardwareImage={switch2}
+  />
+  <GamePlatformCard
+    className="col-span-12"
+    platform="Xbox"
+    platformColor={{ light: "#107c10", dark: "#1ba135" }}
+    logo={faXbox}
+    id="Lolipop703"
+    url="https://www.exophase.com/xbox/user/Lolipop703"
+    avatar={xboxAvatar}
+    hardware="Xbox One S"
+    hardwareImage={xboxOneS}
+  />
+</Grid>
 
 现在尚在游玩的网游和手游：
 
-<GameCard
-  logo="/images/league-of-legends-logo.png"
-  id="天童愛麗絲"
-  description="祖安"
-  url="/images/league-of-legends-20260130.jpg"
-  image="	https://lol.qq.com/act/export/artbook/content/champion/00_intro/intro_01.jpg"
-  hoverImage="https://lol.qq.com/act/export/artbook/content/champion/16_end/end_01.jpg"
-/>
-
-<GameCard
-  logo="/images/ffxiv-logo.png"
-  logoInvert
-  id="Gugu Du"
-  description="国际服 · Gaia · Bahamut"
-  url="https://www.fflogs.com/character/id/20629736"
-  image="https://static.web.sdo.com/jijiamobile/pic/ff14/wallpaper/20200520/2.x_14_1924x1200.JPG"
-  hoverImage="https://static.web.sdo.com/jijiamobile/pic/ff14/191010shismages/8EpgyYLq3KBtFUq0zgYgIan1n8.jpg"
-/>
-
-<GameCard
-  logo="/images/blue-archive-logo.png"
-  id="秋人君"
-  description="国际服"
-  url="/images/blue-archieve-20260129.jpg"
-  image="https://webcnstatic.yostar.net/ba_cn_web/prod/upload/wallpaper/X0_6rTZl.jpeg"
-  hoverImage="https://static.kivo.wiki/images/gallery/A4.%E4%B8%AA%E4%BA%BA%E5%89%A7%E6%83%85%E5%9B%BE%E5%83%8F/%E5%9B%9E%E5%BF%86%E5%A4%A7%E5%8E%85/CH0334_home_Idle_01_1.4190000000000003.png"
-/>
-
-<GameCard
-  logo="/images/wuthering-waves-logo.png"
-  logoInvert
-  id="星晴的秋人君"
-  description="国服"
-  url="/images/wuthering-waves-20260923.jpg"
-  image="https://prod-alicdn-community.kurobbs.com/forum/814121bf17ab4e389a3bc3c29265536020250524.jpg"
-  hoverImage="https://i0.hdslb.com/bfs/new_dyn/20850fdf6607a787ac9887670a47e633448738328.png"
-/>
-
-<GameCard
-  logo="/images/arknights-endfield-logo.png"
-  logoInvert
-  id="星晴的秋人君#0734"
-  description="国服"
-  url="/images/arknights-endfield-20260923.png"
-  image="https://web.hycdn.cn/endfield/landing/ua/Q7MZK9XA/assets/imgs/kv-obt-pc.1d54f2.jpg"
-  hoverImage="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/86b3553ade80dc37eabc33e3e76a509a052080e3/ss_86b3553ade80dc37eabc33e3e76a509a052080e3.1920x1080.jpg"
-/>
+<Grid>
+  <GameCard
+    className="col-span-full"
+    title="英雄联盟"
+    logo={leagueOfLegendsLogo}
+    id="天童愛麗絲"
+    description="祖安 · 艾欧尼亚 · 征服之海"
+    url={leagueOfLegendsScreenshot}
+    image="	https://lol.qq.com/act/export/artbook/content/champion/00_intro/intro_01.jpg"
+    hoverImage="https://lol.qq.com/act/export/artbook/content/champion/16_end/end_01.jpg"
+  />
+  <GameCard
+    className="col-span-full"
+    title="最终幻想XIV"
+    logo={ffxivLogo}
+    logoInvert
+    id="Gugu Du"
+    description="国际服 · Gaia · Bahamut"
+    url="https://www.fflogs.com/character/id/20629736"
+    image="https://static.web.sdo.com/jijiamobile/pic/ff14/wallpaper/20200520/2.x_14_1924x1200.JPG"
+    hoverImage="https://static.web.sdo.com/jijiamobile/pic/ff14/191010shismages/8EpgyYLq3KBtFUq0zgYgIan1n8.jpg"
+  />
+  <GameCard
+    className="col-span-full"
+    title="碧蓝档案"
+    logo={blueArchiveLogo}
+    id="秋人君"
+    description="国际服 · ARVPKZKJ"
+    url={blueArchiveScreenshot}
+    image="https://webcnstatic.yostar.net/ba_cn_web/prod/upload/wallpaper/X0_6rTZl.jpeg"
+    hoverImage="https://static.kivo.wiki/images/gallery/A4.%E4%B8%AA%E4%BA%BA%E5%89%A7%E6%83%85%E5%9B%BE%E5%83%8F/%E5%9B%9E%E5%BF%86%E5%A4%A7%E5%8E%85/CH0334_home_Idle_01_1.4190000000000003.png"
+  />
+  <GameCard
+    className="col-span-full"
+    title="鸣潮"
+    logo={wutheringWavesLogo}
+    logoInvert
+    id="星晴的秋人君"
+    description="国服 · 131452552"
+    url={wutheringWavesScreenshot}
+    image="https://prod-alicdn-community.kurobbs.com/forum/814121bf17ab4e389a3bc3c29265536020250524.jpg"
+    hoverImage="https://i0.hdslb.com/bfs/new_dyn/20850fdf6607a787ac9887670a47e633448738328.png"
+  />
+  <GameCard
+    className="col-span-full"
+    title="明日方舟：终末地"
+    logo={arknightsEndfieldLogo}
+    logoInvert
+    id="星晴的秋人君#0734"
+    description="国服 · 1167291791"
+    url={arknightsEndfieldScreenshot}
+    image="https://web.hycdn.cn/endfield/landing/ua/Q7MZK9XA/assets/imgs/kv-obt-pc.1d54f2.jpg"
+    hoverImage="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4732690/86b3553ade80dc37eabc33e3e76a509a052080e3/ss_86b3553ade80dc37eabc33e3e76a509a052080e3.1920x1080.jpg"
+  />
+</Grid>
 
 曾玩了很久但如今已退坑的网游和手游：
 

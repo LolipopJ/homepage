@@ -33,6 +33,7 @@ plugins/                 自定义 remark 和 PostCSS 插件
 blog/posts/              已公开文章及配套资源
 blog/drafts/             草稿及配套资源
 blog/about-me.mdx        关于页面内容
+blog/posts/about-me/     关于页面图片
 static/                  原样复制到站点根目录的静态资源及验证文件
 tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 .github/workflows/       构建和部署流程
@@ -71,7 +72,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 - 文章路径为 `/posts/<slug>`，关于页面为 `/about-me`，分类与标签列表分别为 `/categories/<category>`、`/tags/<tag>`。页面由 `gatsby-node.ts` 创建，模板通过 `?__contentFilePath=` 加载 MDX 正文。
 - **草稿不是私密内容。** 当前生产构建仍为草稿创建详情页；生产分类/标签列表、首页查询、RSS 和 Algolia 的公开内容筛选各自位于 `gatsby-node.ts`、[useAllMdx.ts](src/hooks/useAllMdx.ts) 和 `gatsby-config.ts`。调整发布规则时一并核对这些入口。
 - 修改文章字段时，同步维护 `MdxNode` 类型以及使用该字段的页面、列表、RSS 和 Algolia GraphQL 查询。搜索记录类型 `AlgoliaPostItem` 定义在 [algolia-search.tsx](src/components/algolia-search.tsx)，供构建配置复用。
-- [文章模板](src/templates/post.tsx) 注册了 `Card`、`Link`、`HintText`、`GameCard`、`Grid`、`ProjectCard`、`ProjectGrid`，并接管链接与图片渲染。`Grid` 是通用的 24 份网格，`ProjectGrid` 保留为其别名。新增无需显式导入的 MDX 组件时，同步更新模板映射与 `eslint.config.mjs` 中的 MDX globals。
+- [文章模板](src/templates/post.tsx) 注册了 `Card`、`Link`、`HintText`、`GameCard`、`GamePlatformCard`、`Grid`、`ProjectCard`，并接管链接与图片渲染。`Grid` 是通用的 24 份网格，`ProjectGrid` 保留为其别名。新增无需显式导入的 MDX 组件时，同步更新模板映射与 `eslint.config.mjs` 中的 MDX globals。
 - Mermaid 代码块由 [remark 插件](plugins/remark-skip-code-block.ts) 跳过 Prism 高亮，再由 [useMermaid](src/hooks/useMermaid.ts) 在浏览器加载、渲染。修改代码块处理时保持这两个阶段配合。
 
 ## React、主题与样式
@@ -79,9 +80,9 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 - 保持 Gatsby SSR 可执行。浏览器 API 放在 effect、事件处理或明确的客户端调用路径中，避免模块加载或服务端渲染期间直接访问 `window`、`document`、`localStorage`。
 - 浏览器与 SSR 入口必须使用一致的 `ThemeProvider`。`gatsby-ssr.js` 在 React 启动前注入 `getThemeScript()`，React 首次渲染与 SSR 保持一致，避免主题闪烁或 hydration 不匹配。
 - 主题偏好为 `system | light | dark`，实际主题为 `light | dark`；存储键、解析和首屏脚本由 [theme.ts](src/utils/theme.ts) 统一维护。组件通过 [useTheme](src/hooks/useTheme.ts) 使用主题，不另建存储键或主题状态。
-- 样式以根元素的 `data-theme` 和语义 CSS 变量为准。颜色变量放在 [theme.css](src/styles/theme.css)，文章主题适配放在 [theme-content.css](src/styles/theme-content.css)，Tailwind 映射放在 `tailwind.config.js`。
+- 样式以根元素的 `data-theme` 和语义 CSS 变量为准。颜色变量放在 [theme.css](src/styles/theme.css)，文章亮暗主题配色放在 [theme-content.css](src/styles/theme-content.css)，Tailwind 映射放在 `tailwind.config.js`。组件布局和交互样式放在组件的 `className` 中。
 - Prism 与 Gitalk 的明暗样式由 [postcss-theme-scope.cjs](plugins/postcss-theme-scope.cjs) 按来源文件限定作用域；修改导入、选择器处理或插件顺序时保留对逗号选择器和 keyframes 的正确处理。
-- Tailwind 的 `content` 当前扫描指定的 `src/` 目录，不包含 `blog/`。需要在 MDX 中新增工具类时，确认类名能够被扫描生成。
+- Tailwind 的 `content` 扫描 `blog/**/*.mdx` 和指定的 `src/` 目录。`Grid` 的子组件可通过 `className` 使用 `col-span-1` 至 `col-span-24` 设置列宽。
 - 交互组件沿用现有 React、Motion、Tailwind 和 CSS 变量体系。effect 中创建的监听器、定时器和第三方实例由对应 effect 清理。
 
 ## 密钥、构建与部署

@@ -39,23 +39,8 @@ html[data-theme] .post-entry code[class*="language-"] {
   color: var(--code-foreground);
   text-shadow: none;
 }
-.post-entry .gatsby-highlight[data-language] {
-  position: relative;
-}
 .post-entry .gatsby-highlight[data-language]::before {
-  content: attr(data-language);
-  position: absolute;
-  top: 0.25rem;
-  right: -1rem;
   color: var(--foreground-secondary);
-  opacity: 0.3;
-  font-size: 0.75rem;
-  font-weight: bold;
-  line-height: 1;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  pointer-events: none;
-  user-select: none;
 }
 html[data-theme] .post-entry a code[class*="language-"] {
   color: inherit;
@@ -63,74 +48,7 @@ html[data-theme] .post-entry a code[class*="language-"] {
 html[data-theme] .post-entry pre:has(> .mermaid) {
   background: var(--background-light);
 }
-/* 卡片网格，与正文中的图片一致地向两侧突破正文栏 */
-.post-grid {
-  display: grid;
-  grid-template-columns: repeat(24, minmax(0, 1fr));
-  gap: 0.75rem;
-  width: calc(100% + 3rem);
-  margin-block: 1.5rem;
-  margin-inline: -1.5rem;
-}
-.project-card {
-  grid-column: span var(--card-span) / span var(--card-span);
-}
-/* 卡片内容默认不拦截点击，让整张卡片都能响应跳转 */
-.project-card-body a,
-.game-card-body a {
-  pointer-events: auto;
-}
-/* 卡片内的链接不继承正文链接的波浪下划线 */
-.post-entry .project-card .project-card-hit,
-.post-entry .project-card .project-card-hit:hover,
-.post-entry .project-card .project-card-link,
-.post-entry .project-card .project-card-link:hover,
-.post-entry .game-card .game-card-hit,
-.post-entry .game-card .game-card-hit:hover {
-  text-decoration: none;
-}
-/* 抵消 Heti 与正文链接在悬浮时追加的下内边距、下边框和边框样式重置 */
-.post-entry .project-card .project-card-hit:hover,
-.post-entry .game-card .game-card-hit:hover {
-  padding-block-end: 0;
-  border: 0;
-}
-.post-entry .project-card .project-card-link:hover {
-  padding-block-end: 0.125rem;
-  border: 1px solid var(--primary);
-}
-@media (max-width: 640px) {
-  .project-card {
-    grid-column: span 24 / span 24;
-  }
-}
 
-/* #region 游戏卡片 */
-.game-card {
-  --game-card-art-width: clamp(7.5rem, 38%, 15rem);
-
-  position: relative;
-  margin-block: 1.5rem;
-}
-/* 放入网格时改为占据网格的份数，不再自行突破正文栏 */
-.post-grid > .game-card {
-  grid-column: span var(--card-span) / span var(--card-span);
-  width: auto;
-  margin: 0;
-}
-.game-card-frame {
-  position: relative;
-  isolation: isolate;
-}
-.game-card-surface {
-  padding-block: 1rem;
-  /* 为右侧越界的装饰图预留位置 */
-  padding-inline: 1.25rem calc(var(--game-card-art-width) + 1.25rem);
-}
-.game-card-logo {
-  /* 纯黑色的单色 Logo 在深色主题下需要反色才可见 */
-  transition: filter 200ms ease;
-}
 html[data-theme="dark"] .game-card-logo-invert {
   filter: invert(1);
 }
@@ -138,119 +56,6 @@ html[data-theme="dark"] .game-card-logo-invert {
   :root:not([data-theme]) .game-card-logo-invert {
     filter: invert(1);
   }
-}
-.game-card-id {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-}
-.game-card-id-label {
-  color: var(--foreground-tertiary);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-.game-card-id-value {
-  font-family:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
-}
-/* 右侧装饰图，向卡片之外探出以凸显层次感 */
-.game-card-art {
-  position: absolute;
-  z-index: 20;
-  inset-block: -0.75rem;
-  /* 向右探出卡片边界，营造层次感 */
-  right: -0.75rem;
-  width: var(--game-card-art-width);
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  box-shadow:
-    0 10px 15px -3px var(--shadow-hover),
-    0 4px 6px -4px var(--shadow-hover);
-  pointer-events: none;
-  rotate: -2deg;
-  translate: 0 0.35rem;
-  transition:
-    rotate 400ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 400ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.game-card-frame:hover .game-card-art {
-  rotate: 0deg;
-  translate: 0 0;
-}
-.game-card-art-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition:
-    opacity 320ms ease,
-    scale 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-/* 悬浮时当前图片退场 */
-.game-card-art-img-idle {
-  opacity: 1;
-  scale: 1;
-  translate: 0 0;
-}
-.game-card-art-img-hover {
-  opacity: 0;
-  scale: 1.08;
-  translate: 8% 0;
-}
-.game-card-frame:hover .game-card-art-img-idle {
-  opacity: 0;
-  scale: 0.94;
-  translate: -8% 0;
-}
-/* 悬浮时另一张图片入场 */
-.game-card-frame:hover .game-card-art-img-hover {
-  opacity: 1;
-  scale: 1;
-  translate: 0 0;
-}
-.game-card-hit {
-  position: absolute;
-  inset: 0;
-  border-radius: 0.75rem;
-}
-@media (max-width: 640px) {
-  .game-card {
-    --game-card-art-width: 5.5rem;
-  }
-  .game-card-surface {
-    padding-inline: 1rem calc(var(--game-card-art-width) + 0.75rem);
-  }
-  /* 窄屏没有足够的横向余量，装饰图改为只向上下探出，避免出现横向滚动条 */
-  .game-card-art {
-    right: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .game-card-art,
-  .game-card-art-img {
-    transition: none;
-  }
-}
-/* #endregion 游戏卡片 */
-
-.theme-card {
-  box-shadow:
-    0 4px 6px -1px var(--shadow),
-    0 2px 4px -2px var(--shadow);
-}
-.theme-card:hover {
-  box-shadow:
-    0 10px 15px -3px var(--shadow-hover),
-    0 4px 6px -4px var(--shadow-hover);
 }
 
 html[data-theme] .gitalk.gt-container {

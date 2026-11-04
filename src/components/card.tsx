@@ -46,7 +46,7 @@ const Card: React.FC<CardProps> = (props) => {
   return (
     <div
       ref={cardRef}
-      className={`theme-card group relative overflow-hidden rounded-xl border border-border bg-background-light px-6 py-4 text-foreground transition-shadow duration-300 ${className}`}
+      className={`group relative overflow-hidden rounded-xl border border-border bg-background-light px-6 py-4 text-foreground transition-all duration-300 ${className}`}
       style={
         {
           ...style,

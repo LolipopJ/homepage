@@ -9,10 +9,13 @@ export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
 
 /**
  * 正文中的网格容器
- * @description 与正文中的图片一样向两侧突破正文栏，子元素通过 `--card-span` 声明占用的份数
+ * @description 与正文中的图片一样向两侧突破正文栏，子元素通过 `col-span-1` 至 `col-span-24` 设置列宽
  */
 const Grid: React.FC<GridProps> = ({ className = "", ...restProps }) => (
-  <div className={`post-grid ${className}`} {...restProps} />
+  <div
+    className={`post-grid -mx-6 my-6 grid w-[calc(100%+3rem)] grid-cols-[repeat(24,minmax(0,1fr))] gap-3 ${className}`}
+    {...restProps}
+  />
 );
 
 export default Grid;

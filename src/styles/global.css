@@ -91,6 +91,25 @@
 
   /* #region 博客主体 */
   .post-entry {
+    .gatsby-highlight[data-language] {
+      position: relative;
+
+      &::before {
+        content: attr(data-language);
+        position: absolute;
+        top: 0.25rem;
+        right: -1rem;
+        opacity: 0.3;
+        font-size: 0.75rem;
+        font-weight: bold;
+        line-height: 1;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        pointer-events: none;
+        user-select: none;
+      }
+    }
+
     &.heti {
       summary {
         @apply ps-0;

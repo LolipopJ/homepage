@@ -8,9 +8,10 @@ import * as React from "react";
 
 import Card from "../components/card";
 import GameCard from "../components/game-card";
+import GamePlatformCard from "../components/game-platform-card";
 import Grid from "../components/grid";
 import HintText from "../components/hint-text";
-import ProjectCard, { ProjectGrid } from "../components/project-card";
+import ProjectCard from "../components/project-card";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
@@ -64,9 +65,9 @@ const components: MDXProviderProps["components"] = {
   Link,
   HintText,
   GameCard,
+  GamePlatformCard,
   Grid,
   ProjectCard,
-  ProjectGrid,
 };
 
 type PostPageData = {
