@@ -1,3 +1,4 @@
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { liteClient as algoliasearch } from "algoliasearch/lite";
 import * as React from "react";
 import {
@@ -16,6 +17,7 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_INDEX_NAME,
 } from "../constants/algolia";
+import Icon from "./icon";
 import Post from "./post";
 
 export interface AlgoliaSearchProps extends Omit<
@@ -65,45 +67,74 @@ const AlgoliaSearch: React.FC<AlgoliaSearchProps> = ({
   style,
   ...restProps
 }) => {
-  React.useEffect(() => {
-    const onEsc = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const closeDialog = () => dialogRef.current?.close();
 
-    document.addEventListener("keydown", onEsc);
-    return () => document.removeEventListener("keydown", onEsc);
-  }, [onClose]);
+  React.useEffect(() => {
+    const dialog = dialogRef.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, []);
 
   return (
-    <div
-      onClick={(e) => e.stopPropagation()}
+    <dialog
+      ref={dialogRef}
+      aria-labelledby="search-title"
+      onClose={(event) => {
+        // close 事件异步触发，effect 重放后弹窗可能已重新打开。
+        if (!event.currentTarget.open) onClose();
+      }}
+      onClick={closeDialog}
       className={`
-        flex h-142 max-w-2xl flex-col rounded-xl
+        fixed inset-0 m-auto h-142
+        max-h-[calc(100dvh-2rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]
+        w-[calc(100%-2rem)] max-w-2xl rounded-xl border
+        border-foreground-tertiary bg-dialog-background p-0 text-foreground
+        backdrop:bg-overlay backdrop:backdrop-blur-xs
+        print:hidden
         ${className}
       `}
       style={style}
     >
-      <InstantSearch
-        insights
-        searchClient={searchClient}
-        indexName={ALGOLIA_INDEX_NAME}
-        future={{ preserveSharedStateOnUnmount: true }}
-        {...restProps}
+      <div
+        className="flex h-full min-h-0 flex-col"
+        onClick={(event) => event.stopPropagation()}
       >
-        <Configure hitsPerPage={10} />
-        <SearchBox
-          className="algolia-search-box"
-          onResetCapture={() => onClose()}
-        />
-        <Hits<AlgoliaPostItem>
-          className="algolia-hints"
-          hitComponent={(props) => <Hit {...props} onPostClick={onClose} />}
-        />
-        <Pagination className="algolia-pagination" />
-      </InstantSearch>
-    </div>
+        <div className="flex shrink-0 items-center justify-between px-4 py-2">
+          <h2 id="search-title" className="font-bold">
+            搜索博客
+          </h2>
+          <button
+            type="button"
+            aria-label="关闭搜索"
+            className="
+              flex size-11 item-selectable items-center justify-center
+              rounded-md
+            "
+            onClick={closeDialog}
+          >
+            <Icon icon={faClose} aria-hidden="true" />
+          </button>
+        </div>
+        <InstantSearch
+          insights
+          searchClient={searchClient}
+          indexName={ALGOLIA_INDEX_NAME}
+          future={{ preserveSharedStateOnUnmount: true }}
+          {...restProps}
+        >
+          <Configure hitsPerPage={10} />
+          <SearchBox className="algolia-search-box" placeholder="输入关键词…" />
+          <Hits<AlgoliaPostItem>
+            className="algolia-hints"
+            hitComponent={(props) => (
+              <Hit {...props} onPostClick={closeDialog} />
+            )}
+          />
+          <Pagination className="algolia-pagination" padding={1} />
+        </InstantSearch>
+      </div>
+    </dialog>
   );
 };
 

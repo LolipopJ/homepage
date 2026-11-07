@@ -55,34 +55,41 @@ interface TocItemProps {
   index: number;
   state: TocItemState;
   onRef: (el: HTMLLIElement | null, index: number) => void;
+  onNavigate: () => void;
 }
 
-const TocItem = React.memo<TocItemProps>(({ heading, index, state, onRef }) => {
-  const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
-  return (
-    <li
-      ref={(el) => onRef(el, index)}
-      style={{ marginLeft }}
-      className={`
-        mb-1 item-selectable rounded-lg
-        ${
-          state === "past"
-            ? "text-foreground-secondary"
-            : state === "active"
-              ? "item-selected"
-              : ""
-        }
-      `}
-    >
-      <a href={`#${heading.id}`} className="block px-3 py-2 transition">
-        <span
-          dangerouslySetInnerHTML={{ __html: heading.innerHTML }}
-          className="pointer-events-none"
-        />
-      </a>
-    </li>
-  );
-});
+const TocItem = React.memo<TocItemProps>(
+  ({ heading, index, state, onRef, onNavigate }) => {
+    const marginLeft = `${(Number(heading.nodeName[1]) - 2) * 1}rem`;
+    return (
+      <li
+        ref={(el) => onRef(el, index)}
+        style={{ marginLeft }}
+        className={`
+          mb-1 item-selectable rounded-lg
+          ${
+            state === "past"
+              ? "text-foreground-secondary"
+              : state === "active"
+                ? "item-selected"
+                : ""
+          }
+        `}
+      >
+        <a
+          href={`#${heading.id}`}
+          onClick={onNavigate}
+          className="block px-3 py-2 transition"
+        >
+          <span
+            dangerouslySetInnerHTML={{ __html: heading.innerHTML }}
+            className="pointer-events-none"
+          />
+        </a>
+      </li>
+    );
+  },
+);
 
 interface SidebarStaticContentProps {
   activities: RichPresenceActivity[];
@@ -163,6 +170,9 @@ const Layout: React.FC<PageProps> = (props) => {
     },
     [],
   );
+  const closeSubNavbarDrawer = React.useCallback(() => {
+    setOpenSubNavbarDrawer(false);
+  }, []);
 
   const { title: siteTitle, owner: siteOwner } = useSiteMetadata();
   const posts = useAllMdx();
@@ -598,11 +608,12 @@ const Layout: React.FC<PageProps> = (props) => {
                   : "none"
             }
             onRef={tocRefCallback}
+            onNavigate={closeSubNavbarDrawer}
           />
         ))}
       </ol>
     ),
-    [pageHeadings, currentHeading, tocRefCallback],
+    [pageHeadings, currentHeading, tocRefCallback, closeSubNavbarDrawer],
   );
 
   if (isPostPage) {
@@ -617,8 +628,8 @@ const Layout: React.FC<PageProps> = (props) => {
   return (
     <div
       className="
-        flex h-screen
-        print:h-auto
+        relative isolate flex h-dvh overflow-hidden
+        print:h-auto print:overflow-visible
       "
     >
       {/* 初始化完成前的蒙版层 */}
@@ -688,6 +699,7 @@ const Layout: React.FC<PageProps> = (props) => {
         {siderBarNavItem}
       </SiderBar>
       <SiderBar<SubNavbarActiveKey>
+        id="site-navigation"
         items={subSiderBarItems}
         activeKey={subNavbarActiveKey}
         onActiveKeyChange={setSubNavbarActiveKey}
@@ -717,7 +729,7 @@ const Layout: React.FC<PageProps> = (props) => {
           )
         }
         headerClassName="px-4 mx-3"
-        bodyClassName="px-4 h-[calc(100vh-var(--height-header)*2)] lg:h-[calc(100vh-var(--height-header))]"
+        bodyClassName="px-4 pb-[env(safe-area-inset-bottom)]"
         className={`
           print:hidden
           ${isImmersiveActivated ? "hidden!" : ""}
@@ -728,11 +740,17 @@ const Layout: React.FC<PageProps> = (props) => {
                 2xl:w-88
               `
               : `
-                fixed top-[calc(var(--height-header))] z-20
-                h-[calc(100vh-var(--height-header))] w-full border-none
+                absolute top-header bottom-0 left-0 z-20 w-full border-none
                 transition
                 sm:w-96
-                ${openSubNavbarDrawer ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-96 opacity-0"}`
+                ${
+                  openSubNavbarDrawer
+                    ? "translate-x-0 opacity-100"
+                    : `
+                      pointer-events-none invisible -translate-x-full opacity-0
+                    `
+                }
+              `
           }
         `}
       />
@@ -741,22 +759,27 @@ const Layout: React.FC<PageProps> = (props) => {
       <main
         ref={mainRef}
         className={`
-          flex-1 bg-background
+          min-h-0 min-w-0 flex-1 overscroll-y-contain bg-background
           ${openSubNavbarDrawer || openAlgoliaSearch ? "overflow-hidden" : "overflow-auto"}`}
       >
         <header
           className={`
             sticky top-0 z-20 flex h-header items-center bg-background-light
-            px-8 backdrop-blur-xs
+            px-4 backdrop-blur-xs
+            sm:px-8
             lg:bg-header-background
             print:hidden
             ${isImmersiveActivated ? "hidden!" : ""}
           `}
         >
-          <div
+          <button
+            type="button"
+            aria-label={openSubNavbarDrawer ? "关闭导航" : "打开导航"}
+            aria-expanded={openSubNavbarDrawer}
+            aria-controls="site-navigation"
             className={`
-              mr-4 flex size-8 item-selectable items-center justify-center
-              rounded-md border-2 border-foreground
+              mr-3 flex size-11 shrink-0 item-selectable items-center
+              justify-center rounded-md border-2 border-foreground
               lg:hidden
               ${
                 openSubNavbarDrawer
@@ -775,23 +798,36 @@ const Layout: React.FC<PageProps> = (props) => {
             <Icon
               icon={openSubNavbarDrawer ? faClose : faNavicon}
               className="size-4"
+              aria-hidden="true"
             />
-          </div>
-          <div className="line-clamp-1 flex flex-1 items-center text-lg font-bold">
+          </button>
+          <div
+            className="
+              flex min-w-0 flex-1 items-center truncate text-lg font-bold
+            "
+          >
             {isPostPage ? pageTitle : staticPageTitle}
           </div>
           <div
             className="
-              ml-auto flex shrink-0 items-center justify-end gap-2 pl-4
+              ml-auto flex shrink-0 items-center justify-end gap-2 pl-2
               sm:pl-8
             "
           >
             <ThemeSwitcher />
-            <Icon
-              icon={faSearch}
-              className="item-selectable rounded-md p-2"
+            <button
+              type="button"
+              aria-label="搜索博客"
+              aria-haspopup="dialog"
+              className="
+                flex size-11 item-selectable items-center justify-center
+                rounded-md
+                lg:size-9
+              "
               onClick={() => setOpenAlgoliaSearch(true)}
-            />
+            >
+              <Icon icon={faSearch} aria-hidden="true" />
+            </button>
           </div>
         </header>
 
@@ -799,7 +835,8 @@ const Layout: React.FC<PageProps> = (props) => {
           ref={pageRef}
           className="
             relative
-            min-h-[calc(100vh-var(--height-header)-var(--height-footer))] p-8
+            min-h-[calc(100dvh-var(--height-header)-var(--height-footer))] p-6
+            sm:p-8
             lg:px-16 lg:py-12
             2xl:px-24
           "
@@ -844,8 +881,10 @@ const Layout: React.FC<PageProps> = (props) => {
           {isPostPage && (
             <div
               className="
-                sticky bottom-8 z-10 mt-12 flex flex-col items-end justify-end
-                gap-4 text-sm
+                pointer-events-none sticky
+                bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 mt-12 flex
+                flex-col items-end justify-end gap-4 text-sm
+                sm:bottom-8
                 print:hidden
               "
             >
@@ -853,15 +892,17 @@ const Layout: React.FC<PageProps> = (props) => {
               {!isImmersiveActivated && (
                 <div
                   className={`
-                    relative flex size-9 items-center justify-center
+                    relative flex size-11 items-center justify-center
                     rounded-full transition
-                    ${showBackTop ? "opacity-100" : "pointer-events-none opacity-0"}`}
+                    ${showBackTop ? "pointer-events-auto opacity-100" : "invisible opacity-0"}`}
                   style={{
                     background: `conic-gradient(var(--foreground) ${readProgress * 3.6}deg, var(--foreground-tertiary) ${readProgress * 3.6}deg)`,
                   }}
                 >
                   <ActionButton
                     icon={faChevronUp}
+                    aria-label="回到顶部"
+                    title="回到顶部"
                     onClick={() =>
                       mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })
                     }
@@ -871,7 +912,7 @@ const Layout: React.FC<PageProps> = (props) => {
               {/* 沉浸式浏览按钮 */}
               <div
                 className="
-                  hidden
+                  pointer-events-auto hidden
                   lg:block
                 "
               >
@@ -879,7 +920,7 @@ const Layout: React.FC<PageProps> = (props) => {
                   icon={isImmersive ? faCookieBite : faCookie}
                   onClick={() => setIsImmersive((prev) => !prev)}
                   className={`
-                    size-9 border-2
+                    size-11 border-2
                     ${isImmersive ? "border-foreground" : "border-foreground-tertiary"}`}
                   title={isImmersive ? "退出沉浸模式" : "进入沉浸模式"}
                 />
@@ -891,7 +932,8 @@ const Layout: React.FC<PageProps> = (props) => {
         <footer
           className={`
             flex h-footer flex-col justify-center gap-2 border-t
-            border-foreground-tertiary bg-background-lighter px-16
+            border-foreground-tertiary bg-background-lighter px-6
+            sm:px-16
             print:hidden
             ${isImmersiveActivated ? "hidden!" : ""}
           `}
@@ -992,7 +1034,7 @@ const Layout: React.FC<PageProps> = (props) => {
         <div
           className={`
             ${openSubNavbarDrawer ? "block" : "hidden"}
-            absolute inset-0 bg-overlay backdrop-blur-xs
+            absolute inset-0 z-10 bg-overlay backdrop-blur-xs
             lg:hidden
             print:hidden
           `}
@@ -1002,21 +1044,7 @@ const Layout: React.FC<PageProps> = (props) => {
 
       {/* Algolia 搜索窗口 */}
       {openAlgoliaSearch && (
-        <div
-          onClick={() => setOpenAlgoliaSearch(false)}
-          className="
-            absolute inset-0 z-30 bg-overlay backdrop-blur-xs
-            print:hidden
-          "
-        >
-          <AlgoliaSearch
-            onClose={() => setOpenAlgoliaSearch(false)}
-            className="
-              mx-auto mt-16 max-h-[calc(100vh-4rem)] border
-              border-foreground-tertiary bg-dialog-background
-            "
-          />
-        </div>
+        <AlgoliaSearch onClose={() => setOpenAlgoliaSearch(false)} />
       )}
     </div>
   );

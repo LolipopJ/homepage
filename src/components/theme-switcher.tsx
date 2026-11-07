@@ -33,9 +33,10 @@ const ThemeSwitcher: React.FC<{ className?: string }> = ({
     <button
       type="button"
       className={`
-        flex size-9 item-selectable items-center justify-center rounded-md
+        flex size-11 item-selectable items-center justify-center rounded-md
         focus-visible:outline focus-visible:outline-2
         focus-visible:outline-offset-2 focus-visible:outline-primary
+        lg:size-9
         ${className}
       `}
       aria-label={description}

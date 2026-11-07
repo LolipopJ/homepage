@@ -3,7 +3,7 @@ import * as React from "react";
 
 import Icon from "./icon";
 
-export interface ActionButtonProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: IconDefinition;
   onClick: () => void;
 }
@@ -12,18 +12,21 @@ const ActionButton: React.FC<ActionButtonProps> = (props) => {
   const { icon, onClick, className = "", ...restProps } = props;
 
   return (
-    <div
+    <button
+      type="button"
       className={`
-        flex size-8 cursor-pointer items-center justify-center rounded-full
+        flex size-10 cursor-pointer items-center justify-center rounded-full
         bg-background transition
         hover:bg-foreground hover:text-background
+        focus-visible:outline-2 focus-visible:outline-offset-2
+        focus-visible:outline-primary
         ${className}
       `}
       onClick={onClick}
       {...restProps}
     >
-      <Icon icon={icon} />
-    </div>
+      <Icon icon={icon} aria-hidden="true" />
+    </button>
   );
 };
 

@@ -72,7 +72,8 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
   return (
     <aside
       className={`
-        flex flex-col border-r border-foreground-tertiary bg-background-light
+        flex min-h-0 shrink-0 flex-col border-r border-foreground-tertiary
+        bg-background-light
         ${className}
       `}
       {...restProps}
@@ -99,8 +100,9 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
                 aria-selected={activeKey === item.key}
                 tabIndex={0}
                 className={`
-                  cursor-pointer rounded-full px-2 py-0.5 font-medium transition
-                  sm:px-3
+                  flex min-h-10 cursor-pointer items-center rounded-full px-3
+                  font-medium transition
+                  lg:min-h-8
                   ${activeKey === item.key ? "item-converse-color" : ""}
                 `}
                 onClick={() => handleTabClick(item.key)}
@@ -120,7 +122,7 @@ const SiderBar = <T extends string>(props: SiderBarProps<T>) => {
       <div
         ref={containerRef}
         className={`
-          h-[calc(100vh-var(--height-header))] overflow-x-hidden overflow-y-auto
+          min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain
           ${bodyClassName}
         `}
       >
