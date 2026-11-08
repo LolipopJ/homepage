@@ -52,4 +52,6 @@ const Tags: React.FC<PageProps> = () => {
 
 export default Tags;
 
-export const Head: HeadFC = () => <SEO title="所有标签" />;
+export const Head: HeadFC = ({ location }) => (
+  <SEO title="所有标签" pathname={location.pathname} />
+);

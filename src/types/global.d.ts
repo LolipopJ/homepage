@@ -33,8 +33,14 @@ declare global {
       isDraft: boolean;
     };
     frontmatter: {
+      /** 自定义摘要 / 描述 */
+      description?: string;
       /** 封面图 */
-      banner?: ImageDataLike;
+      banner?:
+        | (ImageDataLike & {
+            publicURL?: string;
+          })
+        | null;
       /** 分类 */
       categories?: string[];
       /** 标签 */

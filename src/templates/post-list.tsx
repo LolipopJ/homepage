@@ -72,10 +72,13 @@ export const query = graphql`
 `;
 
 export const Head = ({
+  location,
   pageContext,
 }: HeadProps<PostListPageData, PostListPageContext>) => {
   const { category, tag } = pageContext;
-  return <SEO title={category ?? tag ?? "博客列表"} />;
+  return (
+    <SEO title={category ?? tag ?? "博客列表"} pathname={location.pathname} />
+  );
 };
 
 export default PostListTemplate;

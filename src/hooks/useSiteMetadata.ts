@@ -10,6 +10,7 @@ export const useSiteMetadata = () => {
           title
           description
           owner
+          siteUrl
         }
       }
     }

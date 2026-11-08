@@ -16,7 +16,7 @@ const config: GatsbyConfig = {
     title: "Lolipop's Studio",
     owner: "Lolipop",
     description:
-      "Homepage and blog of Lolipop, share knowledge about software / frontend development.",
+      "Homepage and blog of Lolipop, share my thoughts about software development & AI technology.",
     siteUrl: "https://blog.towind.cn",
   } as SiteMetadata,
   flags: {

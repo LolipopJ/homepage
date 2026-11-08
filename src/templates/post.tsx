@@ -71,7 +71,7 @@ const components: MDXProviderProps["components"] = {
 };
 
 type PostPageData = {
-  mdx: Pick<MdxNode, "frontmatter"> & {
+  mdx: Pick<MdxNode, "excerpt" | "frontmatter"> & {
     fields: Pick<MdxNode["fields"], "isDraft">;
   };
 };
@@ -233,11 +233,14 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
 export const query = graphql`
   query ($id: String!) {
     mdx(id: { eq: $id }) {
+      excerpt(pruneLength: 200)
       fields {
         isDraft
       }
       frontmatter {
+        description
         banner {
+          publicURL
           childImageSharp {
             gatsbyImageData
           }
@@ -253,8 +256,24 @@ export const query = graphql`
   }
 `;
 
-export const Head = ({ data }: HeadProps<PostPageData, PostPageContext>) => {
-  return <SEO title={String(data.mdx.frontmatter.title)} />;
+export const Head = ({
+  data,
+  location,
+}: HeadProps<PostPageData, PostPageContext>) => {
+  const { title, banner, description } = data.mdx.frontmatter;
+  const { excerpt } = data.mdx;
+  const isProfile =
+    location.pathname === "/about-me" || location.pathname === "/about-me/";
+
+  return (
+    <SEO
+      title={String(title)}
+      description={description ?? excerpt}
+      image={banner?.publicURL}
+      pathname={location.pathname}
+      type={isProfile ? "profile" : "article"}
+    />
+  );
 };
 
 export default PostTemplate;

@@ -70,4 +70,6 @@ const IndexPage: React.FC<PageProps> = () => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <SEO title="主页" />;
+export const Head: HeadFC = ({ location }) => (
+  <SEO title="主页" pathname={location.pathname} />
+);

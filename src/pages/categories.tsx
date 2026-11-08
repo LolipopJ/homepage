@@ -52,4 +52,6 @@ const Categories: React.FC<PageProps> = () => {
 
 export default Categories;
 
-export const Head: HeadFC = () => <SEO title="所有分类" />;
+export const Head: HeadFC = ({ location }) => (
+  <SEO title="所有分类" pathname={location.pathname} />
+);
