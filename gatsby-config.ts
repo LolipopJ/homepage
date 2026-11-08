@@ -184,12 +184,14 @@ const config: GatsbyConfig = {
                   guid: node.fields.slug,
                   custom_elements: [
                     {
-                      "content:original-text": node.body,
+                      "content:encoded": {
+                        _cdata: node.body,
+                      },
                     },
                     {
-                      "content:updated-at": new Date(
+                      "atom:updated": new Date(
                         String(node.frontmatter.updated),
-                      ).toISOString(),
+                      ).toUTCString(),
                     },
                   ],
                 });
