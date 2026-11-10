@@ -1,10 +1,16 @@
 import {
+  type BuildArgs,
   type CreateNodeArgs,
   type CreatePagesArgs,
   type CreateWebpackConfigArgs,
 } from "gatsby";
 import path from "path";
 
+import {
+  generateSitemaps,
+  type MdxQueryResult,
+  type SitePageQueryResult,
+} from "./plugins/sitemap";
 import { parseFilePathToPostSlug } from "./src/utils/post";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -159,4 +165,53 @@ export const createPages = async function ({
       context: { ids, tag },
     });
   });
+};
+
+export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
+  reporter.info(
+    "[sitemap] Generating sitemaps for blog.towind.cn and lolipopj.github.io...",
+  );
+
+  const { data, errors } = await graphql<{
+    allSitePage: {
+      nodes: SitePageQueryResult[];
+    };
+    allMdx: {
+      nodes: MdxQueryResult[];
+    };
+  }>(`
+    query SitemapQuery {
+      allSitePage {
+        nodes {
+          path
+        }
+      }
+      allMdx {
+        nodes {
+          fields {
+            slug
+            isPublic
+            isDraft
+          }
+          frontmatter {
+            date
+            updated
+          }
+        }
+      }
+    }
+  `);
+
+  if (errors || !data) {
+    reporter.panicOnBuild(
+      "[sitemap] Failed to query data for sitemap generation",
+      errors,
+    );
+    return;
+  }
+
+  const publicDir = path.resolve("./public");
+  await generateSitemaps(publicDir, data.allSitePage.nodes, data.allMdx.nodes);
+
+  reporter.info("[sitemap] Successfully generated sitemaps.");
 };

@@ -17,7 +17,7 @@ const config: GatsbyConfig = {
     owner: "Lolipop",
     description:
       "Homepage and blog of Lolipop, share my thoughts about software development & AI technology.",
-    siteUrl: "https://blog.towind.cn",
+    siteUrl: process.env.SITE_URL || "https://blog.towind.cn",
   } as SiteMetadata,
   flags: {
     // DEV_SSR: true,
@@ -29,7 +29,6 @@ const config: GatsbyConfig = {
   plugins: [
     "gatsby-plugin-layout",
     "gatsby-plugin-postcss",
-    "gatsby-plugin-sitemap",
     "gatsby-plugin-image",
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
@@ -207,7 +206,11 @@ const config: GatsbyConfig = {
       resolve: "gatsby-plugin-algolia",
       options: {
         appId: ALGOLIA_APP_ID,
-        apiKey: process.env.ALGOLIA_API_KEY,
+        apiKey:
+          process.env.ALGOLIA_API_KEY ||
+          (process.env.ALGOLIA_DRY_RUN === "true"
+            ? "dry_run_dummy_key"
+            : undefined),
         indexName: ALGOLIA_INDEX_NAME,
         queries: [
           {
@@ -266,7 +269,7 @@ const config: GatsbyConfig = {
         mergeSettings: false,
         concurrentQueries: true,
         dryRun: process.env.ALGOLIA_DRY_RUN === "true",
-        continueOnFailure: false,
+        continueOnFailure: process.env.ALGOLIA_DRY_RUN === "true",
         algoliasearchOptions: { timeouts: { connect: 1, read: 30, write: 30 } },
       },
     },
