@@ -51,6 +51,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 | `pnpm install --frozen-lockfile`     | 按锁文件安装，与 CI 一致                       |
 | `pnpm develop` / `pnpm start`        | 启动 Gatsby 开发服务器                         |
 | `pnpm build`                         | 生产构建；默认会同步 Algolia 索引，见下文      |
+| `pnpm build:dry-run`                 | 生产构建；不会同步 Algolia 索引，开发测试用    |
 | `pnpm serve`                         | 预览已经生成的生产站点                         |
 | `pnpm clean`                         | 清理 Gatsby 缓存和构建产物，按需使用           |
 | `pnpm typecheck`                     | 执行 `tsc --noEmit`                            |
@@ -91,14 +92,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 
 `ALGOLIA_API_KEY` 是构建时使用的索引写入密钥，不放入浏览器代码或 `src/constants/`。浏览器搜索配置位于 `src/constants/algolia.ts`，修改时区分搜索权限和索引写入权限。
 
-**普通 `pnpm build` 会尝试更新 Algolia 索引。** 本地验证设置 `ALGOLIA_DRY_RUN` 为字符串 `true`，执行完后恢复环境设置。PowerShell 示例：
-
-```powershell
-$env:ALGOLIA_DRY_RUN = "true"
-pnpm build
-```
-
-POSIX shell 可使用 `ALGOLIA_DRY_RUN=true pnpm build`。不要为了通过本地验证修改线上索引配置、关闭失败报告或把写入密钥写入源码。
+**`pnpm build` 会尝试更新 Algolia 索引，本地运行时可能报错。** 需要在本地验证构建结果时，请使用命令 `pnpm build:dry-run`。
 
 [部署工作流](.github/workflows/deployment.yml) 在 `main` 分支收到 push 时安装依赖、执行 `pnpm build`，使用 `ALGOLIA_API_KEY` 更新索引，再用 `PERSONAL_ACCESS_TOKEN` 将 `public/` 发布到 `LolipopJ/LolipopJ.github.io` 的 `main` 分支。CI 当前只执行安装和构建，其他检查需要按变更范围在本地运行。
 
@@ -111,7 +105,7 @@ POSIX shell 可使用 `ALGOLIA_DRY_RUN=true pnpm build`。不要为了通过本�
 | 文档                               | 指定文件的 Prettier 检查，核对引用路径、命令和描述                                                |
 | TypeScript / React                 | 指定代码文件的 ESLint 检查、`pnpm typecheck`；用户可见交互在浏览器验证                            |
 | 主题解析、首屏脚本、第三方主题 CSS | 现有主题回归测试；浏览器检查系统主题、显式偏好和刷新后的首屏效果                                  |
-| MDX、GraphQL、路由、构建插件或依赖 | 设置 `ALGOLIA_DRY_RUN=true` 后生产构建；按影响范围用 `pnpm serve` 检查文章、分类/标签、资源与 RSS |
+| MDX、GraphQL、路由、构建插件或依赖 | 执行 `pnpm build:dry-run` 验证生产构建；按影响范围用 `pnpm serve` 检查文章、分类/标签、资源与 RSS |
 | Algolia 查询或搜索记录             | 核对构建查询、记录类型与浏览器搜索消费字段；本地构建保持 dry run                                  |
 
 - 不为机械修改或低风险可逆改动新增测试。仅在复现实际回归或保护容易无声破坏的行为时增加最小测试，优先复用现有 Node.js 测试入口。

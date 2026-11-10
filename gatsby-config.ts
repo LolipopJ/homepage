@@ -208,9 +208,7 @@ const config: GatsbyConfig = {
         appId: ALGOLIA_APP_ID,
         apiKey:
           process.env.ALGOLIA_API_KEY ||
-          (process.env.ALGOLIA_DRY_RUN === "true"
-            ? "dry_run_dummy_key"
-            : undefined),
+          (process.env.DRY_RUN === "true" ? "dry_run_dummy_key" : undefined),
         indexName: ALGOLIA_INDEX_NAME,
         queries: [
           {
@@ -268,8 +266,8 @@ const config: GatsbyConfig = {
         settings: {},
         mergeSettings: false,
         concurrentQueries: true,
-        dryRun: process.env.ALGOLIA_DRY_RUN === "true",
-        continueOnFailure: process.env.ALGOLIA_DRY_RUN === "true",
+        dryRun: process.env.DRY_RUN === "true",
+        continueOnFailure: process.env.DRY_RUN === "true",
         algoliasearchOptions: { timeouts: { connect: 1, read: 30, write: 30 } },
       },
     },

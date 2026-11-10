@@ -17,7 +17,15 @@ Check lint errors:
 pnpm lint
 ```
 
+Build source locally:
+
+```bash
+pnpm build:dry-run
+```
+
 ## Deployment
+
+Build source with Algolia:
 
 ```bash
 pnpm build
