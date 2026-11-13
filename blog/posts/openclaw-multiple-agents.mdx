@@ -67,7 +67,7 @@ moonshot/kimi-k2-thinking-turbo            text       250k     no    yes   confi
 特别的，需要手动修改 OpenClaw 的配置文件，添加想要使用的模型列表。例如，笔者配置的模型列表如下：
 
 ```json
-// ~/.openclaw/config.json
+// ~/.openclaw/openclaw.json
 {
   "agents": {
     "defaults": {
@@ -123,6 +123,9 @@ github-copilot/gpt-4.1                     text+image 125k     no    yes   confi
 在前面的章节里，我根据自己的实际需要，为 OpenClaw 接入了三个大模型提供商，开放了若干款 AI 模型的调用权限。
 
 接下来，根据今天的 [LMSYS LLM 竞技场](https://huggingface.co/spaces/lmarena-ai/arena-leaderboard)排行榜，整理我引入模型的排名结果如下表：
+
+> [!WARNING]
+> 下表引用的 LMSYS Arena 排行榜与模型列表为 2026 年 4 月快照，具体排名、模型版本与定价策略可能已发生变化。
 
 <div style={{ overflow: "auto" }}>
   <table style={{ width: "max-content", margin: 0 }}>

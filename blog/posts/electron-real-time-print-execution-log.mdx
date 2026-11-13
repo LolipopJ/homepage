@@ -165,14 +165,14 @@ ipcMain.on(Events.UPDATE_INDEX, (_, args) => {
      process.stdout.on("data", (data) => {
        browserWindow.webContents.send(
          SpawnEvents.SPAWN_STDOUT,
-         iconv.decode(Buffer.from(data, "binary"), iconvDecoding),
+         iconv.decode(data, iconvDecoding),
        );
      });
 
      process.stderr.on("data", (data) => {
        browserWindow.webContents.send(
          SpawnEvents.SPAWN_STDERR,
-         iconv.decode(Buffer.from(data, "binary"), iconvDecoding),
+         iconv.decode(data, iconvDecoding),
        );
      });
 
@@ -191,9 +191,9 @@ ipcMain.on(Events.UPDATE_INDEX, (_, args) => {
    import { type IpcRendererEvent } from "electron";
 
    const ipc = {
-     on: (channel: string, func: (...args: unknown[]) => void) => {
+     on: <T extends unknown[]>(channel: string, func: (...args: T) => void) => {
        const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-         func(...args);
+         func(...(args as T));
        ipcRenderer.on(channel, subscription);
 
        return () => {

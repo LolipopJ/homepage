@@ -88,11 +88,14 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 
 我们的项目可能无法直接访问到 Telegram 的服务器，可以使用 [**SOCKS5 代理**](https://github.com/mattcg/socks5-https-client)解决这个问题：
 
+> [!WARNING]
+> `socks5-https-client` 与 `node-telegram-bot-api` 底层依赖的 `request` 库均已停止维护并废弃；现代 Node.js Telegram Bot 开发建议使用 `grammY` 或 `telegraf` 等更活跃的框架。
+
 ```js
 const TelegramBot = require("node-telegram-bot-api");
 const proxySocks5Agent = require("socks5-https-client/lib/Agent");
 
-requestOptions = {
+const requestOptions = {
   agentClass: proxySocks5Agent,
   agentOptions: {
     socksHost: process.env.PROXY_SOCKS5_HOST,
@@ -113,7 +116,7 @@ const bot = new TelegramBot(token, {
 ```js
 const TelegramBot = require("node-telegram-bot-api");
 
-requestOptions = {
+const requestOptions = {
   proxy: process.env.PROXY_HTTP,
 };
 
@@ -146,6 +149,9 @@ Telegram Bot 可以通过轮询（polling）和网络钩子（webhook）两种�
 
 如上图所示，当 ngrok 运行时，Telegram Bot 发向 `https://a75b-182-141-75-13.ngrok.io` 的请求，将转发给运行在本地 `http://localhost:4000` 上的程序。
 
+> [!WARNING]
+> ngrok 免费域名已迁移至 `*.ngrok-free.app`，且现行版本需注册账号并配置 `authtoken` 后方可使用。
+
 这样，只需要同时运行我们的项目和 ngrok，我们就可以正常地接收到信息并进行处理了。修改连接 Bot 的代码如下：
 
 ```js
@@ -161,7 +167,7 @@ globalThis.bot = bot;
 现在，Telegram 上机器人收到的消息会立即发送给我们的服务器。最后，在服务器需要处理接收到的 POST 类型请求 `/bot${TELEGRAM_BOT_TOKEN}`，告知 Telegram 我们已经收到新的消息了。可以在 `routes/index.js` 中添加代码如下：
 
 ```js
-router.post(`bot${token}`, (ctx) => {
+router.post(`/bot${token}`, (ctx) => {
   globalThis.bot.processUpdate(ctx.request.body);
   ctx.status = 200;
 });

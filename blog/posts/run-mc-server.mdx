@@ -21,7 +21,7 @@ tags:
 
 Java 版的 Minecraft 服务器依赖于 Java 启动，因此在一切的最开始，需要在服务器上安装 Java 环境。
 
-Java 版的 Minecraft 自 1.18 版本开始需要 Java >= 17。参考网上俯拾皆是的教程，通过包管理工具或前往 [Oracle OpenJDK](https://jdk.java.net/) 页面下载并安装合适版本的 Java。
+Java 版的 Minecraft 在 1.18–1.20.4 版本需要 Java >= 17，而自 1.20.5+（含本文部署的 1.21）起强制要求 **Java 21+**（2026 年的更高版本已要求 Java 25）。参考网上俯拾皆是的教程，通过包管理工具或前往 [Oracle OpenJDK](https://jdk.java.net/) 页面下载并安装合适版本的 Java。
 
 输入 `java -version` 命令查看是否安装成功，在笔者的服务器上打印的结果如下：
 
@@ -81,6 +81,9 @@ screen -dmS mc-server java -Xmx2G -jar fabric-server-mc.1.21-loader.0.15.11-laun
 
 笔者推荐使用开源作者[龙腾猫跃](https://github.com/LTCatt)开发的 [Plain Craft Launcher](https://github.com/Hex-Dragon/PCL2)（[爱发电](https://afdian.net/p/0164034c016c11ebafcb52540025c377)）来下载与启动 Minecraft 客户端。
 
+> [!WARNING]
+> 爱发电域名已由 `afdian.net` 变更为 `afdian.com`，访问旧链接时请注意核对域名。
+
 下载时需选择与服务端相同的 Fabric Loader 和 Fabric API 版本：
 
 ![通过 PCL 下载 Minecraft 客户端](./run-mc-server/download-mc-client.png)
@@ -93,7 +96,7 @@ screen -dmS mc-server java -Xmx2G -jar fabric-server-mc.1.21-loader.0.15.11-laun
 
 我们可以向 Minecraft 服务器添加各种各样的 Fabric 模组。
 
-模组存放于服务器根目录的 `mods/` 目录下，服务器初始化后会默认包含一个 Fabric 依赖的必要模组 `mods/fabric-api-1.0.1+1.21.jar`。我们也只需要像这样，把 `.jar` 格式的模组文件放置到 `mods/` 目录下，就算成功添加模组了。
+模组存放于服务器根目录的 `mods/` 目录下。需要注意的是，Fabric 服务端初始化后不会自动包含 `fabric-api`（前文中的 `1.0.1` 实际上是 Fabric Server Launcher 的版本号），如果所安装的模组依赖它，需手动前往 Modrinth 或 CurseForge 下载对应 1.21 版本的 `fabric-api` 并放入 `mods/` 目录。其余模组也只需要像这样，把 `.jar` 格式的模组文件放置到 `mods/` 目录下，就算成功添加模组了。
 
 您可以在 [Modrinth](https://modrinth.com/mods) 和 [CurseForge](https://www.curseforge.com/minecraft/search?class=mc-mods) 探索和下载想要使用的模组。
 
@@ -146,6 +149,9 @@ AutoModpack 是一个**客户端和服务端模组**，安装了此模组的客�
 ### 配置服务器
 
 参考[此文档](https://minecraft.fandom.com/wiki/Server.properties)按需修改服务器根目录下的 `server.properties` 配置文件。
+
+> [!WARNING]
+> Minecraft Wiki 已迁离 Fandom，现代官方社区文档请访问 [`https://minecraft.wiki/w/Server.properties`](https://minecraft.wiki/w/Server.properties)。
 
 其中值得一提的有：
 

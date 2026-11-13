@@ -187,7 +187,7 @@ clawhub login # 登录 ClawHub 账号，避免配额限制
 
 1. 将 Skill 提供的模板复制到助理的学习目录中：
    ```bash
-   cp -r ~/.openclaw/workspace/skills/self-improving-agent/.learning ~/.openclaw/workspace/.learning
+   cp -r ~/.openclaw/workspace/skills/self-improving-agent/.learnings ~/.openclaw/workspace/.learnings
    ```
 2. 启动技能钩子，在助理遇到报错等情况时，自动触发学习流程：
    ```bash
@@ -270,6 +270,9 @@ Ok to proceed? (y) y
 奥，新来的助理可能还没有使用工具指令如 `cron` 等的权限，所以还需要为它开放权限。
 
 当我尝试通过 Web UI 为助理启用 `cron` 权限时，屎山代码发力了，2026.3.2 版本里的保存按钮无法点击（[#32812](https://github.com/openclaw/openclaw/issues/32812)）。查看这个 Issue 关联的 PR 记录，发现 OpenClaw 整个仓库其实也是一块巨大的 AI 编程试验田，先种下种子，随后维护者采用长成的作物。至于 PR 的质量如何，会否引入新的问题，在人手不足的情况下无法一一校验测试，只能在下次，用户提交 Issue 后，再迭代新一轮的 AI 种子。
+
+> [!WARNING]
+> 上述 `2026.3.2` 版本的 Web UI 保存按钮 Bug 为早期版本问题，后续版本中通常已修复。
 
 这就是几乎完全由 AI 驱动的敏捷开发，好处是真的很快，一个功能点从原型到实现可能就半小时的事情，坏处是很容易引入新的问题，并且会为了修复一个小问题嵌套一堆代码，继而可能又会诱发新的小问题。不过多人协作的人工编码在很多情况下也容易变得如此混乱，只能期待未来在优化仓库代码的时候，能有核心开发者，或是足够厉害的 AI 站出来主导工程重构吧。从我这次的探索体验来看，目前的 OpenClaw 距离正式的 1.0 版本尚有很长一段距离。
 
@@ -358,7 +361,10 @@ OpenClaw 内置了 `browser` 工具，能够让助理直接在宿主机上启动
 
 默认情况下 OpenClaw 会在 `~/.openclaw/workspace` 目录下自动初始化 Git 仓库，但是我不满足于此，懒狗精神发作，希望把整个仓库的重要内容都备份上传到自己的 Github 私有仓库里。尽管这里面包括了**我的密钥等敏感信息**，但上传到私有仓库应该还好吧……还好吧？不会被拿去训练 Copilot 然后某天被闲得没事儿干的用户套出来了吧……
 
-确保能通过 SSH 访问到自己的 Github 账号，顺手把这些老生常谈的命令写在这里：
+确保能通过 SSH 访问到自己的 Github 账号，下面以 **macOS 环境**为例，顺手把这些老生常谈的命令写在这里（前文初次体验是在 Windows 环境下）：
+
+> [!WARNING]
+> 在较新的 macOS 版本中，`ssh-add --apple-use-keychain` 参数已过时，建议在 `~/.ssh/config` 中配置 `UseKeychain yes` 与 `AddKeysToAgent yes` 来自动管理钥匙串中的 SSH 密钥。
 
 ```bash
 # 生成 SSH 密钥对，添加到 SSH 代理中
@@ -460,7 +466,7 @@ chmod +x ~/.openclaw/scripts/backup-workspace.sh
 ~/.openclaw/scripts/backup-workspace.sh
 ```
 
-新建 LaunchAgent 服务，遂电脑启动，每天定时执行脚本。可编写系统服务文件 `~/Library/LaunchAgents/ai.openclaw.backup.plist` 内容如下：
+在 **macOS 环境**下，可以新建 `launchd` LaunchAgent 后台服务，随电脑启动并每天定时执行脚本。可编写系统服务文件 `~/Library/LaunchAgents/ai.openclaw.backup.plist` 内容如下（**注意：`.plist` XML 文件不会展开环境变量，请务必将下方的 `<YOUR_USERNAME>` 手动替换为真实的 macOS 用户名**）：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -473,7 +479,7 @@ chmod +x ~/.openclaw/scripts/backup-workspace.sh
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/$YOUR_USERNAME/.openclaw/scripts/backup-workspace.sh</string>
+        <string>/Users/<YOUR_USERNAME>/.openclaw/scripts/backup-workspace.sh</string>
     </array>
 
     <!-- 每天 00:00 执行脚本 -->
@@ -487,9 +493,9 @@ chmod +x ~/.openclaw/scripts/backup-workspace.sh
 
     <!-- 标准输出和错误日志 -->
     <key>StandardOutPath</key>
-    <string>/Users/$YOUR_USERNAME/.openclaw/logs/backup-workspace.stdout.log</string>
+    <string>/Users/<YOUR_USERNAME>/.openclaw/logs/backup-workspace.stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/$YOUR_USERNAME/.openclaw/logs/backup-workspace.stderr.log</string>
+    <string>/Users/<YOUR_USERNAME>/.openclaw/logs/backup-workspace.stderr.log</string>
 </dict>
 </plist>
 ```

@@ -8,6 +8,9 @@ tags:
   - Linux
 ---
 
+> [!WARNING]
+> 自 `v2ray-core` v5 起，启动命令已变更为 `v2ray run`（不再直接运行 `v2ray &`）；此外，VMess 协议中非零的 `alterId`（旧版 MD5 认证）已被弃用，现行配置应统一将 `alterId` 设为 `0` 以启用更安全的 AEAD 认证。
+
 ## 下载 Release
 
 在 Project-V 的 [Github Releases](https://github.com/v2fly/v2ray-core/releases) 页面下载最新的二进制包。
@@ -86,13 +89,11 @@ ln -s /path/to/v2ray /usr/local/bin
             "users": [
               {
                 "id": "V2RAY_UUID", // 代理服务器的 UUID
-                "alterId": 64 // 代理服务器的 Alter Id，应为不加双引号的数字
+                "alterId": 0 // 现代配置建议设为 0 以启用 AEAD 认证（旧版为 64）
               }
             ]
-          },
-          {
-            // 添加更多的 VMESS 协议代理服务器
           }
+          // 如需配置多个 VMess 代理服务器，可在此处继续追加对象
         ]
       },
 

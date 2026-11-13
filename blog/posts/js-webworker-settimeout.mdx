@@ -63,6 +63,9 @@ export default () => {
 
 通过监听窗口的 `visibilitychange` 事件（兼容性[见于此](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/visibilitychange_event#browser_compatibility)），可以判断页面是否切换到前台：
 
+> [!WARNING]
+> 现代浏览器与 TypeScript 类型定义中，`Document.visibilityState` 仅包含 `"visible"` 与 `"hidden"` 两种状态；早期规范中的 `"prerender"` 与 `"unloaded"` 已被废弃并从标准及 TS 类型中移除。
+
 ```ts
 window.addEventListener("visibilitychange", () => {
   switch (document.visibilityState) {
@@ -71,12 +74,6 @@ window.addEventListener("visibilitychange", () => {
       break;
     case "hidden":
       // 当前页面被切换到后台（不可见）
-      break;
-    case "prerender":
-      // 当前页面被预渲染，且用户不可见
-      break;
-    case "unloaded":
-      // 当前页面被卸载
       break;
   }
 });
@@ -105,8 +102,8 @@ const getLeavePageCountdown = (): number => {
 };
 
 /** 获得离开页面定时器 */
-const getLeavePageTimeout = (): NodeJS.Timeout => {
-  return setTimeout(() => leavePage(), getLeavePageCountdown());
+const getLeavePageTimeout = (): ReturnType<typeof setTimeout> => {
+  return window.setTimeout(() => leavePage(), getLeavePageCountdown());
 };
 
 export default () => {
@@ -248,7 +245,7 @@ const leavePage = () => {
 export default () => {
   useEffect(() => {
     // 新建 Worker 线程
-    // const worker = new Worker("path/to/leavePage.worker.js");
+    const worker = new Worker("path/to/leavePage.worker.js");
 
     // 向 Worker 线程发出消息，设定 12h 后返回消息
     worker.postMessage(12 * 60 * 60 * 1000);
@@ -294,7 +291,7 @@ export default leavePageWorker;
 import LeavePageWorker from "path/to/leavePage.worker.js";
 
 const loadWebWorker = (code: string): Worker => {
-  const blob = new Blob(["(" + code + ")()"]);
+  const blob = new Blob([code], { type: "application/javascript" });
   return new Worker(URL.createObjectURL(blob));
 };
 
@@ -306,6 +303,9 @@ const leavePageWorker = loadWebWorker(LeavePageWorker);
 由于浏览器的 Content Security Policy (CSP) 策略，通过此方法创建 Worker 可能会失败，可以参考[此介绍](https://stackoverflow.com/questions/30280370/how-does-content-security-policy-csp-work)进行解决。
 
 ### Umi 项目的方式
+
+> [!WARNING]
+> Umi 3 与 Webpack `worker-loader` 均已废弃（Umi 4+ / Vite / Webpack 5 已原生支持 `new Worker(new URL('./xxx.worker.ts', import.meta.url))` 语法）。下文仅作历史参考。
 
 根据 [Umi 文档](https://v3.umijs.org/config#workerloader)，对于 Umi 3.4.1+ 的项目，可以进行如下配置启用对 Web Worker 的支持：
 
@@ -360,6 +360,9 @@ Worker 的编译和运行均在后台执行，这意味着即使出现报错也�
 Umi 4.x 内置 Webpack 5.x 作为默认 Bundler，因此[查阅文档](https://webpack.js.org/guides/web-workers)使用即可。
 
 ### 三方库的方式
+
+> [!WARNING]
+> 本小节推荐的 `alewin/useWorker`（`@koale/useworker`）与 `developit/greenlet` 均已长期停止维护或归档，新项目建议优先使用原生 Web Worker 或现代构建工具内置的 Worker 方案（如 Comlink）。
 
 如果不介意 Web Worker 编写是否原生（笔者从不介意！），更推荐选用封装了 Web Worker 能力的三方库，例如 [`alewin/useWorker`](https://github.com/alewin/useWorker) 和 [`developit/greenlet`](https://github.com/developit/greenlet/) 等。
 

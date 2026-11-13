@@ -10,6 +10,13 @@ tags:
   - VSCode
 ---
 
+> [!WARNING]
+> 本文部分配置方式已过时：
+>
+> 1. 传统的 `.eslintrc.*` 配置文件已在 ESLint v9 中废弃，并在 ESLint v10 中正式移除，现行标准为 Flat Config（`eslint.config.*`）。
+> 2. Prettier 与 ESLint 官方均已不再推荐通过 `eslint-plugin-prettier` 在 ESLint 中运行格式化，建议两者各自独立运行，仅保留 `eslint-config-prettier` 关闭冲突规则。
+> 3. 新版 VS Code 中 `editor.codeActionsOnSave` 的布尔值 `true` 已废弃，应改为 `"explicit"` 或 `"always"`。
+
 哪位代码人不希望自己的代码总有统一优美的风格，不会因为合作开发项目而杂乱呢？
 
 在最开始写项目代码的时候我就用起了 ESLint 和 Prettier，再装一堆预设的配置，便跑了起来。令人沮丧的是，用 ESLint 修复了代码**质量**问题，还是会在编译器里看到红色波浪线，提醒还有些代码**风格**需要修复。直到这一次，我才忽然意识到 ESLint 和 Prettier 其实分工了不同领域，协同使用体验极好。
@@ -51,6 +58,9 @@ yarn add --dev eslint prettier
 ```bash
 yarn add --dev eslint-plugin-prettier eslint-config-prettier
 ```
+
+> [!WARNING]
+> `.eslintrc.*` 已在 ESLint v9 废弃、v10 移除，且官方已不再推荐通过 `eslint-plugin-prettier` 运行格式化（建议仅使用 `eslint-config-prettier` 并由 Prettier 独立执行格式化）。下文相关配置仅作历史参考。
 
 将 `eslint-plugin-prettier` 的推荐配置 `plugin:prettier/recommended` 放到 ESLint 配置里 `extends` 的最后一项即可，它将自动配置并启用 `eslint-config-prettier`。如下所示：
 
@@ -115,6 +125,9 @@ yarn lint --fix
 在 VSCode 里，也应当将 ESLint 作为默认的格式化工具。如果正确地安装并启用了 VSCode 的 ESLint 拓展，编辑器就能正确的高亮 ESLint 与 Prettier 检查出来的问题了。
 
 此外，VSCode 还可以设置**保存时自动修复代码问题**，如下所示。这样执行 `Ctrl + S` 保存时会自动格式化代码文件。
+
+> [!WARNING]
+> 新版 VS Code 中 `editor.codeActionsOnSave` 的布尔值 `true` 已废弃，现行配置应改为 `"explicit"` 或 `"always"`。
 
 ```json
 // settings.json

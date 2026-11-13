@@ -12,6 +12,9 @@ description: 记录在 CentOS 环境下执行 yum 或 ldconfig 时出现 xxx is 
 
 ## 问题描述
 
+> [!WARNING]
+> 本文涉及的 CentOS 7/8 均已停止维护（EOL）。现代 RHEL 系发行版（如 Rocky Linux、AlmaLinux、CentOS Stream）的默认包管理器已替换为 `dnf`。
+
 在 CentOS 环境下执行 `yum update` 和 `ldconfig` 命令时都出现提示警告，节选内容如下所示：
 
 ```bash
@@ -59,12 +62,12 @@ lrwxrwxrwx. 1 root root     21 Mar 10 16:26 librdmacm.so.1 -> librdmacm.so.1.1.1
 将 `ldconfig` 命令的错误输出重定向到临时文件中，读取内容，组合使用 `cut` 和 `rm` 命令即可实现删除重复文件，接下来删除存储错误信息的临时文件。最后再次执行 `ldconfig` 创建软链接。
 
 ```bash
-# 标准错误输出到 dupNote 临时文件中
-ldconfig 2> dupNote
-# 删除重复的动态库（非软链接）文件
-cat dupNote | cut -c 11- | rev | cut -c 23- | rev | xargs rm -rf
+# 固定英文输出并将标准错误输出到 dupNote 临时文件中
+LC_ALL=C ldconfig 2> dupNote
+# 仅筛选 "is not a symbolic link" 提示，提取路径并删除重复的动态库文件（避免误删其他报错路径或含空格路径）
+grep "is not a symbolic link" dupNote | cut -c 11- | rev | cut -c 23- | rev | xargs -d '\n' rm -f
 # 删除刚刚创建的临时文件
-rm -rf dupNote
+rm -f dupNote
 # 创建软链接
 ldconfig
 ```
@@ -72,7 +75,7 @@ ldconfig
 当然可以合起来变成一条命令使用：
 
 ```bash
-ldconfig 2> dupNote ; cat dupNote | cut -c 11- | rev | cut -c 23- | rev | xargs rm -rf ; rm -rf dupNote ; ldconfig
+LC_ALL=C ldconfig 2> dupNote && grep "is not a symbolic link" dupNote | cut -c 11- | rev | cut -c 23- | rev | xargs -d '\n' rm -f && rm -f dupNote && ldconfig
 ```
 
 现在执行 `ldconfig` 不再提示 `*** is not a symbolic link` 错误，问题顺利解决！

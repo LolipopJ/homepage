@@ -25,7 +25,7 @@ tags:
 
 ## 首次启动 Mac Mini
 
-这是笔者第一次购买 Mac Mini，在首次启动主机的时候，会需要连接鼠标与键盘。由于 Mac Mini 4 上只有 Type-C 接口，所以可以提前准备拓展坞或者 Type-C 连接线。
+这是笔者第一次购买 Mac Mini，在首次启动主机的时候，会需要连接鼠标与键盘。由于 Mac Mini 4 上没有 USB-A 接口（机身背面除 Thunderbolt / Type-C 接口外还配有 HDMI、以太网口和 3.5mm 耳机孔），如果手头是传统的 USB-A 外设，可以提前准备拓展坞或者 Type-C 连接线。
 
 如果有蓝牙鼠标和蓝牙键盘，就不需要用到这些硬件了：只需要把蓝牙鼠标和蓝牙键盘置于配对模式下，Mac Mini 就会自动配对并连接。
 
@@ -57,6 +57,9 @@ Docker 是管理本地服务的无二之选，首先在 Mac Mini 上下载并安
 }
 ```
 
+> [!WARNING]
+> 国内 Docker 公共镜像加速域名的时效性极短且多数已失效，实际配置时请自行检索当前可用的镜像源或使用代理。
+
 不保证上述镜像仓库始终可用，如失效，可以在网上找到最新有效的地址。
 
 拉取 Rust Desk 的服务端镜像 `rustdesk/rustdesk-server`，运行 hbbs 和 hbbr 容器服务：
@@ -83,6 +86,9 @@ cat path/to/rustdesk/data/id_ed25519.pub
 ![连接到 Mac Mini 远程桌面](./mac-mini-server/connect-to-mac-mini.png)
 
 在默认情况下，远程桌面将使用不可变更的 1920 \* 1080 分辨率，可以使用 Better Dummy 软件为 Mac Mini 虚拟一个显示屏，就可以自定义分辨率与启用 HiDPI 功能了。
+
+> [!WARNING]
+> `Better Dummy` 现已更名为 **BetterDisplay**，新版本可前往其官网或 GitHub 仓库获取。
 
 ![使用 Better Dummy 虚拟显示屏](./mac-mini-server/with-better-dummy.png)
 
@@ -122,6 +128,9 @@ scp /local/path/to/all_databases.sql username@192.168.100.239:/Users/username/Po
 ```
 
 在 Mac Mini 上拉取最新版本的 `postgres` 镜像，启动新的 PostgreSQL 容器：
+
+> [!WARNING]
+> 自 PostgreSQL 18 起，官方 `postgres:latest` 镜像已将数据挂载点调整为 `/var/lib/postgresql`。直接挂载 `/var/lib/postgresql/data` 在 `postgres:latest` 上已不再兼容，建议固定版本标签（如 `postgres:17`）或按照新路径进行挂载。
 
 ```bash
 docker run --name postgres --restart unless-stopped -e POSTGRES_PASSWORD=SECRET_PASSWORD -v /Users/username/PostgreSQL/data:/var/lib/postgresql/data -d -p 5432:5432 postgres:latest

@@ -9,6 +9,9 @@ tags:
   - Workflow
 ---
 
+> [!WARNING]
+> 本文编写于 2021 年，文中工作流所使用的 Node.js 14.x（已停止维护）以及 `actions/checkout@v2`、`actions/setup-node@v1`、`actions/cache@v2`、`peaceiris/actions-gh-pages@v3` 等 Action 版本均已过时或废弃。如需在现行项目中使用，请升级至受支持的 Node.js LTS 版本及对应的最新版 Action。
+
 我真傻，真的，单单受文档的推荐就选择了 Travis 作为部分项目的持续集成工具，没有料到它早已于 2020 年 12 月更换了免费政策，不再为开源项目提供免费的用于持续集成使用的 Credits 了。当赠送的 10000 个点数用完，就需要付费才能进行构建了。
 
 当然，作为经济驱动的公司，近些天来又受 Github Actions 等其它持续集成工具打压了盈利空间，抛弃开源用户选择转型做起了商人事业也并非不可理解。感谢它曾为开发者提供的便利，不过作为一个佛系开发者，终于还是需要转投到别的免费工具上去了——Gihub Actions。
@@ -80,17 +83,18 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
+          # github_token 与 deploy_key 二选一即可，不能同时配置
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          deploy_key: ${{ secrets.ACCESS_TOKEN }}
+          # deploy_key: ${{ secrets.ACCESS_TOKEN }}
           publish_dir: vuepress/docs/.vuepress/dist
           publish_branch: gh-pages
 ```
 
 ## 创建 SSH Deploy Key
 
-这一步是为了给 Github Actions 远程服务器访问我的 Github 账号提供凭证。如果没有设置 Github 账户双重验证或其它安全验证，可以移除上面脚本中的 `deploy_key` 属性然后跳过这一步。但是假如以后设置了安全验证，回来改又会很麻烦，不如一步到位了吧 🤗。
+这一步是为了给 Github Actions 远程服务器访问我的 Github 账号提供凭证。如果您只想将构建产物推送到当前仓库的 `gh-pages` 分支，直接使用上面配置中的 `github_token: ${{ secrets.GITHUB_TOKEN }}` 即可（它由 GitHub Actions 自动生成，与账号是否开启双重验证无关），无需额外配置 `deploy_key`；但如果您需要将产物推送到其他仓库，或有更细粒度的权限需求，可以改用 `deploy_key`（注意移除或注释掉 `github_token`，两者互斥）来提供凭证。
 
-您也可以生成 Personal access token 作为替代，不过前面的脚本中的 `deploy_key` 应该修改为 `personal_token`。
+您也可以生成 Personal access token 作为替代，不过前面的脚本中应将 `deploy_key` 替换为 `personal_token`。
 
 启动命令行工具，创建 SSH 部署密钥：
 

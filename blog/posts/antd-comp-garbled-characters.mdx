@@ -14,6 +14,9 @@ tags:
 
 项目中使用了 AntD 4.x 的 `<DatePicker />` 组件，开发环境显示正常，生产环境显示乱码，如下图所示：
 
+> [!WARNING]
+> Ant Design 5.x 起已全面使用 `dayjs` 替代 `moment.js`，本文仅适用于 AntD 4.x 场景。
+
 ![error](./antd-comp-garbled-characters/error.png)
 
 ## 问题原因
@@ -24,7 +27,7 @@ tags:
 
 因此产生问题的关键在于，**为何浏览器没有正确地以 UTF-8 格式读取 Moment 提供的中文语言包文本。**
 
-经排查，发现在访问生产环境时，服务端返回的 HTML 文档设置了编码为 ISO8859-1：
+经排查，发现在访问生产环境时，服务端返回的 HTML 文档设置了编码为 ISO8859-1（而外链 `<script>` 的编码首先由 JS 文件自身的 HTTP 响应头 `Content-Type` 中的 `charset` 决定，仅当 JS 响应头未指定编码时，浏览器才会回退到宿主 HTML 文档的编码或 `<script>` 标签上的 `charset` 属性）：
 
 ![response-content-type](./antd-comp-garbled-characters/response-content-type.png)
 
@@ -32,7 +35,7 @@ tags:
 
 ## 如何解决
 
-最好的解决方案是联系服务端同学，修改 `Content-Type=text/html;charset=UTF-8`。
+最好的解决方案是联系服务端同学，为 HTML 文档（以及静态 JS 资源）正确设置 `Content-Type: text/html; charset=UTF-8`（或对应的 JS `charset=utf-8`）。
 
 在这个项目中，使用了 CDN 的方式引入 Moment，因此可以采用的一个临时解决方案为强制指定编码，例如：
 

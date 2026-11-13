@@ -44,10 +44,10 @@ let User = class {
 console.log(User.name); // User
 
 // 命名类
-let User = class Admin {
+let Admin = class Admin {
   //
 };
-console.log(User.name); // Admin
+console.log(Admin.name); // Admin
 ```
 
 同样，使用类表达式的方式也**不会提升**。
@@ -301,6 +301,9 @@ child.sayHello(); // I am your father.
 详细内容可以参考[这篇博客](https://github.com/dwqs/blog/issues/67#issue-327371697)。
 
 在类中，直接使用 `=` 的声明从本质上而言就是 [Field Declarations](https://github.com/tc39/proposal-class-fields#field-declarations) 的语法，相当于**直接声明了一个实例的属性**。在接下来的[字段声明](#字段声明)小节中，也使用到了这个语法。
+
+> [!WARNING]
+> Class Fields（类字段声明，包括公有字段与 `#` 私有字段）提案已于 ES2022 正式纳入 ECMAScript 标准，如今主流浏览器与 Node.js 环境均已原生支持。
 
 ## 字段声明
 
@@ -569,7 +572,7 @@ console.log(Square.help()); // I have 4 sides. They are all equal.
 
 在本章节的例子中，似乎子类方法中的 `super` 都调用了父类中与之同名的方法，但实际上并没有这个限制，在编写的时候可以根据实际的需求自行调整命名或调用其它父类方法。
 
-在[箭头函数的使用](#箭头函数定义方法)章节的例子中，既然箭头函数定义的方法挂载到了实例的属性上，那么还能用 `super` 来调用吗？答案是否定的。JavaScript 没能在父对象的原型链上找到这个方法，于是什么也没有发生。
+在[箭头函数的使用](#箭头函数定义方法)章节的例子中，既然箭头函数定义的方法挂载到了实例的属性上，那么还能用 `super` 来调用吗？答案是否定的。JavaScript 没能在父对象的原型链上找到这个方法，`super.sayHello` 的值为 `undefined`，因此调用 `super.sayHello()` 时会直接抛出 `TypeError`（`... is not a function`）。
 
 更多补充可以查阅 MDN 上[关于 `super` 的介绍](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super)。
 
@@ -652,18 +655,24 @@ const Mixin2 = class {
 其中，第二种方式，或者说使用类表达式声明类的方式，允许我们**动态生成自定义的类**。根据这个特性，我们就可以编写 Mixin 代码来实现多重继承了：
 
 ```js
-class Animal { // 共同工具类
-    //
+class Animal {
+  // 共同工具类
+  //
 }
-class CatMixin = (superClass) => class extends superClass { // 猫猫工具类
+const CatMixin = (superClass) =>
+  class extends superClass {
+    // 猫猫工具类
     //
-}
-class DogMixin = (superClass) => class extends superClass { // 狗狗工具类
+  };
+const DogMixin = (superClass) =>
+  class extends superClass {
+    // 狗狗工具类
     //
-}
+  };
 
-class MyMixin extends CatMixin(DogMixin(Animal)) { // 实现多重继承
-    //
+class MyMixin extends CatMixin(DogMixin(Animal)) {
+  // 实现多重继承
+  //
 }
 ```
 

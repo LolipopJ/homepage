@@ -47,7 +47,7 @@ yarn add -D prettier
 ```json
 {
   "scripts": {
-    "prettier": "prettier --write **/* --ignore-unknown"
+    "prettier": "prettier --write . --ignore-unknown"
   }
 }
 ```
@@ -73,3 +73,6 @@ yarn add --dev @prettier/plugin-php prettier-plugin-java
 ```
 
 Prettier 将自动加载与它在同一 `node_modules` 文件夹中的 Prettier 插件，并自动识别新增的代码后缀（如 `.php` 和 `.java`）。因此在最后，只需要再执行一遍 `yarn prettier`，就可以实现格式化项目中的 PHP 及 Java 代码了。
+
+> [!WARNING]
+> 自 Prettier 3.0（2023-07 发布）起，Prettier 已移除插件自动加载机制。在现代版本中，需要在 `.prettierrc` 的 `plugins` 数组或命令行 `--plugin` 参数中显式声明所需插件。

@@ -51,6 +51,9 @@ services:
       retries: 3
 ```
 
+> [!WARNING]
+> 独立的 `docker-compose`（Compose V1）命令已停止维护，现代 Docker 环境请使用内置的 Compose V2 命令 `docker compose up -d`。
+
 执行 `docker-compose up -d` 后，访问 `http://localhost:8080` 就能看到 FreshRSS 的初始化界面了，在这里可以配置管理员账号和数据库信息等。配置完毕后，首页便是内置的 FreshRSS 订阅源的版本更新通知：
 
 ![FreshRSS 首页](./openclaw-with-rss/freshrss-homepage.png)

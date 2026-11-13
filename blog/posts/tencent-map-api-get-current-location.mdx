@@ -11,6 +11,9 @@ tags:
   - Nuxt
 ---
 
+> [!WARNING]
+> 本文编写于 2021 年，文中的前端工程示例基于已停止维护（EOL）的 Nuxt 2 配置语法，定位实现则使用了早期的前端定位组件（`qq.maps.Geolocation`）。现行腾讯位置服务 Web 端开发已全面转向 JavaScript API GL，新项目建议参考最新的官方 [JavaScript API GL 文档](https://lbs.qq.com/webApi/javascriptGL/glGuide/glOverview)。
+
 正在开发的 Web 项目需要获取使用者的位置信息，而使用者主要通过移动端访问此 Web 服务。位置信息需要精确到区。在腾讯位置服务的[定位解决方案](https://lbs.qq.com/location/#anchor)里想要搜索可用的 JavaScript 库，只看到了服务端的 IP 定位和移动端的几个 SDK 包，甚异之。
 
 终于在不起眼的地方找到了[前端定位组件](https://lbs.qq.com/webApi/component/componentGuide/componentGeolocation)，适用于浏览器进行定位操作。

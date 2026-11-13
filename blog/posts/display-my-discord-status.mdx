@@ -16,7 +16,7 @@ tags:
 
 如今，随着全局代理成为家中网络标配，Discord 成为挂驻后台的常用软件，看着自己信息页的“正在玩”项目，心想这不就是笔者一直想要的读取自己在做什么的功能吗？那么，现在再去做这个软件就简单不少了：只需要实现读取自己的 Discord 状态，开放接口供前端调用就好了。
 
-经过调研，笔者找到了 [`discord.py-self`](https://github.com/dolfies/discord.py-self) 库，考虑通过 Discord Self-Bot 来实现相关功能。**当然，直接轮询调用 Discord 官方提供的 API 已然可以实现需求，只是笔者太闲了想在外面包一层 Self-Bot**……😎万一以后用得上呢？
+经过调研，笔者找到了 [`discord.py-self`](https://github.com/dolfies/discord.py-self) 库，考虑通过 Discord Self-Bot 来实现相关功能。**需要注意的是，Discord 官方 REST API 并不提供直接轮询用户在线状态与活动（Presence/Activities）的接口；若走官方规范，需要通过 Gateway WebSocket 监听 `PRESENCE_UPDATE` 事件。**
 
 > [!CAUTION]
 > Discord 官方文档中明确表示**不支持 Self-Bot 的使用**，违反使用条款可能导致账号被封禁。因此，笔者仅将本文内容作为技术分享，若您决心实现类似功能，请承担账号封禁的风险。
@@ -164,7 +164,7 @@ class MyClient(discord.Client):
         self.task_query_activities.start()
 
     @tasks.loop(seconds=5)
-    def task_query_activities(self):
+    async def task_query_activities(self):
         if self.recipient is None:
             channelId = int(os.getenv("DISCORD_CHANNEL_ID"))
             channel = self.get_channel(channelId)
@@ -202,7 +202,7 @@ Discord 官方文档里好像有提到 API 请求限制是每分钟 120 次，�
 
 咳咳，那么总之，运行轮询任务来获取指定账号的状态信息会被 Discord 风控并封禁，就应该考虑更健康，更合作的方式来实现同样的功能。
 
-实际上，在后台并不需要时时刻刻读取并存档一份用户的状态信息，只需要在接口请求时，返回缓存的状态信息即可。如果缓存过期，才调用 Discord 接口读取。这样一来，相比明目张胆每五秒请求一次接口，被识别风控的风险会大大降低。
+实际上，`self.get_relationship(...)` 查询的是 `discord.py-self` 的本地内存缓存（由后台 Gateway WebSocket 实时更新），并不会向 Discord 发送 REST API 请求；不过在接口层加上本地缓存，依然可以减少对前端请求的重复计算，并降低状态信息对外暴露的频率。
 
 新实现的代码如下：
 
@@ -228,6 +228,7 @@ class MyClient(discord.Client):
 
         # ...省略获取 self._recipient 的代码
 
+        # 从本地 Gateway 缓存读取好友关系与活动状态（不发起 REST 请求）
         relation = self.get_relationship(self._recipient.id)
         self._queried_activities = [
             activity.to_dict() for activity in relation.activities

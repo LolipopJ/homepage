@@ -9,6 +9,9 @@ tags:
   - Workflow
 ---
 
+> [!WARNING]
+> 本文工作流中使用的 Node.js 12.x、`master` 分支以及 `actions/checkout@v2`、`actions/setup-node@v1`、`actions/cache@v2`、`peaceiris/actions-gh-pages@v3` 均已过时或停止受支持。截至 2026 年，现代项目建议升级至 Node.js 20+、`@v4` 及以上版本的 Action，或直接使用官方的 `actions/deploy-pages` 完成部署。
+
 这是我撰写的第一篇与 Github Actions 有关的博客，那么就首先对 Github Actions 做一个简短的介绍吧。
 
 Github Actions 是 Github 于 2018 年 10 月推出的持续集成服务（CI）。
@@ -96,9 +99,9 @@ jobs:
 
 最后，等到 Github Pages 也更新完毕后，就可以访问您的博客啦！
 
-### 假如您采用了账户两重验证
+### 假如遇到推送权限或部署失败
 
-Ops, 也许您的邮箱收到了一份新的邮件，遗憾地通知您 Github Actions 执行失败。这时您可以想一想自己是否启用了 Github 账号的双重验证或其它安全访问验证。这都可能导致自动部署失败。
+Ops, 也许您的邮箱收到了一份新的邮件，遗憾地通知您 Github Actions 执行失败。需要说明的是，工作流中的 `secrets.GITHUB_TOKEN` 是 GitHub Actions 在运行时自动签发的临时令牌，与您是否启用了 GitHub 账号双重验证（2FA）并无关系；若自动部署失败并需要额外配置 `deploy_key` 或个人访问令牌（PAT），通常是由于跨仓库推送、`GITHUB_TOKEN` 默认权限受限，或希望推送后能触发下游的 GitHub Pages 构建。
 
 但是别担心，您可以通过[添加 SSH 身份验证](https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-ssh-deploy-key)来解决这个问题。
 

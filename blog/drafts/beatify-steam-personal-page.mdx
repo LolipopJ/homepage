@@ -33,7 +33,10 @@ tags:
 https://media.st.dl.eccdnx.com/steamcommunity/public/images/items/2855140/e2a8428a48f49312a3fe5c45206b998af76910e8.mp4
 ```
 
-由于 Steam Design 站点无法跨域访问 Steam CDN 上的文件，需替换链接地址为 [Backgrounds Gallery](https://backgrounds.gallery/) 的地址，即替换地址中的域名 `media.st.dl.eccdnx.com` 为 `steamcdn-a.akamaihd.net`。替换后的 URL 形如：
+由于 Steam Design 站点无法跨域访问 Steam 国区 CDN 上的文件（可参考 [Backgrounds Gallery](https://backgrounds.gallery/) 中的资源链接格式），需将 Steam 国区 CDN 域名 `media.st.dl.eccdnx.com` 替换为 Steam 国际版 CDN 域名 `steamcdn-a.akamaihd.net`。替换后的 URL 形如：
+
+> [!WARNING]
+> Steam 官方 CDN 已逐步迁移至 `shared.fastly.steamstatic.com`、`cdn.akamai.steamstatic.com` 等域名，`steamcdn-a.akamaihd.net` 为早期旧域名，若无法访问可尝试替换为上述新域名。
 
 ```plaintext
 https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/2855140/e2a8428a48f49312a3fe5c45206b998af76910e8.mp4

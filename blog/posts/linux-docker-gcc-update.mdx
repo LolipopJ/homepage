@@ -10,6 +10,9 @@ tags:
   - Docker
 ---
 
+> [!WARNING]
+> 本文基于已于 2024-06-30 停止维护（EOL）的 CentOS 7 与较早的 GCC 10.3.0 编写。现代 RHEL 系发行版（如 Rocky Linux / AlmaLinux / Fedora）已普遍转向 `dnf` 包管理器，下载 GCC 源码及依赖时也建议优先使用 HTTPS 协议。
+
 如果软件源可用，可以使用 CentOS 的 yum 包管理器或 Ubuntu 的 apt 包管理器等一键安装 GCC，例如：
 
 ```bash
@@ -122,11 +125,11 @@ Tue Apr 20 9:52 CST 2021 - Tue Apr 20 12:33:29 CST 2021.
 make install
 ```
 
-此时直接执行 `gcc -v` 仍会显示以前安装的版本，在**重启系统**之后就会显示为当前安装的版本。
+此时如果直接在当前终端执行 `gcc -v` 仍显示以前安装的版本，通常是因为 bash 缓存了旧的可执行文件路径（`/usr/bin/gcc`），执行 `hash -r` 刷新路径缓存即可生效（同时确保 `PATH` 环境变量中 `/usr/local/bin` 排在 `/usr/bin` 之前），无需重启系统或容器。
 
 ```bash
-# 重启容器环境
-docker restart ${CONTAINER}
+# 刷新 bash 命令路径缓存
+hash -r
 
 # 检查安装是否成功
 gcc -v

@@ -14,6 +14,9 @@ tags:
 
 迷途知反！腾讯地图的 JS API 文档实在过于简陋，且库很久没有更新，转身投入高德地图的怀抱，享受 this moment 的美好！
 
+> [!WARNING]
+> 本文基于已停止维护（EOL）的 Vue 2 与 Nuxt 2 编写；此外，自 2021 年 12 月 2 日起，高德地图 JS API 2.0 强制要求配合安全密钥（`window._AMapSecurityConfig`）或代理服务器使用，仅传入 `key` 已无法正常调用接口。
+
 ## 高德地图与腾讯地图定位功能区别
 
 高德地图将定位功能和逆地理编码功能分开为两个操作，而腾讯地图将二者合并。
@@ -47,8 +50,8 @@ script: [
 
 此外要注意：
 
-- 为避免地图数据协议和前端资源不匹配导致页面运行报错，只允许在线加载 JS API，禁止进行本地转存、与其它代码混合打包等用法。——[JS API 的加载](https://developer.amap.com/api/javascript-api/guide/abc/load)
-- 由于 Chrome、IOS10 等已不再支持非安全域的浏览器定位请求，为保证定位成功率和精度，请尽快升级您的站点到 HTTPS。——[AMap.Geolocation 插件](https://developer.amap.com/api/javascript-api/reference/location)
+- 为避免地图数据协议和前端资源不匹配导致页面运行报错，只允许在线加载 JS API，禁止进行本地转存、与其它代码混合打包等用法。——[JS API 的加载](https://developer.amap.com/api/jsapi-v2/guide/abc/load)
+- 由于 Chrome、IOS10 等已不再支持非安全域的浏览器定位请求，为保证定位成功率和精度，请尽快升级您的站点到 HTTPS。——[AMap.Geolocation 插件](https://developer.amap.com/api/jsapi-v2/reference/location)
 
 ## 高德地图定位功能实现
 
@@ -63,7 +66,7 @@ const geolocation = new AMap.Geolocation({
 });
 ```
 
-更多的构造选项可参考 [AMap.Geolocation 插件官方文档](https://developer.amap.com/api/javascript-api/reference/location)。
+更多的构造选项可参考 [AMap.Geolocation 插件官方文档](https://developer.amap.com/api/jsapi-v2/reference/location)。
 
 对于定位方法 `getCurrentPosition(callback:function(status,result){})`，可以用 callback 的方式或事件监听的方式实现取得返回值。以 callback 的方式为例，可编写：
 
@@ -115,7 +118,7 @@ getCurrentPosition()
 
 ## 高德地图逆地理编码功能实现
 
-[高德地图逆地理编码](https://developer.amap.com/api/javascript-api/reference/lnglat-to-address)由 `AMap.Geocoder` 插件实现，我们也已经引入。
+[高德地图逆地理编码](https://developer.amap.com/api/jsapi-v2/reference/lnglat-to-address)由 `AMap.Geocoder` 插件实现，我们也已经引入。
 
 因此只需要将上一步得到的地理经纬度坐标信息作为参数传入即可：
 
@@ -178,7 +181,7 @@ const geolocation = new AMap.Geolocation({
 
 /**
  * 获取当前的经纬度坐标
- * https://developer.amap.com/api/javascript-api/reference/location
+ * https://developer.amap.com/api/jsapi-v2/reference/location
  */
 function getCurrentPosition() {
   return new Promise((resolve, reject) => {
@@ -200,7 +203,7 @@ function getCurrentPosition() {
 
 /**
  * 获取当前地理坐标的逆编码结果
- * https://developer.amap.com/api/javascript-api/reference/lnglat-to-address
+ * https://developer.amap.com/api/jsapi-v2/reference/lnglat-to-address
  */
 function getCurrentAddress() {
   return new Promise((resolve, reject) => {

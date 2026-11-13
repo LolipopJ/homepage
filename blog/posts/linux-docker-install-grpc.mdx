@@ -10,6 +10,9 @@ tags:
   - Docker
 ---
 
+> [!WARNING]
+> 本文基于已于 2024-06-30 停止维护（EOL）的 CentOS 7 以及较早期的 gRPC 1.28.x、CMake 3.20.1 与 GCC 4.9+ 要求编写。现代 C++ gRPC 通常需要支持 C++14/17 的编译器以及 CMake 3.16+，建议结合最新官方文档操作。
+
 本文适用于 C++ 版本 gRPC 的离线编译安装，但对于[下载 gRPC](#下载-gRPC) 步骤强烈建议使用 git 进行。
 
 如果在能直接连接外网的机器上编译，可直接按照 [gRPC 官网文档](https://github.com/grpc/grpc)的指引快速执行编译操作。
@@ -132,16 +135,23 @@ make -j ${JOBS_NUM}
 make install
 ```
 
-如果想要编译动态库 `.so` 文件，可以在上一步执行 `cmake` 命令时设置 `-DBUILD_SHARED_LIBS=ON`，如：
+如果想要编译动态库 `.so` 文件，可以在上一步执行 `cmake` 命令时加上 `-DBUILD_SHARED_LIBS=ON`（同时保留安装相关参数），如：
 
 ```bash
 # 生成编译 gRPC 的 Makefile 文件
-cmake -DBUILD_SHARED_LIBS=ON ../..
+cmake -DgRPC_INSTALL=ON \
+    -DgRPC_BUILD_TESTS=OFF \
+    -DCMAKE_INSTALL_PREFIX=$MY_INSTALL_DIR \
+    -DBUILD_SHARED_LIBS=ON \
+    ../..
 ```
 
 假如编译失败，可以参考笔者遇到的[错误和解决方案](#可能遇见的错误)。
 
-C++ 版本的 gRPC 还依赖于 Abseil C++ 库，因此需要单独编译安装它：
+> [!WARNING]
+> 通过 `git submodule update --init` 拉取源码后，CMake 构建 gRPC 时默认会自动内置构建并安装 `third_party/abseil-cpp`（无需在编译 gRPC 之后再单独安装）。如果需要使用外部包模式的 Abseil（`-DgRPC_ABSL_PROVIDER=package`），也应当在编译 gRPC **之前**预先编译安装好 Abseil。
+
+下面保留当年单独编译安装 Abseil C++ 库时的操作步骤供参考：
 
 ```bash
 # 回到 gRPC 根目录
@@ -225,4 +235,4 @@ error: no matching function for call to ‘StrFormat(const char [22], const char
 
 提示报错没有找到 `StrFormat` 函数，请确保 `gcc` 版本在 `4.9` 及以上，可以执行 `gcc -v` 命令查看当前版本。
 
-建议[更新](http://3ms.huawei.com/km/blogs/details/10193429)到 `gcc 4.9.4` 版本，笔者在该版本下顺利编译 gRPC。
+建议更新到 `gcc 4.9.4` 及以上版本（可参考笔者的<Link to="/posts/linux-docker-gcc-update">这一篇博客</Link>），笔者在该版本下顺利编译 gRPC。

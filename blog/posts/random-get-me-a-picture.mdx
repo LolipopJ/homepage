@@ -19,6 +19,9 @@ tags:
 
 ![请求需包含 Referer](./random-get-me-a-picture/pixiv-cat.png)
 
+> [!WARNING]
+> `pixiv.cat` 等第三方 Pixiv 图片反代域名的稳定性与可用性已大幅下降（曾多次变更域名或触发限流），文中硬编码的代理链接在实际运行时可能已失效。
+
 实现此功能分为两个阶段：一，为本地的图片生成数据库索引条目。二，开发 Telegram Bot 接口，随机从数据库索引中获取一张图片转发给聊天。
 
 ## 为本地的 Pixiv 图片建立索引
@@ -124,7 +127,7 @@ sequelize.define("ServiceProcess", serviceProcessModel);
 ```js
 module.exports = {
   pixiv: {
-    randomGetFromCollection: {
+    generateCollectionIndex: {
       duration: 3600,
       path: ["C:\\path\\to\\collection"],
     },
@@ -458,7 +461,7 @@ bot.onText(/\/random_pixiv/, async (msg) => {
 
 在上面这段代码中，当以 `bot.sendPhoto()` 的方法尝试发送 5 MB 以下的图片失败时，首先重新构建请求 URL 为 `https://pixiv.cat/${data.picId}-1.${data.picType}`，再次进行发送。如果还是失败（可能图片被作者删除），则发送简单的链接文本。由此，解决了前面提到的无法判断作品是否为漫画作品的问题。
 
-与 Telegram 上的机器人对话，发送命令 `\random_pixiv`，结果如下：
+与 Telegram 上的机器人对话，发送命令 `/random_pixiv`，结果如下：
 
 ![Bot service](./random-get-me-a-picture/bot-service.png)
 

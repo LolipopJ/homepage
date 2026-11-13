@@ -103,9 +103,10 @@ await exec(`tar -czf ${backupFilename} ${resolvedBackupFiles.join(" ")}`);
 
 ```js
 const filenames = fs.readdirSync(backupDir);
-const backupFileList = filenames.map((filename) =>
-  fs.statSync(path.resolve(backupDir, filename)),
-);
+const backupFileList = filenames.map((filename) => ({
+  name: filename,
+  stat: fs.statSync(path.resolve(backupDir, filename)),
+}));
 ```
 
 支持指定保存的备份文件数量，得到需要移除的文件列表：
@@ -114,9 +115,9 @@ const backupFileList = filenames.map((filename) =>
 const BACKUP_MAX_NUM = 7; // 保留最新的 N 个备份文件，此处为 7 个
 
 const backupFiles = backupFileList
-  .filter((file) => file.isFile())
+  .filter((file) => file.stat.isFile())
   .sort((a, b) => {
-    return b.mtimeMs - a.mtimeMs;
+    return b.stat.mtimeMs - a.stat.mtimeMs;
   });
 const oldBackupFiles = backupFiles.slice(BACKUP_MAX_NUM);
 ```
@@ -150,6 +151,9 @@ Wed, 15 May 2024 07:00:00 +0000
 ```
 
 笔者通过安装 `zoneinfo-asia` 解决了问题：
+
+> [!WARNING]
+> OpenWRT 24.10 及之后版本已逐步使用 `apk` 替代 `opkg` 作为包管理器（例如 `apk update && apk add zoneinfo-asia`）。
 
 ```bash
 $ opkg update

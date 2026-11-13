@@ -76,7 +76,7 @@ v2rayN-windows-64
 
 首次启动客户端后，会自动创建 `guiConfigs/`，`guiLogs/` 和 `guiTemp/` 三个目录，分别用于存放 GUI 客户端的配置文件、日志文件和临时文件。
 
-而后，在客户端进行的与 V2Ray 相关的配置，如添加服务器、订阅、路由规则等，都会被保存到 `binConfigs/config.json` 文件中。这个文件是最重要的配置文件，如果有多主机使用 V2RayN 的需求，建议将其备份到云端，以便在不同设备间同步配置。如果你知道自己在做什么，可以直接编辑这个文件来修改代理配置。此外，如果代理出现了奇奇怪怪的问题，在确保备份的前提下，可以直接删除这个文件来重置 V2Ray 配置。
+在客户端进行的设置，如添加服务器、订阅、路由规则等持久化配置，都会保存在 `guiConfigs/` 目录中（例如 `guiNConfig.json`、`guiNDB.db`）。如果有多主机使用 V2RayN 的需求，建议备份该目录以便在不同设备间同步配置；如果客户端配置出现了奇奇怪怪的问题，在确保备份的前提下，也可以通过清理 `guiConfigs/` 中的对应文件来重置配置。至于 `binConfigs/config.json`，它只是 V2RayN 启动内核时自动生成的运行时配置，每次重启或切换节点都会被重新覆盖，因此不应手动编辑它，也不能通过删除它来重置配置。
 
 ## 导入代理地址或添加订阅
 
@@ -84,7 +84,7 @@ v2rayN-windows-64
 
 ```plaintext
 ss://xxxxxxxxxxx@xxx.xxx.xxx.xxx:xxx
-ss://xxxxxxxxxxx@https://xxx.xxx.xxx.xxx:xxx
+ss://xxxxxxxxxxx@example.com:xxx
 vless://xxxxxxxxxxx@xxx.xxx.xxx.xxx:xxx?encryption=none&flow=xtls-rprx-vision&security=reality&sni=portal.citygrainla.com&fp=chrome&pbk=xxx&sid=xxx&type=tcp&headerType=none
 ```
 
@@ -197,7 +197,7 @@ Mux 的核心思想是在一条 TCP/UDP 连接上同时承载多条独立的数�
 
 特别的，「末端分片」是指特意将 Client Hello 的最后一个字节或最后几个字节单独作为一个分片发送。这种策略针对的是某些只检查“前 N 个字节”或“特定偏移量”的简化版 DPI 设备，把敏感信息推到末尾并单独切片，可以最大化规避检测。
 
-现代的网络协议本身就更抗检测，例如 REALITY 无证书安全传输方案，会“借用”（TLS 伪装）互联网上现成知名网站（如 `://microsoft.com`）的 TLS 特征，让你的代理流量在外部看起来与访问正规网站完全一致，从而极大地降低被识别和封锁的概率，无需再叠加会增加延迟的分片功能。
+现代的网络协议本身就更抗检测，例如 REALITY 无证书安全传输方案，会“借用”（TLS 伪装）互联网上现成知名网站（如 `microsoft.com`）的 TLS 特征，让你的代理流量在外部看起来与访问正规网站完全一致，从而极大地降低被识别和封锁的概率，无需再叠加会增加延迟的分片功能。
 
 总结来说，对于使用 VLESS 等现代协议，以及使用较新 V2RayN 客户端的用户来说，应当**关闭与分片相关的功能**。只有在确认遭遇 TLS 指纹级封锁且无法更换节点/协议时，才将其作为最后的调试手段。
 
@@ -305,4 +305,4 @@ NO_PROXY=localhost,127.0.0.1,::1
 
 截止目前，我认为你应该掌握的所有内容都已经在上面了，如果还想更深入了解更多配置项的功能，建议访问 V2RayN 的[仓库维基](https://github.com/2dust/v2rayN/wiki/)，关注社区里的相关[讨论](https://github.com/2dust/v2rayN/discussions)。
 
-V2RayN 本质上只是简化使用的命令行工具 V2Ray 的客户端，如果想探索 V2Ray 的完整能力，可以前往其[官方网站](https://www.v2ray.com/)学习，手动对 `binConfigs/config.json` 进行配置。
+V2RayN 本质上是各类代理内核（目前默认基于 Xray-core 或 sing-box，而非原版 V2Ray）的图形化客户端。如果想探索底层内核的完整能力，建议前往 [Xray-core 文档](https://xtls.github.io/)或 [V2Fly 文档](https://www.v2fly.org/)学习，并通过内核自身的配置文件或命令行进行调试。

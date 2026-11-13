@@ -33,6 +33,9 @@ blogFiles.keys().forEach((key) => {
 });
 ```
 
+> [!NOTE]
+> Webpack 默认无法直接解析 `.md` 文件，使用前需先在 Webpack 配置中为 `/\.md$/` 规则配置 `raw-loader`（Webpack 4）或 `type: "asset/source"`（Webpack 5），否则构建时会报模块解析错误。
+
 ## 对 .md 文件进行预处理
 
 参考 Hexo 博客的撰写格式，可以规定 NetUnion 官网的新闻和博客撰写格式如下：
@@ -55,6 +58,9 @@ ${main-text}
 // content 为传入的 .md 文件内容
 const contentArray = content.split(/---+\r?\n/g);
 ```
+
+> [!NOTE]
+> 直接使用 `content.split(/---+\r?\n/g)` 全局切分存在一定局限性：如果正文中包含 `---` 水平分割线或代码块中的 `---`，不仅会被误切分，后续用 `---\n` 重新拼接时还可能破坏原本的 `----` 或 `\r\n` 换行格式。更稳妥的做法是仅匹配文件开头的 frontmatter 区块，例如使用 `content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)`。
 
 对属性内容的处理同样可以先使用 `split()` 方法按换行符拆分为数组。
 

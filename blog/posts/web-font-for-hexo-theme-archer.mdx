@@ -24,6 +24,9 @@ tags:
 - `https://fonts.proxy.ustclug.org`
 - `https://fonts.loli.net`，可参考：https://sb.sb/blog/css-cdn
 
+> [!WARNING]
+> 本文编写于 2021 年，当时测试可用的 `fonts.googleapis.cnpmjs.org`、`fonts.proxy.ustclug.org` 等镜像站现均已下线或停止服务。如果您需要使用 Google Fonts，建议考虑本地托管字体文件或寻找其他仍可稳定访问的 CDN 方案。
+
 使用方法非常简单，在 Google 字体上选择[思源黑体简体中文版本](https://fonts.google.com/specimen/Noto+Sans+SC?subset=chinese-simplified#standard-styles)，再选择需要的字重如 `Regular 400`，如果使用 `<link>` 的方式引入，则代码如下所示：
 
 ```html
@@ -62,6 +65,7 @@ tags:
 @font-face {
   font-family: "Glow Sans SC";
   src: url("../font/GlowSansSC-Normal-Book.otf");
+  font-display: swap;
 }
 ```
 
@@ -71,7 +75,7 @@ tags:
 
 这种方式的优点是：配置方便。
 
-但缺点也很明显：慢！尤其对于大多数人建立个人博客时，会使用自己的“小水管”服务器，字体文件要加载老半天才能正常显示出来（包括中文的字体文件大约 9 MB 左右，而下载速度大约为 200 KB/s）。此外，由于 Archer 主题在开头处就会引入包含字体配置的 CSS 文件，要留待字体加载完成后才渲染后续内容，极大影响首次浏览体验。
+但缺点也很明显：慢！尤其对于大多数人建立个人博客时，会使用自己的“小水管”服务器，字体文件要加载老半天才能正常显示出来（包括中文的字体文件大约 9 MB 左右，而下载速度大约为 200 KB/s）。此外，如果在 `@font-face` 中未设置 `font-display: swap`，浏览器默认会采用 FOIT（Flash of Invisible Text，文字不可见期）策略，在字体加载完成前将对应文字隐藏（而非阻塞后续 DOM 渲染），同样会极大影响首次浏览体验。
 
 ## 更换博客字体
 
@@ -116,6 +120,9 @@ $base-font-family:
 
 一款国人开源的智能 WebFont 压缩工具 [font-spider](https://github.com/aui/font-spider) 能够满足我们的需求。
 
+> [!WARNING]
+> `font-spider` 已多年未维护，且其底层依赖早已停止维护的 `phantomjs`（在现代 Node.js 与操作系统环境下极易安装失败或报错）。现代中文字体子集化推荐使用 [`cn-font-split`](https://github.com/KonghaYao/cn-font-split) 或 Python 的 [`fonttools`](https://github.com/fonttools/fonttools) 等工具。
+
 这款工具能够获取网页中使用到的中文文字，然后从源字体文件中提取出来这些文字，生成一个只包含这些文字的字体文件。而我们只需要引入这个生成的字体文件，就可以实现压缩中文字体了！
 
 为了能使用 Github Actions 自动集成部署博客，这里我在博客根目录引入了 font-spider 作为项目的开发依赖。
@@ -148,7 +155,7 @@ yarn add -D font-spider
 
 ```json
 "scripts": {
-  "font-spider": "font-spider public/*.html"
+  "font-spider": "font-spider \"public/**/*.html\""
 }
 ```
 

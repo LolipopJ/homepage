@@ -12,6 +12,9 @@ tags:
   - RxJS
 ---
 
+> [!WARNING]
+> 本文基于已停止维护的 Vue 2、Vue CLI 4、Node.js 14.x、旧版 `puppeteer@10.2.0` 及旧版 GitHub Actions（`@v1`/`@v2`/`@v3`），仅作历史实现参考。
+
 去年投简历的时候，在 Github 上找了个开源的，星星很多的仓库 [best-resume-ever](https://github.com/salomonelli/best-resume-ever) 来制作自己的简历。其中的 Creative 模板我觉得很喜欢，就用它制作了我人生中的第一份找工作用的简历：
 
 ![my first resume](./build-my-resume/my-first-resume.jpg)
@@ -326,7 +329,7 @@ Run yarn install to install new versions.
 PS C:\Users\Lolipop\Github\resume> yarn install
 ```
 
-启动项目服务端渲染，确保能正常运行：
+启动项目本地开发服务器，确保能正常运行：
 
 ```bash
 PS C:\Users\Lolipop\Github\resume> yarn serve
@@ -334,7 +337,7 @@ PS C:\Users\Lolipop\Github\resume> yarn serve
 
 将原有的 Vue 文件移动过来，处理发生错误的依赖关系，再根据需要安装必要的其它依赖。
 
-别忘了配置 `vue.config.js` 中的 `publicPath` 项。我们的项目将部署在域名的根路径，例如 `https://lolipopj.github.io/resume`，因此需要配置如下：
+别忘了配置 `vue.config.js` 中的 `publicPath` 项。我们的项目将部署在域名的子路径（例如 `https://lolipopj.github.io/resume/`），因此需要配置如下：
 
 ```js
 // vue.config.js
@@ -436,7 +439,7 @@ concurrently 可以在一个终端中同时运行多个命令，一旦某个命�
 }
 ```
 
-我们将依次执行 `npm run serve` 和 `node scripts/export.js`。当第一条命令成功时返回 0，失败时返回 1。任意一条命令结束或失败时中止此脚本。
+我们将同时执行 `npm run serve` 和 `node scripts/export.js`。`--success first` 表示以最先结束的进程（即第二条命令 `node scripts/export.js`）的退出状态作为最终结果（成功时返回 0，失败时返回 1），并配合 `--kill-others` 在任意一条命令结束或失败时中止其余进程。
 
 rxjs 是一个用于编写异步、事件驱动的程序的库，我们可以使用它来监听页面是否就绪，避免在尚未加载完成的情况下就打印简历 PDF 文档：
 
@@ -579,7 +582,7 @@ const convert = async function () {
 
 然后又到了爷最喜欢的**约定大于配置**环节，在上面的代码里，假设每个翻译版本的简历有不同的 URL 值，对应不同的 `code`。例如 `http://localhost:8088/#/cn` 为简历的中文版本，对应的 `code` 值为 `cn`。这样，最终导出文件为 `export/resume-cn.jpeg` 和 `export/resume-cn.pdf`。
 
-如果需要配置不同翻译版本的简历的 PDF 文档（或截图）的大小，可以在 `config.json` 中配置。例如需要配置中文版本简历 PDF 文档的高度，设置 `"EXPORT_PDF_HEIGHT_CN": 850` 即可，其中 `_CN` 为 `code` 的大写值前面加上短横线。
+如果需要配置不同翻译版本的简历的 PDF 文档（或截图）的大小，可以在 `config.json` 中配置。例如需要配置中文版本简历 PDF 文档的高度，设置 `"EXPORT_PDF_HEIGHT_CN": 850` 即可，其中 `_CN` 为 `code` 的大写值前面加上下划线（`_`）。
 
 不过，手动配置打印 PDF 高度在实现上并不优雅，仔细想想，既然 puppeteer 能够模仿浏览器中的所有行为，那么：在固定页面宽度的情况下，获取当前页面的高度也是理所应当能够做到的吧。[`page.evaluate()`](https://pptr.dev/#?product=Puppeteer&version=v10.2.0&show=api-pageevaluatepagefunction-args) 方法可以实现这个需求：
 

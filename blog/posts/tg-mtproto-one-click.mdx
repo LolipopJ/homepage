@@ -9,12 +9,15 @@ tags:
   - MTProto
 ---
 
+> [!WARNING]
+> 本文编写于 2021 年，文中提及的支持系统列表中的 CentOS 7/8、Debian 8/9、Ubuntu 16 均已结束生命周期（EOL），且文中安装命令使用的 `git.io` 短链接服务已于 2022 年 4 月永久关闭。如仍需部署，请使用受支持的现代 Linux 发行版并前往原项目仓库获取最新安装命令。
+
 ## Telegram 和 MTProto 是什么
 
 Telegram，中文名称为“电报”，或简称“tg”，是一款跨平台即时通讯软件，客户端完全开源。我觉得重要的有如下 Features：
 
 - 私密性高。不再使用的账号最长保留年限为 1 年，随时销毁聊天记录和一切账号资料。
-- 安全性。端对端加密，不受审查。
+- 安全性。常规云端聊天采用客户端与服务端之间的传输加密，而“私密聊天（Secret Chats）”和音视频通话则支持端对端加密。
 - 完全免费。不限制上传文件（视频会有压缩），甚至可以拿来当备用网盘使用。不过已经确认会在将来布局群组广告，“钞能力”还是抵不过越来越多涌入的各国用户。
 
 当然，在被屏蔽的地域需要翻墙使用。
@@ -74,6 +77,9 @@ MTProto 是一种协议，旨在帮助移动设备上的应用程序访问服务
 ```bash
 curl -o MTProtoProxyInstall.sh -L https://git.io/fjo34 && bash MTProtoProxyInstall.sh
 ```
+
+> [!WARNING]
+> GitHub 已于 2022 年 4 月永久关闭 `git.io` 短链接服务，因此上述命令中的 `https://git.io/fjo34` 已失效。请前往 [MTProtoProxyInstaller 仓库](https://github.com/HirbodBehnam/MTProtoProxyInstaller) 获取最新的脚本下载链接。
 
 根据提示进行配置，觉得不妥还可以重新执行上述命令重装代理服务。
 

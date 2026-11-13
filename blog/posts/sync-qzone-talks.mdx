@@ -162,11 +162,14 @@ if (videoFilename.endsWith(".m3u8")) {
 ```
 
 > [!NOTE]
-> 与传统的视频格式不同，M3U8 视频格式将整个视频分成**多个小片段**进行传输，这些小片段可以根据网络情况自动调节其质量和大小。这种方式使得 M3U8 视频格式非常适合在网络环境不稳定或带宽不足的情况下播放视频。
+> M3U8 并非视频编码格式，而是 HLS（HTTP Live Streaming）协议使用的播放列表清单文件，它将整个视频切分为**多个小片段**（如 `.ts` 或 `.m4s`）进行传输。需要注意的是，仅生成单一码率的 `.m3u8` 播放列表并不会自动调节清晰度；只有包含多个不同码率变体流的主播放列表（Master Playlist），才能让客户端根据网络状况实现自适应码率（ABR）切换。不过即便只有单一码率，HLS 的分片传输依然非常适合边下载边播放的场景。
 
 经过复杂且折腾的思想斗争后，笔者决定使用 [`ffmpeg`](https://ffmpeg.org) 工具，将所有 `.mp4` 格式的视频文件转换为 `.m3u8` 格式，完成格式上的统一与边下载边播放的需求。
 
 ### 服务端转换视频文件为 `.m3u8` 格式
+
+> [!WARNING]
+> `fluent-ffmpeg` 官方仓库已于 2025 年 5 月正式归档并停止维护。新项目建议直接通过 Node.js 的 `child_process` 调用 `ffmpeg` CLI，或选用其他仍在维护的封装库。
 
 服务端安装使用 `ffmpeg` 所需的依赖：
 
@@ -254,7 +257,7 @@ const convertVideoToM3u8 = (videoFilePath: string, outputFilePath: string) => {
 
 ### 客户端播放 `.m3u8` 格式视频支持
 
-浏览器自带的 `<video>` 标签并不原生支持播放 `.m3u8` 格式的视频，这里笔者引入了 [`video.js`](https://videojs.com/) 库实现播放功能。基于官方提供的[组件实现](https://videojs.com/guides/react/)，改巴改巴实现为自己的：
+主流桌面端浏览器（如 Chrome、Firefox、Edge）自带的 `<video>` 标签并不原生支持播放 `.m3u8` 格式的视频（Safari 除外），这里笔者引入了 [`video.js`](https://videojs.com/) 库实现播放功能。基于官方提供的[组件实现](https://videojs.com/guides/react/)，改巴改巴实现为自己的：
 
 ```tsx
 import { useEffect, useRef } from "react";

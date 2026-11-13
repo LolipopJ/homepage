@@ -8,6 +8,9 @@ tags:
   - gRPC
 ---
 
+> [!WARNING]
+> 本文编写于 2021 年，文中使用的 `gRPC 1.28.1`、Visual Studio 2015/2017、CMake 3.20.1 等版本均已大幅过时。如需在 Windows 上编译新版 gRPC，请参考最新的官方 [BUILDING.md](https://github.com/grpc/grpc/blob/master/BUILDING.md) 文档。
+
 本博客基于 CMake 实现编译 `gRPC 1.28.1` 版本。
 
 本博客的 Windows 端使用的命令提示符界面为 Powershell。
@@ -41,7 +44,7 @@ git version 2.21.0.windows.1
 
 ### CMake
 
-用于生成编译 gRPC 的 Makefile 文件。
+用于生成编译 gRPC 的 Visual Studio 解决方案（`.sln`）和工程文件。
 
 在 [CMake 官网](https://cmake.org/download/)下载，可以选择下载 `.msi` 文件直接安装。
 
@@ -90,7 +93,7 @@ NASM version 2.15.05 compiled on Aug 28 2020
 git clone https://github.com/grpc/grpc.git
 # 获取 gRPC 第三方依赖
 cd grpc
-git submodule update --init
+git submodule update --init --recursive
 ```
 
 ## 编译安装 gRPC
@@ -99,15 +102,15 @@ git submodule update --init
 
 下面的内容基于的 CMake 版本不低于 3.13，且编译的 gRPC 版本不低于 1.27。
 
-首先创建文件夹存储编译结果，并执行 `cmake` 命令生成 Makefile 文件。使用**管理员权限**打开命令行界面，执行下面的命令：
+首先创建文件夹存储编译结果，并执行 `cmake` 命令生成 Visual Studio 解决方案（`.sln`）和工程文件。使用**管理员权限**打开命令行界面，执行下面的命令：
 
 ```powershell
 # 在 grpc 目录下创建 .build 目录并进入
 md .build
 cd .build
-# 生成 Makefile 文件
-# 其中 Visual Studio 15 2017 为当前的 VS 版本
-cmake .. -DgRPC_INSTALL=ON -G "Visual Studio 15 2017"
+# 生成 Visual Studio 解决方案（.sln）和工程文件
+# 其中 Visual Studio 15 2017 为当前的 VS 版本，-A x64 指定 64 位架构
+cmake .. -DgRPC_INSTALL=ON -G "Visual Studio 15 2017" -A x64
 ```
 
 > [!TIP]
@@ -149,7 +152,7 @@ gRPC 默认安装在 `C:\Program Files (x86)\grpc` 目录。
 移动到 git 克隆的 gRPC 源码目录下的 `grpc\examples\cpp\helloworld` 目录，创建存放编译结果的文件夹 `cmake\build`，进入到该目录，执行下面的命令：
 
 ```powershell
-# 生成 Makefile 文件
+# 生成 Visual Studio 解决方案（.sln）和工程文件
 # 其中 C:\Program Files (x86)\grpc 是 gRPC 默认的安装目录
 cmake -DCMAKE_PREFIX_PATH='C:\Program Files (x86)\grpc' ../..
 ```

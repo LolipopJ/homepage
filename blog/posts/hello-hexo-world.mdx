@@ -9,6 +9,9 @@ tags:
   - Hexo
 ---
 
+> [!WARNING]
+> 本文撰写于 2019 年，文中提及的 Node.js 10.x、Hexo 5.x 以及 `master` 默认分支均已过时。截至 2026 年，现代 Hexo 需要更高版本的 Node.js，且 GitHub 仓库的默认分支名称已普遍改为 `main`。
+
 搭建一个自己的博客是多少投身于 IT 行业的男人女人们的梦想！撇开维护所花费的巨量时间开销不看，能够在网络上划得一片净土去传递自己的故事与思考，是一件何等快乐的事情！
 
 正如许多人的第一篇博客那样，在这里记录下搭建博客的流程，也许能带给你些许决意和帮助。
@@ -76,17 +79,17 @@ npm install hexo-deployer-git --save
 
 2.修改 Hexo 目录下的配置文件 `_config.yml` 中 deploy 的内容如下。
 
-```json
+```yaml
 deploy:
   type: git
-  repo: 你的 Github Pages 链接 # 例如https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io
+  repo: 你的 Github Pages 链接 # 例如 https://github.com/JohnSmith/johnsmith.github.io
   branch: master
 ```
 
 3.生成站点文件并推送至 Github 库。
 
 ```bash
-hexo clean && hexo deploy
+hexo clean && hexo deploy -g
 ```
 
 至此，博客便已经搭建完毕了！Hexo 拥有一个 landscape 的初始主题，意味着现在你就可以访问你自己的 Github Pages 了！
@@ -97,7 +100,7 @@ hexo clean && hexo deploy
 
 当执行 `hexo deploy` 时，Hexo 会将 `public` 目录中的文件和目录推送至 `_config.yml` 中指定的远端仓库和分支中，并且**完全覆盖**该分支下的已有内容。
 
-编写好博客推送以后，只需要用 Git bash 移动到 Hexo 目录，使用 `hexo clean && hexo deploy` 命令（在 windows terminal 上请使用 `hexo clean ; hexo deploy`），即可完成博客页面的更新与同步了。
+编写好博客推送以后，只需要用 Git bash 移动到 Hexo 目录，使用 `hexo clean && hexo deploy -g`（或者先执行 `hexo generate` 生成静态文件，再执行 `hexo deploy`）命令，即可完成博客页面的更新与同步了（注意：在 Windows 自带的 PowerShell 5.1 中不支持 `&&` 操作符，请改用 `;` 分隔，如 `hexo clean ; hexo deploy -g`；Bash、CMD 以及 PowerShell 7+ 均支持 `&&`）。
 
 ## 关于
 

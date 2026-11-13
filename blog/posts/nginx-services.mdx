@@ -17,6 +17,9 @@ tags:
 
 ## 安装最新版本的 Nginx
 
+> [!WARNING]
+> CentOS 7 已于 2024-06-30 停止维护（EOL），下方示例中的 Nginx `1.26.0` 亦为早期版本，实际部署时请根据当前系统发行版与最新 Nginx 官方源进行安装。
+
 笔者使用的服务器为 CentOS 7 系统，默认的 yum 源中包含的 Nginx 版本为 `1.20.1`（2021-05-21）。
 
 更新 yum 源，添加 Nginx 的官方源：
@@ -168,7 +171,7 @@ cd /var/www/towind.cn/blog
 git pull
 ```
 
-如果没有存放构建后的静态文件，或构建后的静态文件无法直接使用（例如 `bashPath` 不同），那么额外执行一次构建命令即可。例如：
+如果没有存放构建后的静态文件，或构建后的静态文件无法直接使用（例如 `basePath` 不同），那么额外执行一次构建命令即可。例如：
 
 ```bash
 # /path/to/update-example.sh
@@ -299,7 +302,7 @@ server {
 server {
   include /etc/nginx/conf.shared.d/https.conf;
   server_name xxx.towind.cn;
-  location = / {
+  location / {
     proxy_pass http://127.0.0.1:15244;
   }
 }

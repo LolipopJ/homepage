@@ -36,8 +36,16 @@ Umi 的 model 简易数据流插件就是基于 Context 的封装，使得数据
 ```tsx
 // src/contexts/userContext.tsx
 import React, { createContext, useState } from "react";
-export const UserContext = createContext();
-export const UserContextProvider = (props) => {
+
+interface UserContextValue {
+  username: string;
+}
+
+export const UserContext = createContext<UserContextValue>({
+  username: "",
+});
+
+export const UserContextProvider = (props: { children: React.ReactNode }) => {
   const [username, setUsername] = useState<string>("");
   return (
     <UserContext.Provider value={{ username }}>

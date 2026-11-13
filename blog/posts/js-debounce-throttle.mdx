@@ -57,7 +57,7 @@ function throttle1(func, wait) {
 
 此外，如果不使用 `apply()` 方法而是直接调用函数的话，节流执行函数内的 `this` 对象仍指向的是全局的 `window` 对象，而非我们期望的绑定此节流函数的对象，因此应使用 `apply()` 传入 `this` 上下文对象。
 
-对于实现传入上下文对象，`call()` 方法的作用和 `apply()` 相同，只是前者需要将传入的参数列举出来，而后者需要将传入的参数放在一个数组中。由于我们使用 `const args = arguments` 获取了函数传入的参数，而 `args` 为一个数组，因此选择使用 `apply()` 的方法。
+对于实现传入上下文对象，`call()` 方法的作用和 `apply()` 相同，只是前者需要将传入的参数列举出来，而后者需要将传入的参数放在一个数组或类数组对象中。由于我们使用 `const args = arguments` 获取了函数传入的参数，而 `arguments` 是一个**类数组对象**（`apply()` 同时支持数组与类数组对象），因此选择使用 `apply()` 的方法。
 
 假如不使用箭头函数，应该在 `setTimeout` 方法前获取 `this` 上下文对象，再调用 `apply()` 方法，如：
 
@@ -193,6 +193,9 @@ function debounce(func, wait, immediate = false) {
 
 ## 在 Nuxt.js 中引入函数节流和防抖
 
+> [!WARNING]
+> 本节及下文示例基于 Vue 2 与 Nuxt 2。Vue 2 已于 2023 年 12 月 31 日停止维护（EOL），Nuxt 2 也已于 2024 年 6 月 30 日停止维护（EOL），现代项目建议使用 Vue 3 与 Nuxt 3+。
+
 在项目的 `plugins` 目录下创建一个新的文件，例如 `main.js`。将函数节流和防抖添加为 Vue 的实例方法。如：
 
 ```js
@@ -228,7 +231,7 @@ export default {
 };
 ```
 
-就可以在组件中通过 `this.$Main.throttle()` 调用函数了。其中 `this` 指向了全局的 Vue 对象。
+就可以在组件中通过 `this.$Main.throttle()` 调用函数了。其中 `this` 指向当前 Vue 组件实例。
 
 ## 简单的使用示例
 
@@ -269,9 +272,13 @@ export default {
     }),
     mounted() {
       // 每 500 毫秒获取当前的 scrollVal 值
-      const throttleOnScroll = this.$Main.throttle(this.onScroll, 500);
+      this.throttleOnScroll = this.$Main.throttle(this.onScroll, 500);
       // 为 window 添加滚动事件
-      window.addEventListener("scroll", throttleOnScroll);
+      window.addEventListener("scroll", this.throttleOnScroll);
+    },
+    beforeDestroy() {
+      // 组件销毁前移除事件监听，避免内存泄漏
+      window.removeEventListener("scroll", this.throttleOnScroll);
     },
     methods: {
       // 获取 window.pageYOffset 值并赋值给 scrollVal
@@ -290,6 +297,9 @@ export default {
   };
 </script>
 ```
+
+> [!WARNING]
+> `window.pageYOffset` 已被规范标记为废弃（deprecated），现代浏览器推荐直接使用 `window.scrollY`。
 
 `window.pageYOffset` 是 `window.scrollY` 的别名，前者的浏览器兼容性较好，调用时将返回文档在垂直方向已滚动的像素值。
 

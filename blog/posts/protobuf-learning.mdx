@@ -114,6 +114,9 @@ message SearchRequest {
 
 上例中定义了三个 singular 字段 `query`, `page_number` 和 `result_per_page`，以及一个 `repeated` 字段 `query_extras`.
 
+> [!WARNING]
+> 自 Protobuf v3.15 起，`proto3` 已重新支持 `optional` 关键字（用于显式追踪字段存在性）；此外，Protobuf 后续也推出了统一 `proto2` 与 `proto3` 演进模式的 Protobuf Editions。本文撰写时基于早期的 `proto3` 规范。
+
 <details>
 <summary>
 作为补充，proto2 包括三种字段规则：<code>required</code>, <code>optional</code> 和 <code>repeated</code>.
@@ -123,7 +126,7 @@ message SearchRequest {
 - `optional`. 一则 message 中只能拥有不超过一个该字段，相当于 proto3 的 singular.
 - `repeated`. 一则 message 可以拥有任意个该字段，相当于 proto3 的 `repeated`.
 
-[相关链接](<(https://developers.google.com/protocol-buffers/docs/proto#specifying_field_rules)>)
+[相关链接](https://developers.google.com/protocol-buffers/docs/proto#specifying_field_rules)
 
 </details>
 
@@ -305,12 +308,12 @@ message AddressBook {
 }
 ```
 
-使用 `protoc` 命令对编写的 `.protoc` 文件进行编译。
+使用 `protoc` 命令对编写的 `.proto` 文件进行编译。
 
 ### Go 版本编译
 
 ```bash
-# 编译 Go 版本的 .protoc 文件
+# 编译 Go 版本的 .proto 文件
 protoc -I=$SRC_DIR --go_out=$DST_DIR $SRC_DIR/addressbook-go.proto
 ```
 
@@ -349,7 +352,7 @@ func listPeople(w io.Writer, book *pb.AddressBook) {
 ### C++ 版本编译
 
 ```bash
-# 编译 C++ 版本的 .protoc 文件
+# 编译 C++ 版本的 .proto 文件
 protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook-cpp.proto
 ```
 
@@ -393,3 +396,6 @@ void ListPeople(const tutorial::AddressBook& address_book) {
   }
 }
 ```
+
+> [!WARNING]
+> 本文撰写于 2021 年，部分外部链接现已变更：Protobuf 官方文档已从 `developers.google.com/protocol-buffers` 迁移至 [`protobuf.dev`](https://protobuf.dev/)，GitHub 仓库默认分支也已从 `master` 迁移为 `main`，文中部分旧链接可能会重定向或失效。

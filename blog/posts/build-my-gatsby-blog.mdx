@@ -13,6 +13,9 @@ tags:
 description: 记录基于 Gatsby、React、TypeScript 与 Tailwind CSS 打造个人博客系统的实践经验，涵盖技术选型、MDX 解析、暗色模式与自动化部署。
 ---
 
+> [!WARNING]
+> 本仓库后续已持续迭代，部分实现与本文撰写时有所不同（例如已升级至 `gatsby-plugin-mdx@^5.16.0` 与 `remark-gfm@^3.0.1`、公开的 Algolia 配置已迁至 `src/constants/algolia.ts`、入口使用 `gatsby-browser.js`、CI/CD 已迁移至 Node.js 24 + pnpm 12 等）。
+
 ## 碎碎念
 
 搭建一个自己的博客是无数跻身于 IT 行业开发者的心中最质朴的愿望！
@@ -205,7 +208,7 @@ export const useAllMdx = () => {
 export default useAllMdx;
 ```
 
-一个 React 组件里最多只能有 `useStaticQuery()` 方法，如果您想要查询多条不同数据，要么把查询代码写到一起，要么就新建一个钩子方法（推荐）。对于全局都会使用到的数据，可以分门别类放到不同的钩子方法里，例如网站的 Metadata，就可以把查询代码放在 `src/hooks/useSiteMetadata.ts` 里。
+一个 React 组件里最多只能有**一个** `useStaticQuery()` 调用，如果您想要查询多条不同数据，要么把查询代码写到一起，要么就新建一个钩子方法（推荐）。对于全局都会使用到的数据，可以分门别类放到不同的钩子方法里，例如网站的 Metadata，就可以把查询代码放在 `src/hooks/useSiteMetadata.ts` 里。
 
 现在，笔者需要根据博客的文件路径，自动生成访问路由，例如对于博客文件 `path/to/this-is-a-blog.mdx`，可以通过路由 `/posts/this-is-a-blog` 访问到，该怎么实现呢？官方提供了多种方案，这里笔者选择了更符合自己喜好的，在 `gatsby-node.ts` 文件里导出 `createPages()` 方法的方案，它能够以编程的方式自定义生成路由，拥有相当大的自由度：
 
@@ -424,7 +427,7 @@ const PostTemplate = ({ children }) => {
 
   React.useEffect(() => {
     const optimizedImageLinks =
-      articleRef.current?.querySelectorAll<HTMLLinkElement>(
+      articleRef.current?.querySelectorAll<HTMLAnchorElement>(
         "a.gatsby-resp-image-link",
       );
     optimizedImageLinks?.forEach((link) => {
@@ -510,7 +513,7 @@ const PostTemplate = ({ post }) => {
 
   return (
     <div>
-      <GatsbyImage image={bannerImage} />
+      {bannerImage && <GatsbyImage image={bannerImage} alt={title} />}
       {/* ... */}
     </div>
   );
@@ -603,7 +606,7 @@ const config: GatsbyConfig = {
 };
 ```
 
-插件 `gatsby-plugin-algolia` 需要一个包含博客元数据的数组以执行上传操作，而 GraphQL 查询的结果是一个形如 `{ addMdx: { nodes: MdxNode[] }}` 的对象，因此要使用插件提供的 `transformer()` 方法，返回里面的 `nodes` 数组。
+插件 `gatsby-plugin-algolia` 需要一个包含博客元数据的数组以执行上传操作，而 GraphQL 查询的结果是一个形如 `{ allMdx: { nodes: MdxNode[] } }` 的对象，因此要使用插件提供的 `transformer()` 方法，返回里面的 `nodes` 数组。
 
 为了确保博客在索引里的唯一性，并确保索引里的数据始终最新，在 GraphQL 查询的时候必须提供 `id` 和 `internal.contentDigest`。
 

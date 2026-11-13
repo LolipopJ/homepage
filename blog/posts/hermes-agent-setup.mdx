@@ -346,6 +346,9 @@ services:
 
 重启 Camofox Browser 服务：
 
+> [!WARNING]
+> `docker-compose`（v1）已停止维护，现代 Docker 环境建议使用 `docker compose up -d`。
+
 ```bash
 # 终止运行中的容器
 docker stop camofox-browser && docker rm camofox-browser
@@ -657,7 +660,7 @@ V2EX 的签到通常在登录后首页右侧会显示「领取今日的登录奖
 
 喔对了，因为目前版本的 Camofox Browser 还不支持持久化 Cookies 等数据（官方文档里写的环境变量 `CAMOFOX_PROFILE_DIR` 还没有实现，可能是 AI 生成的幻觉；另外让 AI 分析 Camofox Browser 源码，也未发现相关实现），每次通过 `curl` 请求导入的数据有效期为当前会话，而会话过期的时间默认为 10 分钟。如果会话过期了，Cookies 数据也就清空了，于是出现上面未登录的提示信息。
 
-那么，再执行一遍 `curl -X POST http://localhost:9377/sessions/agent1/cookies` 请求生成一轮新的会话，再让助理重新尝试吧：
+那么，再执行一遍 `curl -X POST http://localhost:9377/sessions/hermes_${YOUR_ID}/cookies` 请求生成一轮新的会话，再让助理重新尝试吧：
 
 ```plaintext
 ╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────╮
@@ -735,8 +738,8 @@ V2EX 的签到通常在登录后首页右侧会显示「领取今日的登录奖
 ────────────────────────────────────────
 ● 以后遇到类似的需要用户身份信息的任务，请首先调用 node ~/.hermes/scripts/get-cookies.js
 ~/.camofox/cookies/${DOMAIN}_cookies.txt，获取解析后的 Cookies 数据数组。接着，调用 curl -X POST
-http://localhost:9377/sessions/hermes_${YOUR_ID}/cookies \-H 'Content-Type: application/json' \-H
-'Authorization: Bearer $CAMOFOX_API_KEY' \ -d 'Cookies 数据数组'。请把这个过程归纳为技能。
+http://localhost:9377/sessions/hermes_${YOUR_ID}/cookies -H 'Content-Type: application/json' -H
+"Authorization: Bearer $CAMOFOX_API_KEY" -d 'Cookies 数据数组'。请把这个过程归纳为技能。
 ────────────────────────────────────────
 
 ╭─ ⚕ Hermes ───────────────────────────────────────────────────────────────────────────────────────────╮
@@ -894,7 +897,7 @@ node ~/.hermes/scripts/get-cookies.js ~/.camofox/cookies/${DOMAIN}_cookies.txt
 curl -X POST http://localhost:9377/sessions/${CAMOFOX_HERMES_SESSION_ID}/cookies \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${CAMOFOX_API_KEY}" \
-  -d '${COOKIES_JSON}'
+  -d "${COOKIES_JSON}"
 ```
 
 ### 第三步：验证登录状态

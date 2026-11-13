@@ -27,6 +27,9 @@ tags:
 
 参考 Loki 官方快速开始文档，精简示例里的 [`docker-compose.yaml` 文件](https://github.com/grafana/loki/blob/main/examples/getting-started/docker-compose.yaml)，只保留用于启动 Grafana 和 Loki 这两个服务和其他一些必要服务的容器的配置。简化后的 `docker-compose.yaml` 配置文件如下：
 
+> [!WARNING]
+> MinIO 已于 2025 年移除了社区版 Web 控制台的大量管理功能，并停止维护免费社区版 `minio/minio` Docker 镜像。截至 2026 年底，生产环境新部署建议评估 RustFS、SeaweedFS 或 Garage 等替代对象存储方案。
+
 ```yaml
 ---
 networks:
@@ -293,6 +296,9 @@ compactor:
 
 对于笔者的实际使用需求来说，上面每个配置的具体含义并不需要清楚了解，让我们直接启动 Grafana 和 Loki 容器吧！
 
+> [!WARNING]
+> `docker-compose`（v1）已停止维护（EOL），现代 Docker 环境请使用内置插件命令 `docker compose`（如 `docker compose up -d`）。
+
 ```bash
 % docker-compose up -d
 [+] Running 18/18
@@ -325,6 +331,9 @@ compactor:
 > [!NOTE]
 > 笔者在撰写本文时，使用的 Alloy 的版本为 `1.8`。
 
+> [!WARNING]
+> CentOS 7 与 CentOS Stream 8 均已停止维护（EOL）；现代 RHEL 系发行版（如 RHEL 8/9、Rocky Linux、AlmaLinux 等）已转向使用 `dnf` 包管理器。
+
 对于笔者的 CentOS 服务器，依次执行下面的命令来安装 Alloy：
 
 ```bash
@@ -332,7 +341,7 @@ wget -q -O gpg.key https://rpm.grafana.com/gpg.key
 sudo rpm --import gpg.key
 echo -e '[grafana]\nname=grafana\nbaseurl=https://rpm.grafana.com\nrepo_gpgcheck=1\nenabled=1\ngpgcheck=1\ngpgkey=https://rpm.grafana.com/gpg.key\nsslverify=1\nsslcacert=/etc/pki/tls/certs/ca-bundle.crt' | sudo tee /etc/yum.repos.d/grafana.repo
 
-yum update
+sudo yum update
 
 sudo yum install alloy
 ```
@@ -503,7 +512,7 @@ services:
 
 同样，您需要替换配置里的 `YOUR_TENANT_ID` 为您指定的租户 ID。
 
-最后，删除旧的使用 `docker run` 命令启动的容器，执行命令启动新容器：`docker-compose up -d`。
+最后，删除旧的使用 `docker run` 命令启动的容器，执行命令启动新容器：`docker-compose up -d`（现代环境请使用 `docker compose up -d`）。
 
 在 Grafana 查看收集到的日志信息：
 
