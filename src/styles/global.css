@@ -152,7 +152,7 @@
 
       &::before {
         @apply
-          pointer-events-none absolute top-1 -right-4 text-xs/none font-bold
+          pointer-events-none absolute top-1 right-2 text-xs/none font-bold
           tracking-wider uppercase opacity-30 content-[attr(data-language)]
           select-none
         ;
@@ -174,14 +174,14 @@
     }
 
     blockquote {
-      @apply mx-0 rounded-l-sm border-l-4 border-primary;
+      @apply mx-0 my-6 px-5 py-4;
 
-      :first-child {
-        @apply mt-2;
+      > :first-child {
+        @apply mt-0;
       }
 
-      :last-child {
-        @apply mb-2;
+      > :last-child {
+        @apply mb-0;
       }
 
       p {
@@ -196,7 +196,7 @@
     > span > span.gatsby-resp-image-wrapper,
     > video,
     > a > video,
-    > span > div > pre,
+    > span > .gatsby-highlight,
     > table,
     > iframe {
       @apply -mx-6! my-6 w-[calc(100%+3rem)] max-w-none!;

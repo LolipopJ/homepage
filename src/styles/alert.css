@@ -3,10 +3,7 @@
  */
 /* #region https://github.com/sindresorhus/github-markdown-css/blob/e49401776c9d581ad42367fc4ea3d677d13e2e39/github-markdown-dark.css#L1055-L1115 */
 .markdown-alert {
-  @apply
-    mt-3 mb-6 rounded-l-sm rounded-r-lg border-l-4 border-border
-    bg-background-light p-4 text-inherit
-  ;
+  @apply mt-3 mb-6 rounded-lg bg-background-light p-4 text-inherit;
 }
 
 .markdown-alert > :first-child {
@@ -18,11 +15,11 @@
 }
 
 .markdown-alert .markdown-alert-title {
-  @apply mb-4 flex items-center leading-none font-bold;
+  @apply mb-3 flex items-center leading-snug font-bold;
 }
 
 .markdown-alert.markdown-alert-note {
-  @apply border-l-alert-note;
+  @apply bg-alert-note/10;
 }
 
 .markdown-alert.markdown-alert-note .markdown-alert-title {
@@ -30,7 +27,7 @@
 }
 
 .markdown-alert.markdown-alert-important {
-  @apply border-l-alert-important;
+  @apply bg-alert-important/10;
 }
 
 .markdown-alert.markdown-alert-important .markdown-alert-title {
@@ -38,7 +35,7 @@
 }
 
 .markdown-alert.markdown-alert-warning {
-  @apply border-l-alert-warning;
+  @apply bg-alert-warning/10;
 }
 
 .markdown-alert.markdown-alert-warning .markdown-alert-title {
@@ -46,7 +43,7 @@
 }
 
 .markdown-alert.markdown-alert-tip {
-  @apply border-l-alert-tip;
+  @apply bg-alert-tip/10;
 }
 
 .markdown-alert.markdown-alert-tip .markdown-alert-title {
@@ -54,7 +51,7 @@
 }
 
 .markdown-alert.markdown-alert-caution {
-  @apply border-l-alert-caution;
+  @apply bg-alert-caution/10;
 }
 
 .markdown-alert.markdown-alert-caution .markdown-alert-title {
