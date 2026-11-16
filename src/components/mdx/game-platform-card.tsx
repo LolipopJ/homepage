@@ -1,7 +1,7 @@
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import * as React from "react";
 
-import Icon from "./icon";
+import Icon from "../icon";
 
 interface GamePlatformCardProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   platform: string;

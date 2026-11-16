@@ -2,18 +2,21 @@ import {
   type BuildArgs,
   type CreateNodeArgs,
   type CreatePagesArgs,
+  type CreateSchemaCustomizationArgs,
   type CreateWebpackConfigArgs,
 } from "gatsby";
 import path from "path";
 
+import { buildPostCoverTypeDefs } from "./plugins/post-cover";
 import {
   generateSitemaps,
   type MdxQueryResult,
   type SitePageQueryResult,
 } from "./plugins/sitemap";
-import { parseFilePathToPostSlug } from "./src/utils/post";
+import { assertNoRouteConflicts, resolveBlogContent } from "./src/utils/post";
 
 const isProd = process.env.NODE_ENV === "production";
+const BLOG_ROOT = path.resolve("./blog");
 
 export const onCreateWebpackConfig = ({
   actions,
@@ -31,25 +34,38 @@ export const onCreateWebpackConfig = ({
   actions.replaceWebpackConfig(config);
 };
 
+export const createSchemaCustomization = ({
+  actions,
+  schema,
+}: CreateSchemaCustomizationArgs) => {
+  actions.createTypes(buildPostCoverTypeDefs(schema, BLOG_ROOT));
+};
+
 export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
   const { createNodeField } = actions;
   if (node.internal.type === "Mdx") {
+    const contentFilePath = String(node.internal.contentFilePath);
+    const resolved = resolveBlogContent(
+      path.relative(BLOG_ROOT, contentFilePath),
+    );
+    if (!resolved) return;
+
     createNodeField({
       node,
       name: "slug",
-      value: parseFilePathToPostSlug(String(node.internal.contentFilePath)),
+      value: resolved.slug,
     });
 
     createNodeField({
       node,
       name: "isPublic",
-      value: /\/blog\/posts\//.test(String(node.internal.contentFilePath)),
+      value: resolved.isPublic,
     });
 
     createNodeField({
       node,
       name: "isDraft",
-      value: /\/blog\/drafts\//.test(String(node.internal.contentFilePath)),
+      value: resolved.isDraft,
     });
   }
 };
@@ -57,11 +73,12 @@ export const onCreateNode = ({ node, actions }: CreateNodeArgs) => {
 export const createPages = async function ({
   actions,
   graphql,
+  reporter,
 }: CreatePagesArgs) {
   const postTemplate = path.resolve("./src/templates/post.tsx");
   const postListTemplate = path.resolve("./src/templates/post-list.tsx");
 
-  const { data } = await graphql<{
+  const { data, errors } = await graphql<{
     allMdx: {
       nodes: (Pick<MdxNode, "fields" | "id"> & {
         frontmatter: Pick<
@@ -73,16 +90,7 @@ export const createPages = async function ({
     };
   }>(`
     query {
-      allMdx(
-        sort: { frontmatter: { date: DESC } }
-        filter: {
-          internal: {
-            contentFilePath: {
-              regex: "//blog/posts/|/blog/drafts/|/blog/about-me.mdx/"
-            }
-          }
-        }
-      ) {
+      allMdx(sort: { frontmatter: { date: DESC } }) {
         nodes {
           fields {
             slug
@@ -104,16 +112,42 @@ export const createPages = async function ({
     }
   `);
 
+  if (errors || !data) {
+    reporter.panicOnBuild(
+      "[content-routing] Failed to query MDX nodes for page creation",
+      errors,
+    );
+    return;
+  }
+
+  const routableEntries = data.allMdx.nodes.flatMap((node) => {
+    const resolved = resolveBlogContent(
+      path.relative(BLOG_ROOT, node.internal.contentFilePath),
+    );
+    return resolved ? [{ node, resolved }] : [];
+  });
+
+  try {
+    assertNoRouteConflicts(
+      routableEntries.map(({ node, resolved }) => ({
+        pagePath: resolved.pagePath,
+        sourcePath: node.internal.contentFilePath,
+      })),
+    );
+  } catch (error) {
+    reporter.panicOnBuild(
+      error instanceof Error ? error.message : String(error),
+    );
+    return;
+  }
+
   const postsFilteredByCategory: Record<string, string[]> = {};
   const postsFilteredByTag: Record<string, string[]> = {};
 
-  data?.allMdx.nodes.forEach((node) => {
-    const slug = node.fields.slug;
-    const path = slug === "about-me" ? "/about-me" : `/posts/${slug}`;
-
+  routableEntries.forEach(({ node, resolved }) => {
     // Create post pages through template
     actions.createPage({
-      path,
+      path: resolved.pagePath,
       component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
       context: {
         id: node.id,
@@ -121,7 +155,7 @@ export const createPages = async function ({
     });
 
     // Skip drafts when adding to category/tag lists in production
-    const shouldIncludeInLists = !isProd || node.fields.isPublic;
+    const shouldIncludeInLists = !isProd || resolved.isPublic;
 
     // Filter posts by category
     if (shouldIncludeInLists) {
@@ -197,6 +231,9 @@ export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
             date
             updated
           }
+          internal {
+            contentFilePath
+          }
         }
       }
     }
@@ -211,7 +248,12 @@ export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
   }
 
   const publicDir = path.resolve("./public");
-  await generateSitemaps(publicDir, data.allSitePage.nodes, data.allMdx.nodes);
+  await generateSitemaps(
+    publicDir,
+    data.allSitePage.nodes,
+    data.allMdx.nodes,
+    BLOG_ROOT,
+  );
 
   reporter.info("[sitemap] Successfully generated sitemaps.");
 };

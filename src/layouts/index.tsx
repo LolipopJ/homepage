@@ -41,6 +41,13 @@ import useDiscordActivity from "../hooks/useDiscordActivity";
 import useTailwindBreakpoint from "../hooks/useScreenBreakpoint";
 import useSiteMetadata from "../hooks/useSiteMetadata";
 import useTheme from "../hooks/useTheme";
+import {
+  encodeFragmentValue,
+  getHandledAnchorKey,
+  getPostPath,
+  matchPostRoute,
+  normalizeRoutePath,
+} from "../utils/post";
 import Navbar from "./navbar";
 import SiderBar, { SiderBarProps } from "./sider-bar";
 
@@ -146,9 +153,11 @@ const Layout: React.FC<PageProps> = (props) => {
   const [pageTitle, setPageTitle] = React.useState<React.ReactNode>("");
   const [openAlgoliaSearch, setOpenAlgoliaSearch] =
     React.useState<boolean>(false);
-  const [pageHeadings, setPageHeadings] = React.useState<HTMLHeadingElement[]>(
-    [],
-  );
+  const [{ path: pageHeadingsPath, headings: pageHeadings }, setPageHeadings] =
+    React.useState<{ path: string; headings: HTMLHeadingElement[] }>({
+      path: "",
+      headings: [],
+    });
   const [currentHeading, setCurrentHeading] = React.useState<number>(-1);
   const [showBackTop, setShowBackTop] = React.useState<boolean>(false);
   const [readProgress, setReadProgress] = React.useState<number>(0); // %
@@ -193,14 +202,11 @@ const Layout: React.FC<PageProps> = (props) => {
   const { activities } = useDiscordActivity();
 
   /** 当前路由是否为博客页 */
-  const [isPostPage, postSlug] = React.useMemo(() => {
-    if (/^\/about-me\//.test(path)) {
-      return [true, "about-me"];
-    }
-
-    const result = path.match(/^\/posts\/(.+)\//);
-    return [result !== null, result?.[1]];
-  }, [path]);
+  const normalizedPath = React.useMemo(() => normalizeRoutePath(path), [path]);
+  const { isPostPage, isAboutMe, postSlug } = React.useMemo(
+    () => matchPostRoute(path),
+    [path],
+  );
 
   //#region 沉浸模式能力
   React.useEffect(() => {
@@ -288,11 +294,12 @@ const Layout: React.FC<PageProps> = (props) => {
           heading.id = encodeURIComponent(heading.innerText);
         });
         if (headings.length) {
-          setPageHeadings(
-            headings.filter((heading) => heading.nodeName !== "H1"),
-          );
+          setPageHeadings({
+            path: normalizedPath,
+            headings: headings.filter((heading) => heading.nodeName !== "H1"),
+          });
         } else {
-          setPageHeadings([]);
+          setPageHeadings({ path: normalizedPath, headings: [] });
         }
       };
 
@@ -311,25 +318,31 @@ const Layout: React.FC<PageProps> = (props) => {
         mutationObserver.disconnect();
       };
     } else {
-      setPageHeadings([]);
+      setPageHeadings({ path: normalizedPath, headings: [] });
     }
-  }, [path, isPostPage]);
+  }, [normalizedPath, isPostPage]);
   //#endregion
 
   //#region 处理 Hash 查询，跳转到指定 Heading
   React.useEffect(() => {
-    if (hash && hashRef.current !== hash) {
-      const targetId = hash.slice(1);
-      const pageHeading = pageHeadings.find(
-        (heading) => heading.id === targetId,
-      );
-
-      if (pageHeading) {
-        pageHeading.scrollIntoView();
-        hashRef.current = hash;
-      }
+    const anchorKey = getHandledAnchorKey(normalizedPath, hash);
+    if (!anchorKey) {
+      hashRef.current = "";
+      return;
     }
-  }, [hash, pageHeadings]);
+
+    if (pageHeadingsPath !== normalizedPath || hashRef.current === anchorKey) {
+      return;
+    }
+
+    const targetId = encodeFragmentValue(hash.slice(1));
+    const pageHeading = pageHeadings.find((heading) => heading.id === targetId);
+
+    if (pageHeading) {
+      pageHeading.scrollIntoView();
+      hashRef.current = anchorKey;
+    }
+  }, [hash, normalizedPath, pageHeadings, pageHeadingsPath]);
   //#endregion
 
   //#region 同步 pageHeadings 到 ref，避免滚动监听因目录更新而重复挂载
@@ -474,7 +487,7 @@ const Layout: React.FC<PageProps> = (props) => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setPageTitle(
-          postSlug === "about-me" ? (
+          isAboutMe ? (
             <>
               <Icon icon={faPersonRays} className="p-2" />
               <span>关于我</span>
@@ -501,7 +514,7 @@ const Layout: React.FC<PageProps> = (props) => {
     return () => {
       observer.unobserve(postTitle);
     };
-  }, [isPostPage, path, postSlug, layoutInitialized]);
+  }, [isPostPage, isAboutMe, path, layoutInitialized]);
   //#endregion
 
   //#region 挂载后更新时间相关的客户端状态
@@ -557,9 +570,7 @@ const Layout: React.FC<PageProps> = (props) => {
     () => (
       <ol>
         {sortedPosts.map((post) => {
-          const isActive = new RegExp(`^/posts/${post.fields.slug}/`).test(
-            path,
-          );
+          const isActive = normalizedPath === getPostPath(post.fields.slug);
 
           return (
             <li
@@ -583,7 +594,7 @@ const Layout: React.FC<PageProps> = (props) => {
         })}
       </ol>
     ),
-    [sortedPosts, path, postSortKey],
+    [sortedPosts, normalizedPath, postSortKey],
   );
   subSiderBarItems.push({
     key: "posts",

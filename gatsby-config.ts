@@ -3,9 +3,11 @@ import type { GatsbyConfig } from "gatsby";
 import remarkGfm from "remark-gfm";
 import remarkGithubAlerts from "remark-github-alerts";
 
+import { remarkRelativePostLinks } from "./plugins/remark-relative-post-links";
 import { remarkSkipCodeBlock } from "./plugins/remark-skip-code-block";
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
+import { getPostPath } from "./src/utils/post";
 
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
@@ -43,33 +45,22 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-source-filesystem",
       options: {
-        name: "posts",
-        path: "./blog/posts/",
+        name: "blog",
+        path: "./blog/",
       },
-      __key: "posts",
-    },
-    {
-      resolve: "gatsby-source-filesystem",
-      options: {
-        name: "drafts",
-        path: "./blog/drafts/",
-      },
-      __key: "drafts",
-    },
-    {
-      resolve: "gatsby-source-filesystem",
-      options: {
-        name: "about-me",
-        path: "./blog/about-me.mdx",
-      },
-      __key: "about-me",
+      __key: "blog",
     },
     {
       resolve: "gatsby-plugin-mdx",
       options: {
         extensions: [".mdx", ".md"],
         mdxOptions: {
-          remarkPlugins: [remarkGithubAlerts, remarkGfm, remarkSkipCodeBlock],
+          remarkPlugins: [
+            remarkGithubAlerts,
+            remarkGfm,
+            remarkSkipCodeBlock,
+            remarkRelativePostLinks,
+          ],
         },
         gatsbyRemarkPlugins: [
           // 压缩使用到的图片文件，放置到 /public/static 目录下
@@ -179,7 +170,7 @@ const config: GatsbyConfig = {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
                   date: node.frontmatter.date,
-                  url: `${site.siteMetadata.siteUrl}/posts/${node.fields.slug}`,
+                  url: `${site.siteMetadata.siteUrl}${getPostPath(node.fields.slug)}`,
                   guid: node.fields.slug,
                   custom_elements: [
                     {

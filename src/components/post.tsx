@@ -6,6 +6,7 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import * as React from "react";
 
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
+import { getPostPath } from "../utils/post";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -106,7 +107,7 @@ const Post: React.FC<PostProps> = (props) => {
 
   return (
     <Link
-      to={`/posts/${slug}`}
+      to={getPostPath(slug)}
       onClick={onClick}
       className={`
         flex item-selectable flex-col gap-1.5 rounded-lg px-4 py-3

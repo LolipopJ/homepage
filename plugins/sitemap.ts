@@ -2,6 +2,12 @@ import dayjs from "dayjs";
 import fs from "fs/promises";
 import path from "path";
 
+import {
+  normalizeRoutePath,
+  resolveBlogContent,
+  type ResolvedBlogContent,
+} from "../src/utils/post.ts";
+
 export interface SitemapItem {
   path: string;
   lastmod?: string;
@@ -23,6 +29,9 @@ export interface MdxQueryResult {
   frontmatter?: {
     date?: string;
     updated?: string;
+  };
+  internal?: {
+    contentFilePath?: string;
   };
 }
 
@@ -73,20 +82,31 @@ export function encodeUrlLoc(siteUrl: string, pagePath: string): string {
 export function extractSitemapItems(
   pages: SitePageQueryResult[],
   mdxNodes: MdxQueryResult[],
+  blogRoot: string = path.resolve("./blog"),
 ): SitemapItem[] {
-  const mdxBySlug = new Map<string, MdxQueryResult>();
+  const mdxByRoute = new Map<
+    string,
+    { node: MdxQueryResult; resolved: ResolvedBlogContent }
+  >();
   let latestPostDate: string | undefined;
 
   for (const node of mdxNodes) {
-    if (node.fields?.slug) {
-      mdxBySlug.set(node.fields.slug, node);
-      if (node.fields.isPublic && !node.fields.isDraft) {
-        const postDate = node.frontmatter?.updated || node.frontmatter?.date;
-        if (postDate) {
-          const formatted = formatLastmod(postDate);
-          if (formatted && (!latestPostDate || formatted > latestPostDate)) {
-            latestPostDate = formatted;
-          }
+    const contentFilePath = node.internal?.contentFilePath;
+    if (!contentFilePath) continue;
+
+    const resolved = resolveBlogContent(
+      path.relative(blogRoot, contentFilePath),
+    );
+    if (!resolved) continue;
+
+    mdxByRoute.set(normalizeRoutePath(resolved.pagePath), { node, resolved });
+
+    if (resolved.isPublic && !resolved.isDraft) {
+      const postDate = node.frontmatter?.updated || node.frontmatter?.date;
+      if (postDate) {
+        const formatted = formatLastmod(postDate);
+        if (formatted && (!latestPostDate || formatted > latestPostDate)) {
+          latestPostDate = formatted;
         }
       }
     }
@@ -102,20 +122,29 @@ export function extractSitemapItems(
       continue;
     }
 
-    // Check if it's a post page
-    const postMatch = rawPath.match(/^\/posts\/([^/]+)\/?$/);
-    if (postMatch) {
-      const slug = postMatch[1];
-      const mdxNode = mdxBySlug.get(slug);
+    const normalized = normalizeRoutePath(rawPath);
+    const mdxEntry = mdxByRoute.get(normalized);
 
-      // Exclude draft posts or non-public posts
-      if (mdxNode && (mdxNode.fields?.isDraft || !mdxNode.fields?.isPublic)) {
+    if (mdxEntry) {
+      const { node: mdxNode, resolved } = mdxEntry;
+      const lastmod = formatLastmod(
+        mdxNode.frontmatter?.updated || mdxNode.frontmatter?.date,
+      );
+
+      if (resolved.kind === "about-me") {
+        items.push({
+          path: rawPath,
+          lastmod,
+          changefreq: "monthly",
+          priority: 0.8,
+        });
         continue;
       }
 
-      const lastmod = formatLastmod(
-        mdxNode?.frontmatter?.updated || mdxNode?.frontmatter?.date,
-      );
+      // Exclude draft posts or non-public posts
+      if (resolved.isDraft || !resolved.isPublic) {
+        continue;
+      }
 
       items.push({
         path: rawPath,
@@ -137,16 +166,21 @@ export function extractSitemapItems(
       continue;
     }
 
-    // About me page
-    if (rawPath.startsWith("/about-me")) {
-      const mdxNode = mdxBySlug.get("about-me");
-      const lastmod = formatLastmod(
-        mdxNode?.frontmatter?.updated || mdxNode?.frontmatter?.date,
-      );
+    // About me page fallback
+    if (normalized === "/about-me") {
       items.push({
         path: rawPath,
-        lastmod,
         changefreq: "monthly",
+        priority: 0.8,
+      });
+      continue;
+    }
+
+    // Post page fallback
+    if (normalized === "/posts" || normalized.startsWith("/posts/")) {
+      items.push({
+        path: rawPath,
+        changefreq: "weekly",
         priority: 0.8,
       });
       continue;
@@ -240,8 +274,9 @@ export async function generateSitemaps(
   publicDir: string,
   pages: SitePageQueryResult[],
   mdxNodes: MdxQueryResult[],
+  blogRoot: string = path.resolve("./blog"),
 ): Promise<void> {
-  const items = extractSitemapItems(pages, mdxNodes);
+  const items = extractSitemapItems(pages, mdxNodes, blogRoot);
   const homeItem = items.find((item) => item.path === "/");
   const latestPostDate = homeItem?.lastmod;
 

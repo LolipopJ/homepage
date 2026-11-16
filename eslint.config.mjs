@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import css from "@eslint/css";
 import eslint from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -9,6 +12,25 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 import globals from "globals";
 import { tailwind4 } from "tailwind-csstree";
 import tseslint from "typescript-eslint";
+
+import { getMdxGlobalComponentNames } from "./src/utils/mdx-components.ts";
+
+const mdxComponentsDir = path.resolve(
+  import.meta.dirname,
+  "src/components/mdx",
+);
+const mdxComponentFiles = fs.existsSync(mdxComponentsDir)
+  ? fs
+      .readdirSync(mdxComponentsDir, { withFileTypes: true })
+      .filter((entry) => entry.isFile())
+      .map((entry) => entry.name)
+  : [];
+const mdxComponentGlobals = Object.fromEntries(
+  getMdxGlobalComponentNames(mdxComponentFiles).map((name) => [
+    name,
+    "readonly",
+  ]),
+);
 
 const scriptFiles = ["**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,mdx}"];
 
@@ -69,13 +91,7 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.browser,
-        Card: "readonly",
-        Link: "readonly",
-        HintText: "readonly",
-        GameCard: "readonly",
-        GamePlatformCard: "readonly",
-        Grid: "readonly",
-        ProjectCard: "readonly",
+        ...mdxComponentGlobals,
         __PATH_PREFIX__: true,
       },
     },

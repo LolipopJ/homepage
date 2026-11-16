@@ -24,8 +24,10 @@ src/pages/               首页、分类/标签索引、404 等文件路由
 src/templates/           文章详情和文章列表模板
 src/layouts/             全局布局、导航栏、侧边栏
 src/components/          共享组件、文章渲染、搜索和评论
+src/components/mdx/      自动注册的 MDX 创作组件（顶层 kebab-case.tsx）
+src/mdx/                 MDX 统一组件注册入口与固定语义绑定（a / img）
 src/hooks/               数据查询、主题、Mermaid 等交互逻辑
-src/utils/               文章 slug 和主题初始化等工具
+src/utils/               文章路由、MDX 组件命名与主题初始化等工具
 src/constants/           导航、分类、搜索和第三方服务配置
 src/types/               全局数据类型与样式声明
 src/styles/              全局样式、主题变量、文章及第三方组件样式
@@ -66,14 +68,17 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 
 ## 文章、路由与数据
 
-- 公开文章放在 `blog/posts/<name>.mdx`，资源通常放在同名目录，通过相对路径引用；草稿放在 `blog/drafts/`。保留 `static/` 中的站点验证文件与其他现有资源。
-- 发布文章填写 `title`、有效日期 `date` 和 `updated`，分类与标签使用字符串数组。`banner` 为可选的相对图片路径。RSS 会对 `updated` 调用 `toISOString()`，不能填写无法解析的日期。
+内容约定与示例见 [README.md](README.md#content-conventions)。
+
+- 公开文章放在 `blog/posts/` 下（`.md` / `.mdx`），资源放在同名目录（目录首页的资源放在所在目录），通过相对路径引用；草稿放在 `blog/drafts/`。保留 `static/` 中的站点验证文件与其他现有资源。
+- 发布文章填写 `title`、有效日期 `date` 和 `updated`，分类与标签使用字符串数组。`banner` 为可选的相对图片路径，未提供时由 [post-cover.ts](plugins/post-cover.ts) 自动发现，所有入口统一消费 `frontmatter.banner`。RSS 会对 `updated` 调用 `toISOString()`，不能填写无法解析的日期。
 - `timeliness` 从最后更新时间计算：默认阈值为 365 天，`0` 始终显示时效提醒，负数关闭提醒。字段定义见 [global.d.ts](src/types/global.d.ts)。
-- slug 由 [parseFilePathToPostSlug](src/utils/post.ts) 对文件名去扩展名后进行 URL 编码得到，不读取 frontmatter 中的 slug。不同目录下的同名文章会使用同一路径，新增或重命名时检查冲突并更新引用。
-- 文章路径为 `/posts/<slug>`，关于页面为 `/about-me`，分类与标签列表分别为 `/categories/<category>`、`/tags/<tag>`。页面由 `gatsby-node.ts` 创建，模板通过 `?__contentFilePath=` 加载 MDX 正文。
+- 路由与 `slug` 统一使用 [post.ts](src/utils/post.ts)，保留目录层级，仅在 URL 中折叠末尾 `index`；不读取 frontmatter 中的 slug，创建页面前检查路由冲突。
+- 关于页面为 `/about-me`，分类与标签列表分别为 `/categories/<category>`、`/tags/<tag>`。页面由 `gatsby-node.ts` 创建，模板通过 `?__contentFilePath=` 加载 MDX 正文；[Sitemap](plugins/sitemap.ts) 复用统一路由。
 - **草稿不是私密内容。** 当前生产构建仍为草稿创建详情页；生产分类/标签列表、首页查询、RSS 和 Algolia 的公开内容筛选各自位于 `gatsby-node.ts`、[useAllMdx.ts](src/hooks/useAllMdx.ts) 和 `gatsby-config.ts`。调整发布规则时一并核对这些入口。
 - 修改文章字段时，同步维护 `MdxNode` 类型以及使用该字段的页面、列表、RSS 和 Algolia GraphQL 查询。搜索记录类型 `AlgoliaPostItem` 定义在 [algolia-search.tsx](src/components/algolia-search.tsx)，供构建配置复用。
-- [文章模板](src/templates/post.tsx) 注册了 `Card`、`Link`、`HintText`、`GameCard`、`GamePlatformCard`、`Grid`、`ProjectCard`，并接管链接与图片渲染。`Grid` 是通用的 24 份网格，`ProjectGrid` 保留为其别名。新增无需显式导入的 MDX 组件时，同步更新模板映射与 `eslint.config.mjs` 中的 MDX globals。
+- 全局 MDX 组件在 `src/components/mdx/` 顶层以 kebab-case `.tsx` 文件默认导出；[components.ts](src/mdx/components.ts) 与 ESLint 共用命名规则自动注册，禁止覆盖固定绑定 `a`、`img`、`Link`。`Grid` 是通用的 24 份网格。
+- 相对 `.md` / `.mdx` 文章链接在附件复制前解析；修改时一并核对 [remark-relative-post-links.ts](plugins/remark-relative-post-links.ts)、[a.tsx](src/mdx/a.tsx) 与 [layouts/index.tsx](src/layouts/index.tsx) 的导航和章节定位。
 - Mermaid 代码块由 [remark 插件](plugins/remark-skip-code-block.ts) 跳过 Prism 高亮，再由 [useMermaid](src/hooks/useMermaid.ts) 在浏览器加载、渲染。修改代码块处理时保持这两个阶段配合。
 
 ## React、主题与样式

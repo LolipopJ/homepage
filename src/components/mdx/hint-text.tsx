@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useClickOutside } from "../hooks/useClickOutside";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 interface HintTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** 触发文字内容 */

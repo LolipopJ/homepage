@@ -54,14 +54,17 @@ test("extractSitemapItems excludes 404 pages and drafts, includes public posts w
     {
       fields: { slug: "public-post", isPublic: true, isDraft: false },
       frontmatter: { date: "2026-05-01", updated: "2026-05-10" },
+      internal: { contentFilePath: path.resolve("blog/posts/public-post.mdx") },
     },
     {
       fields: { slug: "draft-post", isPublic: false, isDraft: true },
       frontmatter: { date: "2026-06-01" },
+      internal: { contentFilePath: path.resolve("blog/drafts/draft-post.mdx") },
     },
     {
-      fields: { slug: "about-me", isPublic: true, isDraft: false },
+      fields: { slug: "about-me", isPublic: false, isDraft: false },
       frontmatter: { updated: "2026-01-01" },
+      internal: { contentFilePath: path.resolve("blog/about-me.mdx") },
     },
   ];
 
@@ -158,6 +161,7 @@ test("generateSitemaps writes only the required three sitemap files to public di
       {
         fields: { slug: "test", isPublic: true, isDraft: false },
         frontmatter: { date: "2026-10-01" },
+        internal: { contentFilePath: path.resolve("blog/posts/test.mdx") },
       },
     ];
 
@@ -201,4 +205,76 @@ test("generateSitemaps writes only the required three sitemap files to public di
   } finally {
     await fs.rm(tempDir, { recursive: true, force: true });
   }
+});
+
+test("extractSitemapItems maps nested posts, root/nested index pages, coexisting about-me, and excludes nested drafts", () => {
+  const pages = [
+    { path: "/" },
+    { path: "/posts/" },
+    { path: "/posts/guide/" },
+    { path: "/posts/react/hooks/" },
+    { path: "/posts/about-me/" },
+    { path: "/about-me/" },
+    { path: "/posts/draft-dir/secret/" },
+    { path: "/posts/draft-index/" },
+  ];
+
+  const mdxNodes = [
+    {
+      frontmatter: { date: "2026-01-01", updated: "2026-02-01" },
+      internal: { contentFilePath: path.resolve("blog/posts/index.md") },
+    },
+    {
+      frontmatter: { date: "2026-02-05" },
+      internal: { contentFilePath: path.resolve("blog/posts/guide/index.mdx") },
+    },
+    {
+      frontmatter: { date: "2026-03-01", updated: "2026-03-10" },
+      internal: { contentFilePath: path.resolve("blog/posts/react/hooks.mdx") },
+    },
+    {
+      frontmatter: { updated: "2026-04-01" },
+      internal: { contentFilePath: path.resolve("blog/posts/about-me.mdx") },
+    },
+    {
+      frontmatter: { updated: "2026-01-15" },
+      internal: { contentFilePath: path.resolve("blog/about-me.mdx") },
+    },
+    {
+      frontmatter: { date: "2026-12-01" },
+      internal: {
+        contentFilePath: path.resolve("blog/drafts/draft-dir/secret.mdx"),
+      },
+    },
+    {
+      frontmatter: { date: "2026-12-05" },
+      internal: {
+        contentFilePath: path.resolve("blog/drafts/draft-index/index.mdx"),
+      },
+    },
+  ];
+
+  const items = extractSitemapItems(pages, mdxNodes);
+
+  assert.equal(items.find((i) => i.path === "/")?.lastmod, "2026-04-01");
+  assert.equal(items.find((i) => i.path === "/posts/")?.lastmod, "2026-02-01");
+  assert.equal(
+    items.find((i) => i.path === "/posts/guide/")?.lastmod,
+    "2026-02-05",
+  );
+  assert.equal(
+    items.find((i) => i.path === "/posts/react/hooks/")?.lastmod,
+    "2026-03-10",
+  );
+  assert.equal(
+    items.find((i) => i.path === "/posts/about-me/")?.lastmod,
+    "2026-04-01",
+  );
+  assert.equal(
+    items.find((i) => i.path === "/about-me/")?.lastmod,
+    "2026-01-15",
+  );
+
+  assert.ok(!items.some((i) => i.path.includes("draft-dir")));
+  assert.ok(!items.some((i) => i.path.includes("draft-index")));
 });

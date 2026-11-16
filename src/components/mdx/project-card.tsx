@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import useHoverPreview from "../hooks/useHoverPreview";
+import useHoverPreview from "../../hooks/useHoverPreview";
 
 export interface ProjectCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 项目名称 */

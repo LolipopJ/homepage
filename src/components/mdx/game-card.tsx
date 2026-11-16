@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import useHoverPreview from "../hooks/useHoverPreview";
+import useHoverPreview from "../../hooks/useHoverPreview";
 
 const artImageClassName = `
   absolute inset-0 size-full object-cover transition-[opacity,translate,scale]

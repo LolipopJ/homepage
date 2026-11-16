@@ -6,69 +6,15 @@ import utc from "dayjs/plugin/utc";
 import { graphql, HeadProps, Link, PageProps } from "gatsby";
 import * as React from "react";
 
-import Card from "../components/card";
-import GameCard from "../components/game-card";
-import GamePlatformCard from "../components/game-platform-card";
-import Grid from "../components/grid";
-import HintText from "../components/hint-text";
-import ProjectCard from "../components/project-card";
 import SEO from "../components/seo";
 import Tag from "../components/tag";
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
 import useMermaid from "../hooks/useMermaid";
+import components from "../mdx/components";
+import { matchPostRoute } from "../utils/post";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-type MDXProviderProps = React.ComponentProps<typeof MDXProvider>;
-
-const FancyBoxImage = (props: { alt?: string; src?: string }) => {
-  const {
-    alt = "The author is too lazy to give an alt",
-    src,
-    ...restProps
-  } = props;
-  return (
-    <a href={src} data-fancybox="gallery" data-caption={alt}>
-      <img src={src} alt={alt} {...restProps} />
-    </a>
-  );
-};
-
-const ALink = ({
-  href = "",
-  children,
-}: {
-  href?: string;
-  children?: React.ReactNode;
-}) => {
-  const isExternalHref = !href?.startsWith("#");
-  const parsedHref = isExternalHref
-    ? href
-    : `#${encodeURIComponent(href.slice(1))}`;
-
-  return (
-    <a
-      href={parsedHref}
-      target={isExternalHref ? "_blank" : undefined}
-      rel="noreferrer"
-    >
-      {children}
-    </a>
-  );
-};
-
-const components: MDXProviderProps["components"] = {
-  a: ALink,
-  img: FancyBoxImage,
-  Card,
-  Link,
-  HintText,
-  GameCard,
-  GamePlatformCard,
-  Grid,
-  ProjectCard,
-};
 
 type PostPageData = {
   mdx: Pick<MdxNode, "excerpt" | "frontmatter"> & {
@@ -262,8 +208,7 @@ export const Head = ({
 }: HeadProps<PostPageData, PostPageContext>) => {
   const { title, banner, description } = data.mdx.frontmatter;
   const { excerpt } = data.mdx;
-  const isProfile =
-    location.pathname === "/about-me" || location.pathname === "/about-me/";
+  const { isAboutMe: isProfile } = matchPostRoute(location.pathname);
 
   return (
     <SEO
