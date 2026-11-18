@@ -37,6 +37,7 @@ blog/drafts/             草稿及配套资源
 blog/about-me.mdx        关于页面内容
 blog/posts/about-me/     关于页面图片
 static/                  原样复制到站点根目录的静态资源及验证文件
+scripts/indexnow.mjs     手动解析 sitemap.xml 并推送 URL 至 IndexNow
 tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 .github/workflows/       构建和部署流程
 ```
@@ -56,6 +57,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 | `pnpm build:dry-run`                 | 生产构建；不会同步 Algolia 索引，开发测试用    |
 | `pnpm serve`                         | 预览已经生成的生产站点                         |
 | `pnpm clean`                         | 清理 Gatsby 缓存和构建产物，按需使用           |
+| `pnpm indexnow -- --key <key>`       | 从 `sitemap.xml` 提取 URL 并推送至 IndexNow    |
 | `pnpm typecheck`                     | 执行 `tsc --noEmit`                            |
 | `node --test tests/theme.test.mjs`   | 运行现有主题回归测试                           |
 | `pnpm exec prettier --check <files>` | 对指定文件做只读格式检查                       |

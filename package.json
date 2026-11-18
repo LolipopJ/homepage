@@ -21,6 +21,7 @@
     "build:dry-run": "cross-env DRY_RUN=true pnpm run build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
+    "indexnow": "node scripts/indexnow.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,mjs,ts,jsx,tsx,mdx,css}\"",
     "lint-staged": "lint-staged"

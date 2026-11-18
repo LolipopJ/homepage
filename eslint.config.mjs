@@ -86,6 +86,12 @@ export default defineConfig([
     },
   },
   {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     files: ["blog/**/*.mdx"],
     extends: [mdx.flat, mdx.flatCodeBlocks],
     languageOptions: {
