@@ -1,7 +1,7 @@
 ---
 title: 不再是小画家了……自动化 Wplace 绘画清日常
 date: 2026-03-19
-updated: 2026-08-06
+updated: 2026-11-18
 categories:
   - 技术琐事
 tags:
@@ -19,7 +19,9 @@ tags:
 >
 > ……换句话说：怂别用，用别怂！
 
-全流程用到了一些**前端调试**的知识，对非技术的小白用户并不友好，请见谅。如果对实现的细节不感兴趣，可以直接跳到最后的[使用方法](#使用方法)部分，按照步骤操作即可。
+流程用到了一些**并不复杂的前端调试**知识，但也对纯小白用户并不友好，请见谅。
+
+对实现的细节不感兴趣，或者太长不想看？可以直接跳到最后的[使用方法](#使用方法)部分，按照步骤操作即可。
 
 ## 方案探索与实现
 
@@ -85,6 +87,7 @@ export default class TemplateManager {
     //...
 
     this.shouldFilterColor = new Map(); // Will contain all color ID's to filter @type {Map<number, boolean>}
+    this.templateMissingPixels = new Map(); // A Map where the keys are tile coordinates, and the values are arrays of missing pixels for that tile.
     this.templateMissingAndUnfilteredPixels = new Map(); // A Map where the keys are tile coordinates, and the values are arrays of missing pixels for that tile, taking into unfiltered colors.
   }
 
@@ -103,6 +106,8 @@ export default class TemplateManager {
           tileBeforeTemplates32,
           originalTileCoords,
         );
+        this.templateMissingPixels.set(tileCoordsKey, missingPixels);
+
         const missingAndUnfilteredPixels = missingPixels.filter(
           (pixel) => !this.shouldFilterColor.has(pixel.colorIdx),
         );
@@ -188,7 +193,7 @@ export default class TemplateManager {
               results.push({
                 colorIdx: templateColorID,
                 pixel: [pixelX, pixelY],
-                season: 0, // Assuming season is 0 for now, adjust as needed
+                season: 0,
                 tile: [tileX, tileY],
               });
             }
@@ -229,9 +234,13 @@ export default class WindowFilter extends Overlay {
     this.addButton({ textContent: "Refresh&Copy" }, (instance, button) => {
       button.onclick = () => {
         button.disabled = true;
-        this.updateColorList();
-        this.#copyMissingPixelsWithUnfilteredColorToClipboard();
-        button.disabled = false;
+        try {
+          this.updateColorList();
+          this.#copyMissingPixelsWithUnfilteredColorToClipboard();
+          button.disabled = false;
+        } catch (e) {
+          // ...
+        }
       };
     });
   }
@@ -241,18 +250,7 @@ export default class WindowFilter extends Overlay {
    * up to the user's charge count.
    */
   #copyMissingPixelsWithUnfilteredColorToClipboard() {
-    const missingAndUnfilteredPixels = Array.from(
-      this.templateManager.templateMissingAndUnfilteredPixels.values(),
-    ).flat();
-    const chargeCount = Math.floor(
-      this.templateManager.userChargeData["count"],
-    );
-    const copiedPixels = missingAndUnfilteredPixels.slice(0, chargeCount);
-    GM_setClipboard(JSON.stringify(copiedPixels));
-    console.log(`Copy pixels to clipboard:`, copiedPixels);
-    alert(
-      `Copied ${copiedPixels.length} missing pixels with unfiltered colors to clipboard!`,
-    );
+    // ...
   }
 }
 ```
@@ -284,19 +282,30 @@ export default class WindowFilter extends Overlay {
     for (const [, group] of groupEntries) {
       if (group.length === 0) continue;
 
-      // Build a set of pixel coordinates for O(1) lookup, and find connected components via BFS
+      // Build a set of GLOBAL pixel coordinates for O(1) lookup, and find connected components via BFS.
+      // `pixel` is tile-local (0..tileSize-1), so keying on it alone would collide between pixels that
+      // share the same local offset in two *different* tiles.
+      const tileSize = this.templateManager.tileSize || 1000;
+      const globalOf = (p) => [
+        p.tile[0] * tileSize + p.pixel[0],
+        p.tile[1] * tileSize + p.pixel[1],
+      ];
       const keyOf = (x, y) => `${x},${y}`;
       const pixelMap = new Map(); // key -> pixel object
-      for (const p of group) pixelMap.set(keyOf(p.pixel[0], p.pixel[1]), p);
+      for (const p of group) {
+        const [gx, gy] = globalOf(p);
+        pixelMap.set(keyOf(gx, gy), p);
+      }
 
       const visited = new Set();
       const components = []; // each element is an array of adjacent pixels
 
       for (const p of group) {
-        const startKey = keyOf(p.pixel[0], p.pixel[1]);
+        const [px, py] = globalOf(p);
+        const startKey = keyOf(px, py);
         if (visited.has(startKey)) continue;
 
-        // BFS to collect all pixels reachable via 4-directional adjacency
+        // BFS to collect all pixels reachable via 4-directional adjacency (across tile boundaries too)
         const component = [];
         const queue = [p];
         visited.add(startKey);
@@ -304,7 +313,7 @@ export default class WindowFilter extends Overlay {
         while (queue.length > 0) {
           const curr = queue.shift();
           component.push(curr);
-          const [cx, cy] = curr.pixel;
+          const [cx, cy] = globalOf(curr);
           for (const [nx, ny] of [
             [cx - 1, cy],
             [cx + 1, cy],
@@ -326,10 +335,11 @@ export default class WindowFilter extends Overlay {
       // then alternate horizontal/vertical sorting (snake pattern).
       let subIdx = 0;
       for (const component of components) {
-        // Pre-sort the component by x then y so the chunk split is spatially coherent
+        // Pre-sort the component by x then y (global coords) so the chunk split is spatially coherent
         component.sort((A, B) => {
-          const dx = A.pixel[0] - B.pixel[0];
-          return dx !== 0 ? dx : A.pixel[1] - B.pixel[1];
+          const [ax, ay] = globalOf(A);
+          const [bx, by] = globalOf(B);
+          return ax !== bx ? ax - bx : ay - by;
         });
 
         for (let i = 0; i < component.length; subIdx++) {
@@ -339,14 +349,16 @@ export default class WindowFilter extends Overlay {
           if (subIdx % 2 === 0) {
             // Even sub-group → horizontal: sort by x, then y
             subGroup.sort((A, B) => {
-              const dx = A.pixel[0] - B.pixel[0];
-              return dx !== 0 ? dx : A.pixel[1] - B.pixel[1];
+              const [ax, ay] = globalOf(A);
+              const [bx, by] = globalOf(B);
+              return ax !== bx ? ax - bx : ay - by;
             });
           } else {
             // Odd sub-group → vertical: sort by y, then x
             subGroup.sort((A, B) => {
-              const dy = A.pixel[1] - B.pixel[1];
-              return dy !== 0 ? dy : A.pixel[0] - B.pixel[0];
+              const [ax, ay] = globalOf(A);
+              const [bx, by] = globalOf(B);
+              return ay !== by ? ay - by : ax - bx;
             });
           }
           sortedPixels.push(...subGroup);
@@ -355,6 +367,9 @@ export default class WindowFilter extends Overlay {
     }
 
     // 4) Copy the pixels to the clipboard, up to the user's charge count
+    // ...
+
+    // 5) Tally copied pixels per color, and how many of that color remain uncopied
     // ...
   }
 }
@@ -373,16 +388,16 @@ export default class WindowFilter extends Overlay {
 - 生产环境脚本 [`BlueMarble.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble.user.js)，一般使用此版本就好。
 - 开发环境脚本 [`BlueMarble-For-GreasyFork.user.js`](https://github.com/LolipopJ/Wplace-BlueMarble/blob/main/dist/BlueMarble-For-GreasyFork.user.js)，与前者的区别在于未混淆压缩，控制台会打印调试信息。
 
-打开开发者控制台，切换到“源代码”标签页，找到 Wplace 的前端资源中的 `paint()` 方法，在方法入口打上断点。可以通过在开发者工具里搜索接口 `/paint` 来快速定位此方法：
+打开开发者控制台，切换到“源代码”标签页，找到 Wplace 的前端资源中实际调用绘画接口的方法，在方法的入口函数处打上断点。可以通过在开发者工具里搜索关键词 `` request(`/paint` `` 来快速定位此方法：
 
 ![为 paint() 方法打上断点](./wplace-painter-automatic/add-breakpoint.png)
 
-在 Blue Marble 插件里过滤掉不需要的颜色，只保留想要绘制的颜色，等待地图上**待绘制像素点刷新后**，点击插件里的 Refresh&Copy 按钮复制请求载荷。
+在 Blue Marble 插件里过滤掉不需要的颜色，只保留想要绘制的颜色，等待地图上**待绘制像素点刷新后**，点击插件里的 Refresh&Copy 按钮复制请求载荷。如果插件获取额度失败，可以先点击主窗口 `Droplets` 旁的 `↻` 按钮手动刷新一次当前额度后再复制。
 
 > [!TIP]
 > 因为 Blue Marble 劫持了 Wplace 刷新地图的请求以计算待绘制像素点列表，所以在过滤颜色后，需要等待**下一次地图刷新**才能正确获取到待绘制像素点列表。简单可以理解为“所见即所得”，当你看到地图上的待绘制像素点刷新后，就可以点击 Refresh&Copy 按钮了。
 
-如果成功的话，浏览器将弹出对话框提示，可以看到本次复制的像素点数量：
+如果成功的话，浏览器将弹出对话框提示，可以看到本次复制的像素点总数以及各颜色的复制数量与剩余数量：
 
 ![复制请求载荷](./wplace-painter-automatic/copy-missing-pixels.png)
 
