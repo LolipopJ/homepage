@@ -70,6 +70,13 @@ export function normalizeRoutePath(pathname: string): string {
   return `/${segments.map(encodeRouteSegment).join("/")}`;
 }
 
+export function getCanonicalUrl(siteUrl: string, pathname: string): string {
+  const route = normalizeRoutePath(pathname);
+  // Gatsby writes routes ending in .html as files.
+  const suffix = route === "/" || pathname.endsWith(".html") ? "" : "/";
+  return `${siteUrl}${route}${suffix}`;
+}
+
 /** 根据文章 slug 计算对应页面地址，仅折叠末尾的 index 段 */
 export function getPostPath(slug: string): string {
   if (!slug || slug === "index") {

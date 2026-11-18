@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import useSiteMetadata from "../hooks/useSiteMetadata";
+import { getCanonicalUrl } from "../utils/post";
 
 export interface SEOProps {
   title: string;
@@ -31,20 +32,19 @@ const SEO: React.FC<SEOProps> = ({
     .replace(/\s+/g, " ")
     .trim();
 
-  const baseUrl = (siteUrl || "").replace(/\/+$/, "");
-  const defaultImage = `${baseUrl}/icons/favicon.png`;
+  const defaultImage = `${siteUrl}/icons/favicon.png`;
 
   let metaImage = defaultImage;
   if (image) {
     if (image.startsWith("http://") || image.startsWith("https://")) {
       metaImage = image;
     } else {
-      metaImage = `${baseUrl}${image.startsWith("/") ? "" : "/"}${image}`;
+      metaImage = `${siteUrl}${image.startsWith("/") ? "" : "/"}${image}`;
     }
   }
 
   const canonicalUrl = pathname
-    ? `${baseUrl}${pathname.startsWith("/") ? "" : "/"}${pathname}`
+    ? getCanonicalUrl(siteUrl, pathname)
     : undefined;
 
   const ogType = type ?? (article ? "article" : "website");

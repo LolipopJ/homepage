@@ -5,15 +5,14 @@ import path from "node:path";
 import test from "node:test";
 
 import {
-  buildSitemapIndexXml,
   buildUrlsetXml,
-  DOMAIN_GITHUB,
-  DOMAIN_TOWIND,
-  encodeUrlLoc,
   extractSitemapItems,
   formatLastmod,
-  generateSitemaps,
+  generateSitemap,
 } from "../plugins/sitemap.ts";
+import { getCanonicalUrl } from "../src/utils/post.ts";
+
+const siteUrl = "https://blog.towind.cn";
 
 test("formatLastmod formats valid dates and handles falsy values", () => {
   assert.equal(formatLastmod("2026-11-10T00:00:00.000Z"), "2026-11-10");
@@ -23,18 +22,22 @@ test("formatLastmod formats valid dates and handles falsy values", () => {
   assert.equal(formatLastmod("invalid-date"), undefined);
 });
 
-test("encodeUrlLoc handles bare % and special characters safely", () => {
+test("getCanonicalUrl matches Gatsby's directory and file URLs", () => {
   assert.equal(
-    encodeUrlLoc(DOMAIN_TOWIND, "/tags/100%/"),
+    getCanonicalUrl(siteUrl, "/tags/100%"),
     "https://blog.towind.cn/tags/100%25/",
   );
   assert.equal(
-    encodeUrlLoc(DOMAIN_TOWIND, "/tags/100%25/"),
+    getCanonicalUrl(siteUrl, "/tags/100%25/"),
     "https://blog.towind.cn/tags/100%25/",
   );
   assert.equal(
-    encodeUrlLoc(DOMAIN_TOWIND, "/categories/生活 闲暇/"),
+    getCanonicalUrl(siteUrl, "/categories/生活 闲暇/"),
     `https://blog.towind.cn/categories/${encodeURIComponent("生活")}%20${encodeURIComponent("闲暇")}/`,
+  );
+  assert.equal(
+    getCanonicalUrl(siteUrl, "/posts/example.html"),
+    "https://blog.towind.cn/posts/example.html",
   );
 });
 
@@ -90,7 +93,7 @@ test("extractSitemapItems excludes 404 pages and drafts, includes public posts w
   assert.equal(aboutMe.lastmod, "2026-01-01");
 });
 
-test("buildUrlsetXml generates valid sitemap xml without cross-domain pollution", () => {
+test("buildUrlsetXml generates valid sitemap xml with encoded absolute URLs", () => {
   const items = [
     { path: "/", lastmod: "2026-11-10", changefreq: "daily", priority: 1.0 },
     {
@@ -102,55 +105,23 @@ test("buildUrlsetXml generates valid sitemap xml without cross-domain pollution"
     { path: "/tags/生活 闲暇/", changefreq: "weekly", priority: 0.6 },
   ];
 
-  const towindXml = buildUrlsetXml(DOMAIN_TOWIND, items);
-  assert.ok(towindXml.includes("<urlset"));
-  assert.ok(towindXml.includes("<loc>https://blog.towind.cn/</loc>"));
+  const xml = buildUrlsetXml(siteUrl, items);
+  assert.ok(xml.includes("<urlset"));
+  assert.ok(xml.includes("<loc>https://blog.towind.cn/</loc>"));
+  assert.ok(xml.includes("<loc>https://blog.towind.cn/posts/hello/</loc>"));
   assert.ok(
-    towindXml.includes("<loc>https://blog.towind.cn/posts/hello/</loc>"),
-  );
-  assert.ok(
-    towindXml.includes(
+    xml.includes(
       `<loc>https://blog.towind.cn/tags/${encodeURIComponent("生活")}%20${encodeURIComponent("闲暇")}/</loc>`,
     ),
   );
-  assert.ok(!towindXml.includes("github.io"));
-
-  const githubXml = buildUrlsetXml(DOMAIN_GITHUB, items);
-  assert.ok(githubXml.includes("<loc>https://lolipopj.github.io/</loc>"));
-  assert.ok(
-    githubXml.includes("<loc>https://lolipopj.github.io/posts/hello/</loc>"),
-  );
-  assert.ok(!githubXml.includes("towind.cn"));
 });
 
-test("buildSitemapIndexXml creates sitemapindex pointing to both domain urlsets", () => {
-  const indexXml = buildSitemapIndexXml([
-    {
-      loc: "https://blog.towind.cn/sitemap-towind.xml",
-      lastmod: "2026-11-10",
-    },
-    {
-      loc: "https://lolipopj.github.io/sitemap-github.xml",
-      lastmod: "2026-11-10",
-    },
-  ]);
-  assert.ok(indexXml.includes("<sitemapindex"));
-  assert.ok(
-    indexXml.includes("<loc>https://blog.towind.cn/sitemap-towind.xml</loc>"),
-  );
-  assert.ok(
-    indexXml.includes(
-      "<loc>https://lolipopj.github.io/sitemap-github.xml</loc>",
-    ),
-  );
-});
-
-test("generateSitemaps writes only the required three sitemap files to public directory", async () => {
+test("generateSitemaps writes only the canonical sitemap", async () => {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "sitemap-test-"));
   try {
     // Simulate stale files from prior builds
-    await fs.writeFile(path.join(tempDir, "sitemap.xml"), "old");
-    await fs.writeFile(path.join(tempDir, "sitemap-0.xml"), "old");
+    await fs.writeFile(path.join(tempDir, "sitemap-github.xml"), "old");
+    await fs.writeFile(path.join(tempDir, "sitemap-index.xml"), "old");
 
     const pages = [
       { path: "/" },
@@ -165,42 +136,15 @@ test("generateSitemaps writes only the required three sitemap files to public di
       },
     ];
 
-    await generateSitemaps(tempDir, pages, mdxNodes);
+    await generateSitemap(tempDir, siteUrl, pages, mdxNodes);
 
-    // Verify only the 3 canonical files exist
-    const files = await fs.readdir(tempDir);
-    assert.deepEqual(files.sort(), [
-      "sitemap-github.xml",
-      "sitemap-index.xml",
-      "sitemap-towind.xml",
-    ]);
-
-    // Verify content of github sitemap
-    const githubContent = await fs.readFile(
-      path.join(tempDir, "sitemap-github.xml"),
-      "utf8",
-    );
-    assert.ok(githubContent.includes("https://lolipopj.github.io/posts/test/"));
-    assert.ok(!githubContent.includes("towind.cn"));
-
-    // Verify content of towind sitemap
-    const towindContent = await fs.readFile(
-      path.join(tempDir, "sitemap-towind.xml"),
-      "utf8",
-    );
-    assert.ok(towindContent.includes("https://blog.towind.cn/posts/test/"));
-    assert.ok(!towindContent.includes("github.io"));
-
-    // Verify content of index sitemap contains both
-    const indexContent = await fs.readFile(
-      path.join(tempDir, "sitemap-index.xml"),
+    assert.deepEqual(await fs.readdir(tempDir), ["sitemap.xml"]);
+    const sitemap = await fs.readFile(
+      path.join(tempDir, "sitemap.xml"),
       "utf8",
     );
     assert.ok(
-      indexContent.includes("https://blog.towind.cn/sitemap-towind.xml"),
-    );
-    assert.ok(
-      indexContent.includes("https://lolipopj.github.io/sitemap-github.xml"),
+      sitemap.includes("<loc>https://blog.towind.cn/posts/test/</loc>"),
     );
   } finally {
     await fs.rm(tempDir, { recursive: true, force: true });

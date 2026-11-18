@@ -7,7 +7,7 @@ import { remarkRelativePostLinks } from "./plugins/remark-relative-post-links";
 import { remarkSkipCodeBlock } from "./plugins/remark-skip-code-block";
 import { type AlgoliaPostItem } from "./src/components/algolia-search";
 import { ALGOLIA_APP_ID, ALGOLIA_INDEX_NAME } from "./src/constants/algolia";
-import { getPostPath } from "./src/utils/post";
+import { getCanonicalUrl, getPostPath } from "./src/utils/post";
 
 dotenv.config({
   path: [".env", `.env.${process.env.NODE_ENV}`],
@@ -19,7 +19,7 @@ const config: GatsbyConfig = {
     owner: "Lolipop",
     description:
       "Homepage and blog of Lolipop, share my thoughts about software development & AI technology.",
-    siteUrl: process.env.SITE_URL || "https://blog.towind.cn",
+    siteUrl: "https://blog.towind.cn",
   } as SiteMetadata,
   flags: {
     // DEV_SSR: true,
@@ -170,7 +170,10 @@ const config: GatsbyConfig = {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
                   date: node.frontmatter.date,
-                  url: `${site.siteMetadata.siteUrl}${getPostPath(node.fields.slug)}`,
+                  url: getCanonicalUrl(
+                    site.siteMetadata.siteUrl,
+                    getPostPath(node.fields.slug),
+                  ),
                   guid: node.fields.slug,
                   custom_elements: [
                     {

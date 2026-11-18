@@ -9,7 +9,7 @@ import path from "path";
 
 import { buildPostCoverTypeDefs } from "./plugins/post-cover";
 import {
-  generateSitemaps,
+  generateSitemap,
   type MdxQueryResult,
   type SitePageQueryResult,
 } from "./plugins/sitemap";
@@ -202,11 +202,10 @@ export const createPages = async function ({
 };
 
 export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
-  reporter.info(
-    "[sitemap] Generating sitemaps for blog.towind.cn and lolipopj.github.io...",
-  );
+  reporter.info("[sitemap] Generating canonical sitemap...");
 
   const { data, errors } = await graphql<{
+    site: { siteMetadata: Pick<SiteMetadata, "siteUrl"> };
     allSitePage: {
       nodes: SitePageQueryResult[];
     };
@@ -215,6 +214,11 @@ export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
     };
   }>(`
     query SitemapQuery {
+      site {
+        siteMetadata {
+          siteUrl
+        }
+      }
       allSitePage {
         nodes {
           path
@@ -248,12 +252,13 @@ export const onPostBuild = async function ({ graphql, reporter }: BuildArgs) {
   }
 
   const publicDir = path.resolve("./public");
-  await generateSitemaps(
+  await generateSitemap(
     publicDir,
+    data.site.siteMetadata.siteUrl,
     data.allSitePage.nodes,
     data.allMdx.nodes,
     BLOG_ROOT,
   );
 
-  reporter.info("[sitemap] Successfully generated sitemaps.");
+  reporter.info("[sitemap] Successfully generated the canonical sitemap.");
 };

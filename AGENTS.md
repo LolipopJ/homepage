@@ -75,6 +75,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 - `timeliness` 从最后更新时间计算：默认阈值为 365 天，`0` 始终显示时效提醒，负数关闭提醒。字段定义见 [global.d.ts](src/types/global.d.ts)。
 - 路由与 `slug` 统一使用 [post.ts](src/utils/post.ts)，保留目录层级，仅在 URL 中折叠末尾 `index`；不读取 frontmatter 中的 slug，创建页面前检查路由冲突。
 - 关于页面为 `/about-me`，分类与标签列表分别为 `/categories/<category>`、`/tags/<tag>`。页面由 `gatsby-node.ts` 创建，模板通过 `?__contentFilePath=` 加载 MDX 正文；[Sitemap](plugins/sitemap.ts) 复用统一路由。
+- `siteMetadata.siteUrl` 定义规范域名 `https://blog.towind.cn`。页面的 canonical、`og:url`、RSS 和 `sitemap.xml` 复用统一 URL 规则，[robots.txt](static/robots.txt) 声明该 sitemap。
 - **草稿不是私密内容。** 当前生产构建仍为草稿创建详情页；生产分类/标签列表、首页查询、RSS 和 Algolia 的公开内容筛选各自位于 `gatsby-node.ts`、[useAllMdx.ts](src/hooks/useAllMdx.ts) 和 `gatsby-config.ts`。调整发布规则时一并核对这些入口。
 - 修改文章字段时，同步维护 `MdxNode` 类型以及使用该字段的页面、列表、RSS 和 Algolia GraphQL 查询。搜索记录类型 `AlgoliaPostItem` 定义在 [algolia-search.tsx](src/components/algolia-search.tsx)，供构建配置复用。
 - 全局 MDX 组件在 `src/components/mdx/` 顶层以 kebab-case `.tsx` 文件默认导出；[components.ts](src/mdx/components.ts) 与 ESLint 共用命名规则自动注册，禁止覆盖固定绑定 `a`、`img`、`Link`。`Grid` 是通用的 24 份网格。
