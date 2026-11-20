@@ -163,6 +163,10 @@
       summary {
         @apply ps-0;
       }
+
+      ol, ul {
+        @apply ps-4.5;
+      }
     }
 
     blockquote,
