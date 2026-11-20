@@ -1,5 +1,6 @@
 import * as React from "react";
-import { createPortal } from "react-dom";
+
+import HoverPreview from "../components/hover-preview";
 
 /** 悬浮预览图与卡片之间的间距（px） */
 const PREVIEW_SPACING = 12;
@@ -7,15 +8,8 @@ const PREVIEW_SPACING = 12;
 const PREVIEW_MAX_WIDTH = 576;
 /** 悬浮预览图的最大高度（px） */
 const PREVIEW_MAX_HEIGHT = 320;
-/** 悬浮预览图与视口边缘的最小间距（px） */
+/** 计算预览图可用空间时预留的视口边距（px） */
 const VIEWPORT_GAP = 8;
-
-interface PreviewPosition {
-  left: number;
-  maxHeight: number;
-  top?: number;
-  bottom?: number;
-}
 
 export interface HoverPreviewOptions {
   /** 预览图地址，未提供时不会展示预览图 */
@@ -37,39 +31,57 @@ export interface HoverPreviewResult<T extends HTMLElement> {
 
 /**
  * 卡片悬浮预览图
- * @description 将预览图水平居中于卡片，并选择空间更充裕的一侧展开
+ * @description 预览图与卡片的一侧对齐，并向垂直空间更充裕的一侧展开
  */
 const useHoverPreview = <T extends HTMLElement = HTMLDivElement>({
   src,
   alt,
 }: HoverPreviewOptions): HoverPreviewResult<T> => {
   const targetRef = React.useRef<T>(null);
-  const [position, setPosition] = React.useState<PreviewPosition | null>(null);
+  const [position, setPosition] = React.useState<React.CSSProperties | null>(
+    null,
+  );
+  const isOpen = position !== null;
 
   const showPreview = React.useCallback(() => {
     const rect = targetRef.current?.getBoundingClientRect();
     if (!src || !rect) return;
 
-    const halfWidth =
-      Math.min(window.innerWidth - VIEWPORT_GAP * 2, PREVIEW_MAX_WIDTH) / 2;
-    const left = Math.min(
-      Math.max(rect.left + rect.width / 2, halfWidth + VIEWPORT_GAP),
-      window.innerWidth - halfWidth - VIEWPORT_GAP,
-    );
+    const { clientWidth: width, clientHeight: height } =
+      document.documentElement;
+    if (
+      rect.bottom <= 0 ||
+      rect.top >= height ||
+      rect.right <= 0 ||
+      rect.left >= width
+    ) {
+      setPosition(null);
+      return;
+    }
+
+    const left = Math.max(0, rect.left);
+    const right = Math.max(0, width - rect.right);
+    const widthFromLeft = width - left - VIEWPORT_GAP;
+    const widthFromRight = width - right - VIEWPORT_GAP;
+    const alignRight =
+      widthFromLeft < PREVIEW_MAX_WIDTH && widthFromRight > widthFromLeft;
 
     const spaceAbove = rect.top - PREVIEW_SPACING - VIEWPORT_GAP;
-    const spaceBelow =
-      window.innerHeight - rect.bottom - PREVIEW_SPACING - VIEWPORT_GAP;
+    const spaceBelow = height - rect.bottom - PREVIEW_SPACING - VIEWPORT_GAP;
     const expandUpwards = spaceAbove >= spaceBelow;
 
     setPosition({
-      left,
+      ...(alignRight ? { right } : { left }),
+      maxWidth: Math.min(
+        alignRight ? widthFromRight : widthFromLeft,
+        PREVIEW_MAX_WIDTH,
+      ),
       maxHeight: Math.min(
-        Math.max(expandUpwards ? spaceAbove : spaceBelow, 96),
+        Math.max(spaceAbove, spaceBelow, 96),
         PREVIEW_MAX_HEIGHT,
       ),
       ...(expandUpwards
-        ? { bottom: window.innerHeight - rect.top + PREVIEW_SPACING }
+        ? { bottom: height - rect.top + PREVIEW_SPACING }
         : { top: rect.bottom + PREVIEW_SPACING }),
     });
   }, [src]);
@@ -78,48 +90,29 @@ const useHoverPreview = <T extends HTMLElement = HTMLDivElement>({
     setPosition(null);
   }, []);
 
-  // 滚动时收起预览图，窗口缩放时重新计算位置
   React.useEffect(() => {
-    if (!position) return;
-    window.addEventListener("scroll", hidePreview, true);
-    window.addEventListener("resize", showPreview);
-    return () => {
-      window.removeEventListener("scroll", hidePreview, true);
-      window.removeEventListener("resize", showPreview);
+    if (!isOpen) return;
+
+    const updatePreview = () => {
+      if (targetRef.current?.matches(":hover, :focus-within")) {
+        showPreview();
+      } else {
+        hidePreview();
+      }
     };
-  }, [position, hidePreview, showPreview]);
+
+    window.addEventListener("scroll", updatePreview, true);
+    window.addEventListener("resize", updatePreview);
+    return () => {
+      window.removeEventListener("scroll", updatePreview, true);
+      window.removeEventListener("resize", updatePreview);
+    };
+  }, [isOpen, showPreview, hidePreview]);
 
   const previewNode =
-    src && position && typeof document !== "undefined"
-      ? createPortal(
-          <div
-            className="
-              pointer-events-none fixed z-50 -translate-x-1/2
-              animate-[project-card-preview-in_150ms_ease-out]
-              motion-reduce:animate-none
-            "
-            style={{
-              left: position.left,
-              top: position.top,
-              bottom: position.bottom,
-            }}
-          >
-            <img
-              alt={alt}
-              src={src}
-              loading="lazy"
-              decoding="async"
-              style={{ maxHeight: position.maxHeight }}
-              className="
-                w-auto max-w-[min(36rem,calc(100vw-1rem))] rounded-lg border
-                border-border bg-background-light object-contain shadow-lg
-                shadow-(color:--shadow-hover)
-              "
-            />
-          </div>,
-          document.body,
-        )
-      : null;
+    src && position ? (
+      <HoverPreview key={src} src={src} alt={alt} position={position} />
+    ) : null;
 
   return { targetRef, previewNode, showPreview, hidePreview };
 };
