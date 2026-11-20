@@ -1,15 +1,10 @@
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import { Link } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import * as React from "react";
 
 import { CATEGORY_GRADIENT_CLASSNAME } from "../constants/post";
 import { getPostPath } from "../utils/post";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { getPostDate } from "../utils/post-date";
 
 export type PostType = Pick<MdxNode, "excerpt" | "fields" | "frontmatter">;
 
@@ -26,6 +21,7 @@ export interface PostProps {
   ) => React.ReactElement;
   size?: "normal" | "large";
   showBanner?: boolean;
+  compactOnMobile?: boolean;
   dateField?: "date" | "updated";
   className?: string;
   categoryClassName?: string;
@@ -43,6 +39,7 @@ const Post: React.FC<PostProps> = (props) => {
     excerptRenderer,
     size = "normal",
     showBanner: propsShowBanner = false,
+    compactOnMobile = false,
     dateField = "date",
     className = "",
     categoryClassName = "",
@@ -67,12 +64,10 @@ const Post: React.FC<PostProps> = (props) => {
   const bannerImage = getImage(banner);
   const showBanner = propsShowBanner && bannerImage;
   const { date, updatedDate } = React.useMemo(() => {
-    const date = dayjs.utc(dateString).tz("Asia/Shanghai");
+    const date = getPostDate(dateString);
     return {
       date,
-      updatedDate: updatedDateString
-        ? dayjs.utc(updatedDateString).tz("Asia/Shanghai")
-        : date,
+      updatedDate: updatedDateString ? getPostDate(updatedDateString) : date,
     };
   }, [dateString, updatedDateString]);
   const displayedDate = dateField === "updated" ? updatedDate : date;
@@ -96,6 +91,7 @@ const Post: React.FC<PostProps> = (props) => {
         title={title}
         className={`
           line-clamp-3 font-bold
+          ${compactOnMobile ? "max-sm:line-clamp-1" : ""}
           ${size === "large" ? "text-lg" : "text-base"}
           ${titleClassName}
         `}
@@ -143,6 +139,7 @@ const Post: React.FC<PostProps> = (props) => {
         <p
           title={excerpt}
           className={`
+            ${compactOnMobile ? "max-sm:line-clamp-4" : ""}
             ${excerptClassName}
           `}
         >
@@ -160,9 +157,10 @@ const Post: React.FC<PostProps> = (props) => {
           title={`首次发布于：${date.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}\n最后更新于：${updatedDate.format("YYYY-MM-DD HH:mm:ss [UTC+8]")}`}
           className="line-clamp-1"
         >
-          {displayedDate.format(
-            size === "large" ? "MM 月 DD 日 YYYY 年" : "MM月DD日YYYY年",
-          )}
+          {displayedDate.format(size === "large" ? "MM 月 DD 日" : "MM月DD日")}
+          <span className={compactOnMobile ? "max-sm:hidden" : undefined}>
+            {displayedDate.format(size === "large" ? " YYYY 年" : "YYYY年")}
+          </span>
         </div>
         {tags?.length && (
           <div

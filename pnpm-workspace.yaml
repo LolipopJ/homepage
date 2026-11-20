@@ -9,7 +9,7 @@ allowBuilds:
   msgpackr-extract: true
 minimumReleaseAgeExclude:
   - lint-staged@17.6.1
-  - rich-presence-react@1.0.0
+  - rich-presence-react@1.0.1
 overrides:
   eslint: ^9
   sharp: ^0.35.5

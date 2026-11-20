@@ -44,7 +44,7 @@
     "@mdx-js/react": "^3.1.1",
     "@react-spring/web": "^10.1.2",
     "@types/lodash-es": "^4.17.12",
-    "algoliasearch": "^5.64.0",
+    "algoliasearch": "^5.65.0",
     "dayjs": "^1.11.23",
     "dotenv": "^18.0.10",
     "gatsby": "^5.16.1",
@@ -71,10 +71,10 @@
     "prismjs": "^1.30.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-instantsearch": "^7.55.0",
+    "react-instantsearch": "^7.55.1",
     "remark-gfm": "^3.0.1",
     "remark-github-alerts": "^0.1.1",
-    "rich-presence-react": "^1.0.0"
+    "rich-presence-react": "^1.0.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^8.0.5",
@@ -106,6 +106,6 @@
     "tailwind-csstree": "^0.4.2",
     "tailwindcss": "^4.3.5",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.72.2"
+    "typescript-eslint": "^8.73.0"
   }
 }

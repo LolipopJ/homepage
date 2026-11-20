@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { HeadFC, PageProps } from "gatsby";
 import * as React from "react";
 
@@ -6,6 +5,7 @@ import Post, { PostProps } from "../components/post";
 import SEO from "../components/seo";
 import { NUMBER_LETTER } from "../constants/utils";
 import useAllMdx from "../hooks/useAllMdx";
+import { getPostDate } from "../utils/post-date";
 
 const IndexPage: React.FC<PageProps> = () => {
   const posts = useAllMdx();
@@ -13,7 +13,7 @@ const IndexPage: React.FC<PageProps> = () => {
   const postsWithYear = React.useMemo(() => {
     const result: Record<number, PostProps["post"][]> = {};
     posts.forEach((post) => {
-      const postYear = dayjs(post.frontmatter.date).year();
+      const postYear = getPostDate(post.frontmatter.date).year();
       if (Array.isArray(result[postYear])) {
         result[postYear].push(post);
       } else {
@@ -24,7 +24,7 @@ const IndexPage: React.FC<PageProps> = () => {
   }, [posts]);
 
   return (
-    <div>
+    <div className="max-sm:-mx-2">
       {Object.entries(postsWithYear)
         .reverse()
         .map(([year, posts]) => (
@@ -57,7 +57,7 @@ const IndexPage: React.FC<PageProps> = () => {
               {posts.map((post) => {
                 return (
                   <li key={post.fields.slug}>
-                    <Post post={post} size="large" showBanner />
+                    <Post post={post} size="large" showBanner compactOnMobile />
                   </li>
                 );
               })}
