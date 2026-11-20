@@ -280,6 +280,10 @@
   }
   /* #endregion */
 
+  .rich-presence-container--theme-light {
+    --rich-presence-background: var(--background-lighter);
+  }
+
   /* #region Algolia 搜索器 */
   .algolia-search-box {
     @apply
