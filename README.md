@@ -47,6 +47,10 @@ Slugs come from source paths relative to `blog/posts/` or `blog/drafts/`, with f
 - Directories without an `index.md` or `index.mdx` do not get an automatic page.
 - Route conflicts fail the build with the conflicting URL and all source files (for example `blog/posts/guide.mdx` + `blog/posts/guide/index.md` on `/posts/guide`, or `blog/posts/guide/setup.mdx` + `blog/drafts/guide/setup.mdx` on `/posts/guide/setup`)
 
+### Body Images
+
+Reference local images with Markdown syntax such as `![Example](./example/image.png)`. Gatsby generates responsive images for a base content width of 624 pixels by default (`optimizeImages: true`). Set `optimizeImages: false` in a post's frontmatter to publish the original files. Cover images use the [cover pipeline](#cover-discovery).
+
 ### Cover Discovery
 
 - Explicit `frontmatter.banner` (relative to the MDX file) takes priority; missing files or unsupported formats fail the build without falling back to auto-discovery.

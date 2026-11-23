@@ -41,6 +41,8 @@ declare global {
             publicURL?: string;
           })
         | null;
+      /** 是否优化正文中的本地 Markdown 图片，默认 `true` */
+      optimizeImages?: boolean;
       /** 分类 */
       categories?: string[];
       /** 标签 */

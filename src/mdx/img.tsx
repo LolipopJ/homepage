@@ -10,7 +10,7 @@ const FancyBoxImage: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = (
   } = props;
   return (
     <a href={src} data-fancybox="gallery" data-caption={alt}>
-      <img src={src} alt={alt} {...restProps} />
+      <img src={src} alt={alt} loading="lazy" decoding="async" {...restProps} />
     </a>
   );
 };

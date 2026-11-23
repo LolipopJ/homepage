@@ -63,20 +63,11 @@ const config: GatsbyConfig = {
           ],
         },
         gatsbyRemarkPlugins: [
-          // 压缩使用到的图片文件，放置到 /public/static 目录下
+          // 按文章设置处理正文图片并复制附件
           {
-            resolve: "gatsby-remark-images",
+            resolve: "gatsby-remark-post-images",
             options: {
               maxWidth: 624,
-            },
-          },
-          // 将使用到的其它类型文件放置到 /public/static 目录下
-          {
-            resolve: "gatsby-remark-copy-linked-files",
-            options: {
-              destinationDir: (file: { name: string; hash: string }) => {
-                return `static/${file.hash}/${file.name}`;
-              },
             },
           },
           // 响应式嵌入内容（如 YouTube 视频）
