@@ -74,6 +74,7 @@ tests/theme.test.mjs     主题初始化和第三方 CSS 作用域回归测试
 
 - 公开文章放在 `blog/posts/` 下（`.md` / `.mdx`），资源放在同名目录（目录首页的资源放在所在目录），通过相对路径引用；草稿放在 `blog/drafts/`。保留 `static/` 中的站点验证文件与其他现有资源。
 - 发布文章填写 `title`、有效日期 `date` 和 `updated`，分类与标签使用字符串数组。`banner` 为可选的相对图片路径，未提供时由 [post-cover.ts](plugins/post-cover.ts) 自动发现，所有入口统一消费 `frontmatter.banner`。RSS 会对 `updated` 调用 `toISOString()`，不能填写无法解析的日期。
+- RSS 通过文章的 `<enclosure>` 导出封面图，提供绝对 URL、文件字节数和 MIME 类型。
 - 正文中的本地 Markdown 图片默认生成响应式图片，在文章 frontmatter 中设置 `optimizeImages: false` 可发布原图。封面图由独立的封面流程处理。
 - `timeliness` 从最后更新时间计算：默认阈值为 365 天，`0` 始终显示时效提醒，负数关闭提醒。字段定义见 [global.d.ts](src/types/global.d.ts)。
 - 路由与 `slug` 统一使用 [post.ts](src/utils/post.ts)，保留目录层级，仅在 URL 中折叠末尾 `index`；不读取 frontmatter 中的 slug，创建页面前检查路由冲突。

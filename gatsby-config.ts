@@ -130,16 +130,16 @@ const config: GatsbyConfig = {
                     }
                     frontmatter {
                       banner {
-                        childImageSharp {
-                          gatsbyImageData
+                        publicURL
+                        size
+                        internal {
+                          mediaType
                         }
                       }
                       categories
-                      tags
                       title
                       date
                       updated
-                      timeliness
                     }
                   }
                 }
@@ -150,22 +150,47 @@ const config: GatsbyConfig = {
               query: {
                 site: { siteMetadata: SiteMetadata };
                 allMdx: {
-                  nodes: Pick<
-                    MdxNode,
-                    "body" | "excerpt" | "fields" | "frontmatter"
-                  >[];
+                  nodes: (Pick<MdxNode, "body" | "excerpt"> & {
+                    fields: Pick<MdxNode["fields"], "slug">;
+                    frontmatter: Pick<
+                      MdxNode["frontmatter"],
+                      "categories" | "title" | "date" | "updated"
+                    > & {
+                      banner: {
+                        publicURL: string;
+                        size: number;
+                        internal: { mediaType: string };
+                      } | null;
+                    };
+                  })[];
                 };
               };
             }) => {
+              const { siteUrl } = site.siteMetadata;
               return allMdx.nodes.map((node) => {
-                return Object.assign({}, node.frontmatter, {
+                const { banner, categories, title, date, updated } =
+                  node.frontmatter;
+                const { slug } = node.fields;
+                return {
+                  title,
+                  categories,
                   description: node.excerpt,
-                  date: node.frontmatter.date,
-                  url: getCanonicalUrl(
-                    site.siteMetadata.siteUrl,
-                    getPostPath(node.fields.slug),
-                  ),
-                  guid: node.fields.slug,
+                  date,
+                  url: getCanonicalUrl(siteUrl, getPostPath(slug)),
+                  guid: slug,
+                  enclosure: banner
+                    ? {
+                        url: new URL(
+                          banner.publicURL
+                            .split("/")
+                            .map(encodeURIComponent)
+                            .join("/"),
+                          siteUrl,
+                        ).href,
+                        size: banner.size,
+                        type: banner.internal.mediaType,
+                      }
+                    : undefined,
                   custom_elements: [
                     {
                       "content:encoded": {
@@ -173,12 +198,10 @@ const config: GatsbyConfig = {
                       },
                     },
                     {
-                      "atom:updated": new Date(
-                        String(node.frontmatter.updated),
-                      ).toUTCString(),
+                      "atom:updated": new Date(String(updated)).toISOString(),
                     },
                   ],
-                });
+                };
               });
             },
             output: "/rss.xml",

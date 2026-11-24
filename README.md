@@ -61,6 +61,7 @@ Reference local images with Markdown syntax such as `![Example](./example/image.
 - Cover lookup follows the source file path, independent of URL encoding.
 - Priority & formats: checks lowercase `cover.*` before `banner.*`, supporting lowercase `jpg`, `jpeg`, `png`, `webp`, `avif`, `tif`, `tiff` (`gif` and `svg` are ignored for auto-discovery).
 - Ambiguity & empty state: multiple candidates at the active priority (e.g. `cover.jpg` + `cover.png`) fail the build; if `cover.*` yields a unique winner, lower-priority `banner.*` ambiguity is ignored. Posts with no candidates build cleanly without a cover.
+- In `/rss.xml`, a public post with a cover has an `<enclosure>` with its absolute image URL (`url`), file size in bytes (`length`), and MIME type (`type`).
 
 ### MDX Component Discovery
 
