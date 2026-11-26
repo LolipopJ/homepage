@@ -149,25 +149,31 @@ const PostTemplate: React.FC<PageProps<PostPageData, PostPageContext>> = ({
       <article ref={articleRef} className="heti post-entry">
         {isDraft && (
           <div className="markdown-alert markdown-alert-caution">
-            这是一篇<strong>尚未正式发布</strong>
-            的博客，内容可能暂不完善或存在纰漏，建议您仔细评估文章的可靠性。
+            <p className="markdown-alert-title">非最终版本</p>
+            <p>
+              这是一篇<strong>尚未正式发布</strong>
+              的博客，内容可能暂不完善或随时发生大幅调整，建议您仔细评估文章的可靠性。
+            </p>
           </div>
         )}
         {showTimelinessWarning && diffDays !== null && (
           <div className="markdown-alert markdown-alert-warning">
-            这是一篇
-            <strong>
-              最后更新于 <span className="print:hidden">{diffDays} 天前</span>
-              <span
-                className="
-                  hidden
-                  print:inline
-                "
-              >
-                {updatedDate.format("YYYY 年 MM 月 DD 日")}
-              </span>
-            </strong>
-            的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估文章的有效性。
+            <p className="markdown-alert-title">信息可能已更新</p>
+            <p>
+              这是一篇最后更新于{" "}
+              <strong>
+                <span className="print:hidden">{diffDays} 天前</span>
+                <span
+                  className="
+                    hidden
+                    print:inline
+                  "
+                >
+                  {updatedDate.format("YYYY 年 MM 月 DD 日")}
+                </span>
+              </strong>
+              的博客，内容可能随着时间的推移而变得不再适用，建议您仔细评估文章的有效性。
+            </p>
           </div>
         )}
         <MDXProvider components={components}>{children}</MDXProvider>

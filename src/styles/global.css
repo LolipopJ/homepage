@@ -193,14 +193,15 @@
       }
     }
 
-    /* 突出显示图片、视频、表格以及引入的 iframe */
+    /* 突出显示正文直接引入的图片、视频、表格以及 iframe 等 */
+    /* > .markdown-alert, */
+    /* > span > .gatsby-highlight, */
     > img,
     > a > img,
     > span.gatsby-resp-image-wrapper,
     > span > span.gatsby-resp-image-wrapper,
     > video,
     > a > video,
-    > span > .gatsby-highlight,
     > table,
     > iframe {
       @apply -mx-6! my-6 w-[calc(100%+3rem)] max-w-none!;
